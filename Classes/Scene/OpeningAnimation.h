@@ -1,0 +1,5 @@
+#ifndef __OPENINGANIMATION_H_
+#define __OPENINGANIMATION_H_
+
+
+#endif // __OPENINGANIMATION_H_

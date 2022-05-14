@@ -1,32 +1,9 @@
-/****************************************************************************
- Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
- 
- http://www.cocos2d-x.org
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- ****************************************************************************/
-
 #include "AppDelegate.h"
-#include "HelloWorldScene.h"
+#include "Snece/OpeningAnimation.h"
 
 // #define USE_AUDIO_ENGINE 1
 
+/*这边有一段音频导入，负责audio部分的同学对照着看一下怎么做*/
 #if USE_AUDIO_ENGINE
 #include "audio/include/AudioEngine.h"
 using namespace cocos2d::experimental;
@@ -34,11 +11,13 @@ using namespace cocos2d::experimental;
 
 USING_NS_CC;
 
-static cocos2d::Size designResolutionSize = cocos2d::Size(480, 320);
+/*尺寸*/
+static cocos2d::Size designResolutionSize = cocos2d::Size(480, 320);    /*这四项可能需要修改*/
 static cocos2d::Size smallResolutionSize = cocos2d::Size(480, 320);
 static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
 
+/*构造 析构*/
 AppDelegate::AppDelegate()
 {
 }
@@ -47,8 +26,10 @@ AppDelegate::~AppDelegate()
 {
 #if USE_AUDIO_ENGINE
     AudioEngine::end();
-#endif
+#endif  /*这里随音频有所不同*/
 }
+
+/*glContextAttrs 暂时不管*/
 
 // if you want a different context, modify the value of glContextAttrs
 // it will affect all platforms
@@ -60,6 +41,8 @@ void AppDelegate::initGLContextAttrs()
     GLView::setGLContextAttrs(glContextAttrs);
 }
 
+/*安装包 暂时不管*/
+
 // if you want to use the package manager to install more packages,  
 // don't modify or remove this function
 static int register_all_packages()
@@ -67,8 +50,13 @@ static int register_all_packages()
     return 0; //flag for packages manager
 }
 
+/*初始化*/
+
 bool AppDelegate::applicationDidFinishLaunching() {
     // initialize director
+
+    /*获取GLView*/
+
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     if(!glview) {
@@ -80,16 +68,23 @@ bool AppDelegate::applicationDidFinishLaunching() {
         director->setOpenGLView(glview);
     }
 
+    /*设置FPS*/
+
     // turn on display FPS
     director->setDisplayStats(true);
 
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0f / 60);
 
+    /*设置design resolution*/
+
     // Set the design resolution
     glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::NO_BORDER);
     auto frameSize = glview->getFrameSize();
     // if the frame's height is larger than the height of medium size.
+
+    /*设置视窗尺寸*/
+
     if (frameSize.height > mediumResolutionSize.height)
     {        
         director->setContentScaleFactor(MIN(largeResolutionSize.height/designResolutionSize.height, largeResolutionSize.width/designResolutionSize.width));
@@ -107,8 +102,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     register_all_packages();
 
+    /*创建开场动画Scene，运行之*/
+
     // create a scene. it's an autorelease object
-    auto scene = HelloWorld::createScene();
+    auto scene = OpeningAnimation::createScene();
 
     // run
     director->runWithScene(scene);
@@ -116,20 +113,24 @@ bool AppDelegate::applicationDidFinishLaunching() {
     return true;
 }
 
+/*程序进入背景，需要控制音频*/
+
 // This function will be called when the app is inactive. Note, when receiving a phone call it is invoked.
 void AppDelegate::applicationDidEnterBackground() {
     Director::getInstance()->stopAnimation();
 
 #if USE_AUDIO_ENGINE
-    AudioEngine::pauseAll();
+    AudioEngine::pauseAll();    /*这里随音频会有不同*/
 #endif
 }
+
+/*程序重新启动，恢复音频*/
 
 // this function will be called when the app is active again
 void AppDelegate::applicationWillEnterForeground() {
     Director::getInstance()->startAnimation();
 
 #if USE_AUDIO_ENGINE
-    AudioEngine::resumeAll();
+    AudioEngine::resumeAll();   /*这里随音频会有不同*/
 #endif
 }
