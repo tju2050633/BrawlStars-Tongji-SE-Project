@@ -57,8 +57,8 @@ bool GameScene::init(std::string map, std::string brawler)
 
 	/*·µ»Ø°´Å¥*/
 	MenuItemImage* backButton = MenuItemImage::create(
-		"Return.png",
-		"Return-Active.png",
+		"button/Return.png",
+		"button/Return-Active.png",
 		CC_CALLBACK_1(GameScene::menuBackCallback, this)
 	);
 	if (backButton == nullptr ||

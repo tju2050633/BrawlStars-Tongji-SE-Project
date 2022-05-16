@@ -1,5 +1,5 @@
 #include "cocos2d.h"
-#include "GameMenu.h"
+#include "Scene/GameMenu.h"
 #include "SelectMap.h"
 #include "Settings.h"
 #include "Instruction.h"
@@ -9,7 +9,14 @@ USING_NS_CC;
 /*获得场景对象 √*/
 Scene* GameMenu::createScene()
 {
-	return GameMenu::create();
+	//lx
+	//create a scene object
+	auto scene = Scene::create();
+	//create OpeningAnimation object
+	auto layer = GameMenu::create();
+	//add the object obove to the scene
+	scene->addChild(layer);
+	return scene;
 }
 
 /*错误处理函数 √*/
@@ -75,7 +82,7 @@ bool GameMenu::init()
 		float y = visibleSize.height / 2;/*多人模式按钮y值 暂定*/
 		multiPlayerButton->setPosition(Vec2(x, y));
 	}
-
+	this->addChild(multiPlayerButton);
 	/*设置 菜单选项*/
 	MenuItemImage* settingsButton = MenuItemImage::create(
 		"button/Btn_setting.png",
@@ -94,6 +101,7 @@ bool GameMenu::init()
 		float y = visibleSize.height / 2;/*设置按钮y值 暂定*/
 		settingsButton->setPosition(Vec2(x, y));
 	}
+	this->addChild(settingsButton);
 
 	/*游戏说明 菜单选项*/
 	MenuItemImage* instructionButton = MenuItemImage::create(
@@ -113,6 +121,7 @@ bool GameMenu::init()
 		float y = visibleSize.height / 2;/*游戏说明按钮y值 暂定*/
 		instructionButton->setPosition(Vec2(x, y));
 	}
+	this->addChild(instructionButton);
 
 	/*退出游戏 菜单选项*/
 	MenuItemImage* quitButton = MenuItemImage::create(
@@ -132,7 +141,7 @@ bool GameMenu::init()
 		float y = visibleSize.height / 2;/*退出游戏按钮y值 暂定*/
 		quitButton->setPosition(Vec2(x, y));
 	}
-
+	this->addChild(quitButton);
 	/*总的菜单，包含以上菜单选项*/
 	Menu* menu = Menu::create(singlePlayerButton, multiPlayerButton, settingsButton, instructionButton, quitButton, NULL);
 	menu->setPosition(Vec2::ZERO);

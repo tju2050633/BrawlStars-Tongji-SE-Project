@@ -1,6 +1,6 @@
 #include "AppDelegate.h"
 #include "Scene/OpeningAnimation.h"
-
+#include "Scene/GameMenu.h"
 // #define USE_AUDIO_ENGINE 1
 
 /*这边有一段音频导入，负责audio部分的同学对照着看一下怎么做*/
@@ -12,7 +12,7 @@ using namespace cocos2d::experimental;
 USING_NS_CC;
 
 /*尺寸*/
-static cocos2d::Size designResolutionSize = cocos2d::Size(960, 480);    /*这四项可能需要修改*/
+static cocos2d::Size designResolutionSize = cocos2d::Size(960, 640);  //lx  /*这四项可能需要修改*/
 static cocos2d::Size smallResolutionSize = cocos2d::Size(480, 320);
 static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
@@ -109,7 +109,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
 	// run
 	director->runWithScene(scene);
+	//auto MenuScene = GameMenu::createScene();
 
+	//director->replaceScene(MenuScene);
 	return true;
 }
 
