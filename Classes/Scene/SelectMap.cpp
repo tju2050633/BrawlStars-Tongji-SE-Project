@@ -1,14 +1,14 @@
 #include "cocos2d.h"
 #include "SelectMap.h"
 #include "SelectBrawler.h"
-#include "Menu.h"
+#include "GameMenu.h"
 
 USING_NS_CC;
 
 /*获得场景对象 √*/
 Scene* SelectMap::createScene()
 {
-	return SelectMode::create();
+	return SelectMap::create();
 }
 
 /*错误处理函数 √*/
@@ -28,17 +28,17 @@ bool SelectMap::init()
 	}
 
 	/*声音，这个SimpleAudioEngine后期看是加上还是换别的*/
-	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	if (!audio->isBackgroundMusicPlaying()) {
-		audio->playBackgroundMusic("选择地图背景音乐", true);
-	}
+	//auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	//if (!audio->isBackgroundMusicPlaying()) {
+		//audio->playBackgroundMusic("选择地图背景音乐", true);
+	//}
 
 	/*获取visibleSize和origin*/
 	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();//获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
 
 	/*地图A选项*/
-	MenuItemImage *MapAButton = MenuItemImage::create(
+	MenuItemImage* MapAButton = MenuItemImage::create(
 		"地图A-Normal.png",
 		"地图A-Active.png",
 		CC_CALLBACK_1(SelectMap::menuMapACallback, this)
@@ -51,13 +51,13 @@ bool SelectMap::init()
 	}
 	else
 	{
-		float x = /*地图A x值*/;
-		float y = /*地图A y值*/;
+		float x = visibleSize.width / 2;/*地图A x值,暂定*/
+		float y = visibleSize.height / 2;/*地图A y值,暂定*/
 		MapAButton->setPosition(Vec2(x, y));
 	}
 
-    /*地图B选项*/
-	MenuItemImage *MapBButton = MenuItemImage::create(
+	/*地图B选项*/
+	MenuItemImage* MapBButton = MenuItemImage::create(
 		"地图B-Normal.png",
 		"地图B-Active.png",
 		CC_CALLBACK_1(SelectMap::menuMapBCallback, this)
@@ -70,13 +70,13 @@ bool SelectMap::init()
 	}
 	else
 	{
-		float x = /*地图B x值*/;
-		float y = /*地图B y值*/;
+		float x = visibleSize.width / 2;/*地图B x值,暂定*/
+		float y = visibleSize.height / 2;/*地图B y值,暂定*/
 		MapBButton->setPosition(Vec2(x, y));
 	}
 
-    /*地图C选项*/
-	MenuItemImage *MapCButton = MenuItemImage::create(
+	/*地图C选项*/
+	MenuItemImage* MapCButton = MenuItemImage::create(
 		"地图C-Normal.png",
 		"地图C-Active.png",
 		CC_CALLBACK_1(SelectMap::menuMapCCallback, this)
@@ -89,13 +89,13 @@ bool SelectMap::init()
 	}
 	else
 	{
-		float x = /*地图C x值*/;
-		float y = /*地图C y值*/;
+		float x = visibleSize.width / 2;/*地图C x值,暂定*/
+		float y = visibleSize.height / 2;/*地图C y值,暂定*/
 		MapCButton->setPosition(Vec2(x, y));
 	}
 
-    /*返回按钮*/
-	MenuItemImage *backButton = MenuItemImage::create(
+	/*返回按钮*/
+	MenuItemImage* backButton = MenuItemImage::create(
 		"返回按钮-Normal.png",
 		"返回按钮-Active.png",
 		CC_CALLBACK_1(SelectMap::menuBackCallback, this)
@@ -108,12 +108,11 @@ bool SelectMap::init()
 	}
 	else
 	{
-		float x = /*返回按钮 x值*/;
-		float y = /*返回按钮 y值*/;
+		float x = visibleSize.width / 2;/*返回按钮 x值,暂定*/
+		float y = visibleSize.height / 2;/*返回按钮 y值,暂定*/
 		backButton->setPosition(Vec2(x, y));
 	}
 
-	
 	/*总的菜单，包含以上菜单选项*/
 	Menu* selectMap = Menu::create(MapAButton, MapBButton, MapCButton, backButton, NULL);
 	selectMap->setPosition(Vec2::ZERO);
@@ -138,46 +137,46 @@ bool SelectMap::init()
 //场景从SelectMap切换至SelectBrawler（参数为'A'）
 void SelectMap::menuMapACallback(cocos2d::Ref* pSender)
 {
-    /*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
-	auto nextScene = SelectBrawler::create('A');    //需要向下一场景传递参数（表示选择的地图）
+	/*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
+	auto nextScene = SelectBrawler::create("A");    //需要向下一场景传递参数（表示选择的地图）
 	Director::getInstance()->replaceScene(          //具体参数类型和值需完善
 		TransitionSlideInT::create(1.0f / 60, nextScene));
 
-	MenuItem *item = (MenuItem*)pSender;
+	MenuItem* item = (MenuItem*)pSender;
 }
 
 /*选择地图 地图B回调函数 √*/
 //场景从SelectMap切换至SelectBrawler（参数为'B'）
 void SelectMap::menuMapBCallback(cocos2d::Ref* pSender)
 {
-    /*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
-	auto nextScene = SelectBrawler::create('B');
+	/*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
+	auto nextScene = SelectBrawler::create("B");
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
 
-	MenuItem *item = (MenuItem*)pSender;
+	MenuItem* item = (MenuItem*)pSender;
 }
 
 /*选择地图 地图C回调函数 √*/
 //场景从SelectMap切换至SelectBrawler（参数为'C'）
 void SelectMap::menuMapCCallback(cocos2d::Ref* pSender)
 {
-    /*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
-	auto nextScene = SelectBrawler::create('C');
+	/*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
+	auto nextScene = SelectBrawler::create("C");
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
 
-	MenuItem *item = (MenuItem*)pSender;
+	MenuItem* item = (MenuItem*)pSender;
 }
 
 /*选择地图 返回回调函数 √*/
 //场景从SelectMap切换至Menu
 void SelectMap::menuBackCallback(cocos2d::Ref* pSender)
 {
-    /*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
-	auto nextScene = Menu::create();
+	/*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
+	auto nextScene = GameMenu::create();
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
 
-	MenuItem *item = (MenuItem*)pSender;
+	MenuItem* item = (MenuItem*)pSender;
 }
