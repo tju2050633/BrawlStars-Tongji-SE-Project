@@ -40,8 +40,8 @@ bool GameMenu::init()
 
 	/*单人模式 菜单选项*/
 	MenuItemImage* singlePlayerButton = MenuItemImage::create(
-		"SingleMode-Normal.png",
-		"SingleMode-Active.png",
+		"button/SingleMode-Normal.png",
+		"button/SingleMode-Active.png",
 		CC_CALLBACK_1(GameMenu::menuSinglePlayerCallback, this)
 	);
 	if (singlePlayerButton == nullptr ||
@@ -52,15 +52,15 @@ bool GameMenu::init()
 	}
 	else
 	{
-		float x = visibleSize.width / 2;
-		float y = visibleSize.height / 2;/*单人模式按钮y值 暂定*/
+		float x = visibleSize.width / 2 + origin.x;
+		float y = visibleSize.height / 2 + origin.y;/*单人模式按钮y值 暂定*/
 		singlePlayerButton->setPosition(Vec2(x, y));
 	}
-
+	this->addChild(singlePlayerButton);
 	/*多人模式 菜单选项*/
 	MenuItemImage* multiPlayerButton = MenuItemImage::create(
-		"TeamMode-Active.png",
-		"TeamMode-Normal.png",
+		"button/TeamMode-Active.png",
+		"button/TeamMode-Normal.png",
 		CC_CALLBACK_1(GameMenu::menuMultiPlayerCallback, this)
 	);
 	if (multiPlayerButton == nullptr ||
@@ -78,8 +78,8 @@ bool GameMenu::init()
 
 	/*设置 菜单选项*/
 	MenuItemImage* settingsButton = MenuItemImage::create(
-		"Btn_setting.png",
-		"Btn_setting_PressDown.png",
+		"button/Btn_setting.png",
+		"button/Btn_setting_PressDown.png",
 		CC_CALLBACK_1(GameMenu::menuSettingsCallback, this)
 	);
 	if (settingsButton == nullptr ||
@@ -97,8 +97,8 @@ bool GameMenu::init()
 
 	/*游戏说明 菜单选项*/
 	MenuItemImage* instructionButton = MenuItemImage::create(
-		"Book_setting.png",
-		"Book_settingActive.png",
+		"button/Book_setting.png",
+		"button/Book_settingActive.png",
 		CC_CALLBACK_1(GameMenu::menuInstructionCallback, this)
 	);
 	if (instructionButton == nullptr ||
@@ -116,8 +116,8 @@ bool GameMenu::init()
 
 	/*退出游戏 菜单选项*/
 	MenuItemImage* quitButton = MenuItemImage::create(
-		"Exit-Normal.png",
-		"Exit-Active.png",
+		"button/Exit-Normal.png",
+		"button/Exit-Active.png",
 		CC_CALLBACK_1(GameMenu::menuQuitCallback, this)
 	);
 	if (quitButton == nullptr ||

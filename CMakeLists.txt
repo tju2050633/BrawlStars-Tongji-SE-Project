@@ -58,11 +58,27 @@ endif()
 list(APPEND GAME_SOURCE
      Classes/AppDelegate.cpp
      Classes/HelloWorldScene.cpp
-     )
+     Classes/Scene/OpeningAnimation.cpp
+     Classes/Scene/GameMenu.cpp
+     Classes/Scene/Instruction.cpp
+     Classes/Scene/GameScene.cpp	
+     Classes/Scene/GameScene.cpp
+     Classes/Scene/SelectBrawler.cpp
+     Classes/Scene/SelectMap.cpp
+     Classes/Scene/Settings.cpp	 
+    )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
      Classes/HelloWorldScene.h
-     )
+     Classes/Scene/OpeningAnimation.h
+     Classes/Scene/GameMenu.h
+     Classes/Scene/Instruction.h
+     Classes/Scene/GameScene.h
+     Classes/Scene/GameScene.h
+     Classes/Scene/SelectBrawler.h
+     Classes/Scene/SelectMap.h
+     Classes/Scene/Settings.h
+    )
 
 if(ANDROID)
     # change APP_NAME to the share library name for Android, it's value depend on AndroidManifest.xml
