@@ -12,22 +12,29 @@ init部分也写的差不多了，还剩素材路径、坐标y值两个细节，都用中文标出来了
 这块知识忘了，还记得的就给他优化一下
 */
 
-class GameMenu : public cocos2d::Scene
+USING_NS_CC;
+
+class GameMenu : public Scene
 {
-public:
-	/*创建场景和初始化*/
-	static cocos2d::Scene* createScene();
-	virtual bool init();
+private:
+	/*给init使用的初始化函数*/
+	void initMenu();	//初始化菜单
+	void initBG();		//初始化背景
 
 	/*按键回调函数*/
-	void menuSinglePlayerCallback(cocos2d::Ref* pSender);   //单人模式
-	void menuMultiPlayerCallback(cocos2d::Ref* pSender);    //多人模式
-	void menuSettingsCallback(cocos2d::Ref* pSender);       //游戏设置
-	void menuInstructionCallback(cocos2d::Ref* pSender);    //游戏说明
-	void menuQuitCallback(cocos2d::Ref* pSender);           //退出游戏
+	void menuSinglePlayerCallback(Ref* pSender);   //单人模式
+	void menuMultiPlayerCallback(Ref* pSender);    //多人模式
+	void menuSettingsCallback(Ref* pSender);       //游戏设置
+	void menuInstructionCallback(Ref* pSender);    //游戏说明
+	void menuQuitCallback(Ref* pSender);           //退出游戏
+
+public:
+	/*创建场景和初始化*/
+	static Scene* createScene();
+	virtual bool init();
 
 	/*自动生成create()的宏*/
 	CREATE_FUNC(GameMenu);
 };
 
-#endif //__MENU_H_
+#endif // !__MENU_H_

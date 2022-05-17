@@ -7,10 +7,13 @@ USING_NS_CC;
 /*获得场景对象 √*/
 Scene* Instruction::createScene()
 {
-	return Instruction::create();
+	auto scene = Scene::create();
+	auto layer = Instruction::create();
+	scene->addChild(layer);
+	return scene;
 }
 
-/*游戏说明场景初始化 ×*/
+/*游戏说明 场景初始化 ×*/
 bool Instruction::init()
 {
 	/*初始化父类*/

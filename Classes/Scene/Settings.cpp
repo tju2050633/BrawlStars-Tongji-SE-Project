@@ -7,7 +7,10 @@ USING_NS_CC;
 /*获得场景对象 √*/
 Scene* Settings::createScene()
 {
-	return Settings::create();
+	auto scene = Scene::create();
+	auto layer = Settings::create();
+	scene->addChild(layer);
+	return scene;
 }
 
 /*游戏设置场景初始化 ×*/

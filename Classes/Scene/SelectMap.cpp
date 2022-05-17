@@ -1,14 +1,19 @@
 #include "cocos2d.h"
-#include "SelectMap.h"
-#include "SelectBrawler.h"
-#include "GameMenu.h"
+#include "Scene/SelectMap.h"
+#include "Scene/SceneManager.h"
+#include "Scene/SceneInfo.h"
+#include "audio/include/SimpleAudioEngine.h"
 
 USING_NS_CC;
+using namespace CocosDenshion;
 
 /*获得场景对象 √*/
 Scene* SelectMap::createScene()
 {
-	return SelectMap::create();
+	auto scene = Scene::create();
+	auto layer = SelectMap::create();
+	scene->addChild(layer);
+	return scene;
 }
 
 /*错误处理函数 √*/
@@ -18,7 +23,7 @@ static void problemLoading(const char* filename)
 	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in SelectModeScene.cpp\n");
 }
 
-/*选模式菜单场景初始化 ×*/
+/*选择地图 场景初始化 ×*/
 bool SelectMap::init()
 {
 	/*初始化父类*/
@@ -28,11 +33,23 @@ bool SelectMap::init()
 	}
 
 	/*声音，这个SimpleAudioEngine后期看是加上还是换别的*/
-	//auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	//if (!audio->isBackgroundMusicPlaying()) {
-		//audio->playBackgroundMusic("选择地图背景音乐", true);
-	//}
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	if (!audio->isBackgroundMusicPlaying()) {
+		audio->playBackgroundMusic("选择地图背景音乐", true);
+	}
 
+	/*菜单*/
+	initMenu();
+
+	/*背景*/
+	initBG();
+
+	return true;
+}
+
+/*选择地图 初始化菜单 ×*/
+void SelectMap::initMenu()
+{
 	/*获取visibleSize和origin*/
 	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();//获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
@@ -117,8 +134,16 @@ bool SelectMap::init()
 	Menu* selectMap = Menu::create(MapAButton, MapBButton, MapCButton, backButton, NULL);
 	selectMap->setPosition(Vec2::ZERO);
 	this->addChild(selectMap, 1);
+}
 
-	/*背景*/
+/*选择地图 初始化背景 ×*/
+void SelectMap::initBG()
+{
+	/*获取visibleSize和origin*/
+	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();//获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
+
+	/*加载背景图片*/
 	auto background = Sprite::create("选择地图背景图片");
 	if (background == nullptr)
 	{
@@ -129,54 +154,35 @@ bool SelectMap::init()
 		background->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 		this->addChild(background, 0);
 	}
-
-	return true;
 }
 
 /*选择地图 地图A回调函数 √*/
 //场景从SelectMap切换至SelectBrawler（参数为'A'）
 void SelectMap::menuMapACallback(cocos2d::Ref* pSender)
 {
-	/*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
-	auto nextScene = SelectBrawler::create("A");    //需要向下一场景传递参数（表示选择的地图）
-	Director::getInstance()->replaceScene(          //具体参数类型和值需完善
-		TransitionSlideInT::create(1.0f / 60, nextScene));
-
-	MenuItem* item = (MenuItem*)pSender;
+	SceneInfo::map = "A";
+	SceneManager::getInstance()->changeScene(SceneManager::SelectBrawler);
 }
 
 /*选择地图 地图B回调函数 √*/
 //场景从SelectMap切换至SelectBrawler（参数为'B'）
 void SelectMap::menuMapBCallback(cocos2d::Ref* pSender)
 {
-	/*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
-	auto nextScene = SelectBrawler::create("B");
-	Director::getInstance()->replaceScene(
-		TransitionSlideInT::create(1.0f / 60, nextScene));
-
-	MenuItem* item = (MenuItem*)pSender;
+	SceneInfo::map = "B";
+	SceneManager::getInstance()->changeScene(SceneManager::SelectBrawler);
 }
 
 /*选择地图 地图C回调函数 √*/
 //场景从SelectMap切换至SelectBrawler（参数为'C'）
 void SelectMap::menuMapCCallback(cocos2d::Ref* pSender)
 {
-	/*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
-	auto nextScene = SelectBrawler::create("C");
-	Director::getInstance()->replaceScene(
-		TransitionSlideInT::create(1.0f / 60, nextScene));
-
-	MenuItem* item = (MenuItem*)pSender;
+	SceneInfo::map = "C";
+	SceneManager::getInstance()->changeScene(SceneManager::SelectBrawler);
 }
 
 /*选择地图 返回回调函数 √*/
-//场景从SelectMap切换至Menu
+//场景从SelectMap切换至GameMenu
 void SelectMap::menuBackCallback(cocos2d::Ref* pSender)
 {
-	/*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
-	auto nextScene = GameMenu::create();
-	Director::getInstance()->replaceScene(
-		TransitionSlideInT::create(1.0f / 60, nextScene));
-
-	MenuItem* item = (MenuItem*)pSender;
+	SceneManager::getInstance()->changeScene(SceneManager::GameMenu);
 }

@@ -1,15 +1,20 @@
 #include "cocos2d.h"
-#include "GameScene.h"
-#include "SelectBrawler.h"
+#include "Scene/GameScene.h"
+#include "Scene/SceneManager.h"
+#include "audio/include/SimpleAudioEngine.h"
 
 USING_NS_CC;
+using namespace CocosDenshion;
 
 /*获得场景对象 √*/
 //init需接受参数，不能用CREATE_FUNC自动生成的create()
 //用以下模板（仅需改init内参数，效果和create()一样）
 Scene* GameScene::createScene(std::string map, std::string brawler)
 {
-	return GameScene::create(map, brawler);
+	auto scene = Scene::create();
+	auto layer = GameScene::create( map, brawler);
+	scene->addChild(layer);
+	return scene;
 }
 
 /*自定义create()*/
@@ -75,9 +80,9 @@ bool GameScene::init(std::string map, std::string brawler)
 	}
 
 	/*总的菜单，包含以上菜单选项*/
-	Menu* selectMap = Menu::create(backButton, NULL);
-	selectMap->setPosition(Vec2::ZERO);
-	this->addChild(selectMap, 1);
+	Menu* gameScene = Menu::create(backButton, NULL);
+	gameScene->setPosition(Vec2::ZERO);
+	this->addChild(gameScene, 1);
 
 	/*背景*/
 	auto background = Sprite::create("选择英雄背景图片");
@@ -98,10 +103,5 @@ bool GameScene::init(std::string map, std::string brawler)
 //场景从GameScene切换至SelectBrawler（参数为m_map）
 void GameScene::menuBackCallback(cocos2d::Ref* pSender)
 {
-	/*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
-	auto nextScene = SelectBrawler::create(m_map);
-	Director::getInstance()->replaceScene(
-		TransitionSlideInT::create(1.0f / 60, nextScene));
-
-	MenuItem* item = (MenuItem*)pSender;
+	SceneManager::getInstance()->changeScene(SceneManager::GameMenu);
 }

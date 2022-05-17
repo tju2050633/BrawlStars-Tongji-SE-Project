@@ -3,11 +3,13 @@
 
 #include "cocos2d.h"
 
-class Settings : public cocos2d::Scene
+USING_NS_CC;
+
+class Settings : public Scene
 {
 public:
 	/*创建场景和初始化*/
-	static cocos2d::Scene* createScene();
+	static Scene* createScene();
 	virtual bool init();
 
 	/*按键回调函数*/
@@ -16,4 +18,4 @@ public:
 	CREATE_FUNC(Settings);
 };
 
-#endif // __SETTINGS_H_
+#endif // !__SETTINGS_H_

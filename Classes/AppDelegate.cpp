@@ -1,12 +1,22 @@
 #include "AppDelegate.h"
 #include "Scene/OpeningAnimation.h"
 #include "Scene/GameMenu.h"
+#include "Scene/SceneManager.h"
 // #define USE_AUDIO_ENGINE 1
+// #define USE_SIMPLE_AUDIO_ENGINE 1
 
-/*这边有一段音频导入，负责audio部分的同学对照着看一下怎么做*/
+/*音频导入*/
+
+#if USE_AUDIO_ENGINE && USE_SIMPLE_AUDIO_ENGINE
+#error "Don't use AudioEngine and SimpleAudioEngine at the same time. Please just select one in your game!"
+#endif
+
 #if USE_AUDIO_ENGINE
 #include "audio/include/AudioEngine.h"
 using namespace cocos2d::experimental;
+#elif USE_SIMPLE_AUDIO_ENGINE
+#include "audio/include/SimpleAudioEngine.h"
+using namespace CocosDenshion;
 #endif
 
 USING_NS_CC;
@@ -25,8 +35,10 @@ AppDelegate::AppDelegate()
 AppDelegate::~AppDelegate()
 {
 #if USE_AUDIO_ENGINE
-	AudioEngine::end();
-#endif  /*这里随音频有所不同*/
+    AudioEngine::end();
+#elif USE_SIMPLE_AUDIO_ENGINE
+    SimpleAudioEngine::end();
+#endif
 }
 
 /*glContextAttrs 暂时不管*/
@@ -55,8 +67,6 @@ static int register_all_packages()
 bool AppDelegate::applicationDidFinishLaunching() {
 	// initialize director
 
-	/*获取GLView*/
-
 	auto director = Director::getInstance();
 	auto glview = director->getOpenGLView();
 	if (!glview) {
@@ -68,22 +78,16 @@ bool AppDelegate::applicationDidFinishLaunching() {
 		director->setOpenGLView(glview);
 	}
 
-	/*设置FPS*/
-
 	// turn on display FPS
 	director->setDisplayStats(true);
 
 	// set FPS. the default value is 1.0/60 if you don't call this
 	director->setAnimationInterval(1.0f / 60);
 
-	/*设置design resolution*/
-
 	// Set the design resolution
 	glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::NO_BORDER);
 	auto frameSize = glview->getFrameSize();
 	// if the frame's height is larger than the height of medium size.
-
-	/*设置视窗尺寸*/
 
 	if (frameSize.height > mediumResolutionSize.height)
 	{
@@ -103,15 +107,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	register_all_packages();
 
 	/*创建开场动画Scene，运行之*/
+	SceneManager::getInstance()->changeScene(SceneManager::OpeningAnimation);
+	//SceneManager::getInstance()->changeScene(SceneManager::GameMenu);
 
-	// create a scene. it's an autorelease object
-	auto scene = OpeningAnimation::createScene();
-
-	// run
-	director->runWithScene(scene);
-	//auto MenuScene = GameMenu::createScene();
-
-	//director->replaceScene(MenuScene);
 	return true;
 }
 
@@ -122,7 +120,10 @@ void AppDelegate::applicationDidEnterBackground() {
 	Director::getInstance()->stopAnimation();
 
 #if USE_AUDIO_ENGINE
-	AudioEngine::pauseAll();    /*这里随音频会有不同*/
+    AudioEngine::pauseAll();
+#elif USE_SIMPLE_AUDIO_ENGINE
+    SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+    SimpleAudioEngine::getInstance()->pauseAllEffects();
 #endif
 }
 
@@ -133,6 +134,9 @@ void AppDelegate::applicationWillEnterForeground() {
 	Director::getInstance()->startAnimation();
 
 #if USE_AUDIO_ENGINE
-	AudioEngine::resumeAll();   /*这里随音频会有不同*/
+    AudioEngine::resumeAll();
+#elif USE_SIMPLE_AUDIO_ENGINE
+    SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+    SimpleAudioEngine::getInstance()->resumeAllEffects();
 #endif
 }

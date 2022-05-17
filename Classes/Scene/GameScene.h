@@ -24,4 +24,4 @@ public:
 	static GameScene* create(std::string map, std::string brawler);
 };
 
-#endif //__GAMESCENE_H_
+#endif // !__GAMESCENE_H_

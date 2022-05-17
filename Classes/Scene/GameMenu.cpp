@@ -1,20 +1,16 @@
 #include "cocos2d.h"
 #include "Scene/GameMenu.h"
-#include "SelectMap.h"
-#include "Settings.h"
-#include "Instruction.h"
+#include "Scene/SceneManager.h"
+#include "audio/include/SimpleAudioEngine.h"
 
 USING_NS_CC;
+using namespace CocosDenshion;
 
 /*获得场景对象 √*/
 Scene* GameMenu::createScene()
 {
-	//lx
-	//create a scene object
 	auto scene = Scene::create();
-	//create OpeningAnimation object
 	auto layer = GameMenu::create();
-	//add the object obove to the scene
 	scene->addChild(layer);
 	return scene;
 }
@@ -36,11 +32,23 @@ bool GameMenu::init()
 	}
 
 	/*声音，这个SimpleAudioEngine后期看是加上还是换别的*/
-	//auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	//if (!audio->isBackgroundMusicPlaying()) {
-		//audio->playBackgroundMusic("菜单背景音乐", true);
-	//}
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	if (!audio->isBackgroundMusicPlaying()) {
+		audio->playBackgroundMusic("菜单背景音乐", true);
+	}
 
+	/*菜单*/
+	initMenu();
+
+	/*背景*/
+	initBG();
+
+	return true;
+}
+
+/*菜单 初始化菜单*/
+void GameMenu::initMenu()
+{
 	/*获取visibleSize和origin*/
 	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();//获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
@@ -63,7 +71,7 @@ bool GameMenu::init()
 		float y = visibleSize.height / 2 + origin.y;/*单人模式按钮y值 暂定*/
 		singlePlayerButton->setPosition(Vec2(x, y));
 	}
-	this->addChild(singlePlayerButton);
+	
 	/*多人模式 菜单选项*/
 	MenuItemImage* multiPlayerButton = MenuItemImage::create(
 		"button/TeamMode-Active.png",
@@ -82,7 +90,7 @@ bool GameMenu::init()
 		float y = visibleSize.height / 2;/*多人模式按钮y值 暂定*/
 		multiPlayerButton->setPosition(Vec2(x, y));
 	}
-	this->addChild(multiPlayerButton);
+
 	/*设置 菜单选项*/
 	MenuItemImage* settingsButton = MenuItemImage::create(
 		"button/Btn_setting.png",
@@ -101,7 +109,6 @@ bool GameMenu::init()
 		float y = visibleSize.height / 2;/*设置按钮y值 暂定*/
 		settingsButton->setPosition(Vec2(x, y));
 	}
-	this->addChild(settingsButton);
 
 	/*游戏说明 菜单选项*/
 	MenuItemImage* instructionButton = MenuItemImage::create(
@@ -121,7 +128,6 @@ bool GameMenu::init()
 		float y = visibleSize.height / 2;/*游戏说明按钮y值 暂定*/
 		instructionButton->setPosition(Vec2(x, y));
 	}
-	this->addChild(instructionButton);
 
 	/*退出游戏 菜单选项*/
 	MenuItemImage* quitButton = MenuItemImage::create(
@@ -141,13 +147,21 @@ bool GameMenu::init()
 		float y = visibleSize.height / 2;/*退出游戏按钮y值 暂定*/
 		quitButton->setPosition(Vec2(x, y));
 	}
-	this->addChild(quitButton);
+
 	/*总的菜单，包含以上菜单选项*/
 	Menu* menu = Menu::create(singlePlayerButton, multiPlayerButton, settingsButton, instructionButton, quitButton, NULL);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
+}
 
-	/*背景*/
+/*菜单 初始化背景*/
+void GameMenu::initBG()
+{
+	/*获取visibleSize和origin*/
+	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();//获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
+
+	/*加载背景图片*/
 	auto background = Sprite::create("菜单界面背景图片");
 	if (background == nullptr)
 	{
@@ -158,50 +172,30 @@ bool GameMenu::init()
 		background->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 		this->addChild(background, 0);
 	}
-
-	return true;
 }
 
-/*菜单 单人模式回调函数 √*/
-//场景从Menu切换至SelectMap
+/*菜单 单人模式回调函数 切换至SelectMap*/
 void GameMenu::menuSinglePlayerCallback(cocos2d::Ref* pSender)
 {
-	/*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
-	auto nextScene = SelectMap::create();
-	Director::getInstance()->replaceScene(
-		TransitionSlideInT::create(1.0f / 60, nextScene));
-
-	MenuItem* item = (MenuItem*)pSender;
+	SceneManager::getInstance()->changeScene(SceneManager::SelectMap);
 }
 
-/*菜单 多人模式回调函数 ×*/
+/*菜单 多人模式回调函数 */
 void GameMenu::menuMultiPlayerCallback(cocos2d::Ref* pSender)
 {
 	/*暂时不实现联机模式*/
 }
 
-/*菜单 设置回调函数 √*/
-//场景从Menu切换至Settings
+/*菜单 设置回调函数 切换至Settings*/
 void GameMenu::menuSettingsCallback(cocos2d::Ref* pSender)
 {
-	/*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
-	auto nextScene = Settings::create();
-	Director::getInstance()->replaceScene(
-		TransitionSlideInT::create(1.0f / 60, nextScene));
-
-	MenuItem* item = (MenuItem*)pSender;
+	SceneManager::getInstance()->changeScene(SceneManager::Settings);
 }
 
-/*菜单 游戏说明回调函数 √*/
-//场景从Menu切换至Instruction
+/*菜单 游戏说明回调函数 切换至Instruction*/
 void GameMenu::menuInstructionCallback(cocos2d::Ref* pSender)
 {
-	/*切换场景两步：1.定义nextScene2.导演调用replaceScene*/
-	auto nextScene = Instruction::create();
-	Director::getInstance()->replaceScene(
-		TransitionSlideInT::create(1.0f / 60, nextScene));
-
-	MenuItem* item = (MenuItem*)pSender;
+	SceneManager::getInstance()->changeScene(SceneManager::Instruction);
 }
 
 /*菜单 退出游戏回调函数 √*/
