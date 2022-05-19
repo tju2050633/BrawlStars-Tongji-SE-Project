@@ -6,15 +6,13 @@
 #include "Scene/SelectMap.h"
 #include "Scene/SelectBrawler.h"
 #include "Scene/GameScene.h"
-#include "Scene/SceneInfo.h"
 
 /*单例对象指针初始化为nullptr*/
 SceneManager* SceneManager::_sceneManager = nullptr;
 
-/*菜单信息静态变量，初始化为空*/
-string SceneInfo::map = "";
-string SceneInfo::brawler = "";
-
+/*菜单信息静态变量，初始化*/
+SceneManager::AllMap SceneManager::map = SceneManager::MapA;
+SceneManager::AllBrawler SceneManager::brawler = SceneManager::Shelly;
 
 /*获取单例类对象指针*/
 SceneManager* SceneManager::getInstance() {
@@ -35,6 +33,13 @@ SceneManager* SceneManager::getInstance() {
 /*本类不需要初始化，总是返回true*/
 bool SceneManager::init() {
 	return true;
+}
+
+/*共用的problemLoading，避免代码重复*/
+void SceneManager::problemLoading(const char* filename)
+{
+	printf("Error while loading: %s\n", filename);
+	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in StartGameScene.cpp\n");
 }
 
 /*切换场景时使用，参数为该对象内枚举数*/
@@ -59,10 +64,10 @@ void SceneManager::changeScene(AllScenes targetScene) {
 		scene = SelectMap::createScene();
 		break;
     case SelectBrawler:
-		scene = SelectBrawler::createScene(SceneInfo::map);
+		scene = SelectBrawler::createScene(SceneManager::map);
 		break;
     case GameScene:
-		scene = GameScene::createScene(SceneInfo::map, SceneInfo::brawler);
+		scene = GameScene::createScene(SceneManager::map, SceneManager::brawler);
 		break;
     default:
         break;
@@ -80,5 +85,28 @@ void SceneManager::changeScene(AllScenes targetScene) {
 	}
 	else {
 		director->replaceScene(scene);
+	}
+}
+
+/*放置背景图，所有场景类共用*/
+void SceneManager::setBGimage(const char* filename, Scene* scene)
+{
+	/*获取visibleSize和origin*/
+	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();//获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
+
+	/*加载背景图片,设置填充可视区域*/
+	auto background = Sprite::create(filename);
+	background->setScaleX(visibleSize.width / background->getContentSize().width);
+	background->setScaleY(visibleSize.height / background->getContentSize().height);
+
+	if (background == nullptr)
+	{
+		SceneManager::problemLoading(filename);
+	}
+	else
+	{
+		background->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+		scene->addChild(background, 0);
 	}
 }

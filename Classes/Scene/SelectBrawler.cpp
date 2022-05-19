@@ -1,7 +1,6 @@
 #include "cocos2d.h"
 #include "Scene/SelectBrawler.h"
 #include "Scene/SceneManager.h"
-#include "Scene/SceneInfo.h"
 #include "audio/include/SimpleAudioEngine.h"
 
 USING_NS_CC;
@@ -10,7 +9,7 @@ using namespace CocosDenshion;
 /*获得场景对象 √*/
 //init需接受参数，不能用CREATE_FUNC自动生成的create()
 //用以下模板（仅需改init内参数，效果和create()一样）
-Scene* SelectBrawler::createScene(std::string map)
+Scene* SelectBrawler::createScene(SceneManager::AllMap map)
 {
 	auto scene = Scene::create();
 	auto layer = SelectBrawler::create(map);
@@ -19,7 +18,7 @@ Scene* SelectBrawler::createScene(std::string map)
 }
 
 /*自定义create()*/
-SelectBrawler* SelectBrawler::create(std::string map)
+SelectBrawler* SelectBrawler::create(SceneManager::AllMap map)
 {
 	auto scene = new(std::nothrow)SelectBrawler;
 	if (scene && scene->init(map))
@@ -31,15 +30,8 @@ SelectBrawler* SelectBrawler::create(std::string map)
 	return nullptr;
 }
 
-/*错误处理函数 √*/
-static void problemLoading(const char* filename)
-{
-	printf("Error while loading: %s\n", filename);
-	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in SelectModeScene.cpp\n");
-}
-
 /*选英雄菜单场景初始化 ×*/
-bool SelectBrawler::init(std::string map)
+bool SelectBrawler::init(SceneManager::AllMap map)
 {
 	/*初始化父类*/
 	if (!Scene::init())
@@ -61,7 +53,7 @@ bool SelectBrawler::init(std::string map)
 	initMenu();
 
 	/*背景*/
-	initBG();
+	SceneManager::setBGimage("BGimage3.png", this);
 
 	return true;
 }
@@ -73,155 +65,85 @@ void SelectBrawler::initMenu()
 	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();//获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
 
-	/*雪莉*/
-	MenuItemImage* ShellyButton = MenuItemImage::create(
-		"雪莉-Normal.png",
-		"雪莉-Active.png",
-		CC_CALLBACK_1(SelectBrawler::menuShellyCallback, this)
-	);
-	if (ShellyButton == nullptr ||
-		ShellyButton->getContentSize().width <= 0 ||
-		ShellyButton->getContentSize().height <= 0)
+	/*菜单所有按钮统一处理，必须用用cocos::Vector*/
+	Vector<MenuItem*> MenuItemVector;
+	//文件名所用的字符串
+	vector<string> stringVector = { "Shelly", "Primo", "Nita", "Stu", "Back"};
+	//按钮回调函数
+	vector<void (SelectBrawler::*)(Ref* pSender)> CallbackVector = {
+		&SelectBrawler::menuShellyCallback,& SelectBrawler::menuPrimoCallback,
+		& SelectBrawler::menuNitaCallback,& SelectBrawler::menuStuCallback,
+		& SelectBrawler::menuBackCallback,
+	};
+	//按钮尺寸
+	vector<float> ScaleVector = { 1,1,1,1,1 };
+	//按钮锚点
+	vector<Vec2> AnchorVector = {
+		Vec2(0.5, 0.5), Vec2(0.5, 0.5),
+		Vec2(0.5, 0.5),Vec2(0.5, 0.5),
+		Vec2(0, 1)
+	};
+	//按钮坐标
+	vector<Vec2> PositionVector = {
+		Vec2(visibleSize.width / 5 + origin.x, visibleSize.height / 3 + origin.y),
+		Vec2(2 * visibleSize.width / 5 + origin.x, visibleSize.height / 3 + origin.y),
+		Vec2(3 * visibleSize.width / 5 + origin.x, visibleSize.height / 3 + origin.y),
+		Vec2(4 * visibleSize.width / 5 + origin.x, visibleSize.height / 3 + origin.y),
+		Vec2(origin.x, visibleSize.height + origin.y)
+	};
+	/*逐个创建按钮，分配信息，存入Vector*/
+	for (int i = 0; i < stringVector.size(); i++)
 	{
-		problemLoading("'雪莉'");
-	}
-	else
-	{
-		float x = visibleSize.width / 2;/*雪莉 x值,暂定*/
-		float y = visibleSize.height / 2;/*雪莉 y值,暂定*/
-		ShellyButton->setPosition(Vec2(x, y));
-	}
+		string filename = "button/" + stringVector[i];
+		MenuItemImage* button = MenuItemImage::create(
+			filename + "-Normal.png",
+			filename + "-Active.png",
+			bind(CallbackVector[i], this, std::placeholders::_1)
+		);
+		if (button == nullptr || button->getContentSize().width <= 0 || button->getContentSize().height <= 0)
+			SceneManager::problemLoading(filename.c_str());//
+		else
+		{
+			button->setScale(ScaleVector[i]);
+			button->setAnchorPoint(AnchorVector[i]);
+			button->setPosition(PositionVector[i]);
+		}
 
-	/*普里莫*/
-	MenuItemImage* PrimoButton = MenuItemImage::create(
-		"普里莫-Normal.png",
-		"普里莫-Active.png",
-		CC_CALLBACK_1(SelectBrawler::menuPrimoCallback, this)
-	);
-	if (PrimoButton == nullptr ||
-		PrimoButton->getContentSize().width <= 0 ||
-		PrimoButton->getContentSize().height <= 0)
-	{
-		problemLoading("'普里莫'");
-	}
-	else
-	{
-		float x = visibleSize.width / 2;/*普里莫 x值,暂定*/
-		float y = visibleSize.height / 2;/*普里莫 y值,暂定*/
-		PrimoButton->setPosition(Vec2(x, y));
-	}
-
-	/*妮塔*/
-	MenuItemImage* NitaButton = MenuItemImage::create(
-		"妮塔-Normal.png",
-		"妮塔-Active.png",
-		CC_CALLBACK_1(SelectBrawler::menuNitaCallback, this)
-	);
-	if (NitaButton == nullptr ||
-		NitaButton->getContentSize().width <= 0 ||
-		NitaButton->getContentSize().height <= 0)
-	{
-		problemLoading("'妮塔'");
-	}
-	else
-	{
-		float x = visibleSize.width / 2;/*妮塔 x值,暂定*/
-		float y = visibleSize.height / 2;/*妮塔 y值,暂定*/
-		NitaButton->setPosition(Vec2(x, y));
-	}
-
-	/*斯图*/
-	MenuItemImage* StuButton = MenuItemImage::create(
-		"斯图-Normal.png",
-		"斯图-Active.png",
-		CC_CALLBACK_1(SelectBrawler::menuSituCallback, this)
-	);
-	if (StuButton == nullptr ||
-		StuButton->getContentSize().width <= 0 ||
-		StuButton->getContentSize().height <= 0)
-	{
-		problemLoading("'斯图'");
-	}
-	else
-	{
-		float x = visibleSize.width / 2;/*斯图 x值,暂定*/
-		float y = visibleSize.height / 2;/*斯图 y值,暂定*/
-		StuButton->setPosition(Vec2(x, y));
-	}
-
-	/*返回按钮*/
-	MenuItemImage* backButton = MenuItemImage::create(
-		"返回按钮-Normal.png",
-		"返回按钮-Active.png",
-		CC_CALLBACK_1(SelectBrawler::menuBackCallback, this)
-	);
-	if (backButton == nullptr ||
-		backButton->getContentSize().width <= 0 ||
-		backButton->getContentSize().height <= 0)
-	{
-		problemLoading("'返回按钮'");
-	}
-	else
-	{
-		float x = visibleSize.width / 2;/*返回按钮 x值,暂定*/
-		float y = visibleSize.height / 2;/*返回按钮 y值,暂定*/
-		backButton->setPosition(Vec2(x, y));
+		MenuItemVector.pushBack(button);
 	}
 
 	/*总的菜单，包含以上菜单选项*/
-	Menu* selectBrawler = Menu::create(ShellyButton, PrimoButton, NitaButton, StuButton, backButton, NULL);
-	selectBrawler->setPosition(Vec2::ZERO);
-	this->addChild(selectBrawler, 1);
-}
-
-/*选择英雄 初始化背景 ×*/
-void SelectBrawler::initBG()
-{
-	/*获取visibleSize和origin*/
-	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();//获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
-
-	auto background = Sprite::create("选择英雄背景图片");
-	if (background == nullptr)
-	{
-		problemLoading("'选择英雄背景图片'");
-	}
-	else
-	{
-		background->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-		this->addChild(background, 0);
-	}
+	Menu* menu = Menu::createWithArray(MenuItemVector);
+	menu->setPosition(Vec2::ZERO);
+	this->addChild(menu, 1);
 }
 
 /*选择英雄 雪莉回调函数 √*/
 //场景从SelectBrawler切换至GameScene（参数为m_map, "Shelly"）
 void SelectBrawler::menuShellyCallback(cocos2d::Ref* pSender)
 {
-	SceneInfo::brawler = "Shelly";
+	SceneManager::brawler = SceneManager::AllBrawler::Shelly;
 	SceneManager::getInstance()->changeScene(SceneManager::GameScene);
 }
 
 /*选择英雄 普里莫回调函数 √*/
-//场景从SelectBrawler切换至GameScene（参数为m_map, "Primo"）
 void SelectBrawler::menuPrimoCallback(cocos2d::Ref* pSender)
 {
-	SceneInfo::brawler = "Primo";
+	SceneManager::brawler = SceneManager::AllBrawler::Primo;
 	SceneManager::getInstance()->changeScene(SceneManager::GameScene);
 }
 
 /*选择英雄 妮塔回调函数 √*/
-//场景从SelectBrawler切换至GameScene（参数为m_map, "Nita"）
 void SelectBrawler::menuNitaCallback(cocos2d::Ref* pSender)
 {
-	SceneInfo::brawler = "Nita";
+	SceneManager::brawler = SceneManager::AllBrawler::Nita;
 	SceneManager::getInstance()->changeScene(SceneManager::GameScene);
 }
 
 /*选择英雄 斯图回调函数 √*/
-//场景从SelectBrawler切换至GameScene（参数为m_map, "Situ"）
-void SelectBrawler::menuSituCallback(cocos2d::Ref* pSender)
+void SelectBrawler::menuStuCallback(cocos2d::Ref* pSender)
 {
-	SceneInfo::brawler = "Stu";
+	SceneManager::brawler = SceneManager::AllBrawler::Stu;
 	SceneManager::getInstance()->changeScene(SceneManager::GameScene);
 }
 

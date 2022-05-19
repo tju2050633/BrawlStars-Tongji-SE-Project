@@ -21,6 +21,22 @@ public:
 		SelectBrawler,
         GameScene
 	};
+	/*枚举所有地图*/
+	enum AllMap {
+		MapA,
+		MapB,
+		MapC,
+	};
+	/*枚举所有英雄*/
+	enum AllBrawler {
+		Shelly,
+		Primo,
+		Nita,
+		Stu
+	};
+	/*静态成员变量，存储切换场景时用到的信息*/
+	static AllMap map;
+	static AllBrawler brawler;
 
 	/*获取单例类对象指针*/
 	static SceneManager* getInstance();
@@ -28,8 +44,14 @@ public:
     /*本类不需要初始化，总是返回true*/
 	virtual bool init();
 
-    /*切换场景时使用，参数为该对象内枚举数*/
-	void changeScene(AllScenes targetScene);
+	/*共用的problemLoading，避免代码重复*/
+	static void problemLoading(const char* filename);
+
+    /*共用，切换场景时使用，参数为该对象内枚举数*/
+	static void changeScene(AllScenes targetScene);
+
+	/*放置背景图，所有场景类共用*/
+	static void setBGimage(const char* filename, Scene* scene);
 };
 
 #endif // !_SCENEMANAGER_H_

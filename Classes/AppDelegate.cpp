@@ -107,8 +107,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	register_all_packages();
 
 	/*创建开场动画Scene，运行之*/
-	SceneManager::getInstance()->changeScene(SceneManager::OpeningAnimation);
-	//SceneManager::getInstance()->changeScene(SceneManager::GameMenu);
+	SceneManager::changeScene(SceneManager::OpeningAnimation);
 
 	return true;
 }

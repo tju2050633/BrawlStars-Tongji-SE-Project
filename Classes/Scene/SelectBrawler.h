@@ -2,6 +2,7 @@
 #define __SELECTBRAWLER_H_
 
 #include "cocos2d.h"
+#include "SceneManager.h"
 
 /*【行动指示】选择英雄界面
 类似，基本完成，完善几个细节：
@@ -18,24 +19,23 @@ private:
 
 	/*给init使用的初始化函数*/
 	void initMenu();	//初始化菜单
-	void initBG();		//初始化背景
 
 	/*选择英雄 回调函数*/
 	void menuShellyCallback(Ref* pSender); //雪莉
 	void menuPrimoCallback(Ref* pSender);  //普里莫
 	void menuNitaCallback(Ref* pSender);   //妮塔
-	void menuSituCallback(Ref* pSender);    //斯图
+	void menuStuCallback(Ref* pSender);    //斯图
 
 	/*返回 回调函数*/
 	void menuBackCallback(Ref* pSender);
 
 public:
 	/*创建场景和初始化*/
-	static Scene* createScene(string map);/*暂时用的char表示三张地图，后面改*/
-	virtual bool init(string map);
+	static Scene* createScene(SceneManager::AllMap map);/*暂时用的char表示三张地图，后面改*/
+	virtual bool init(SceneManager::AllMap map);
 
 	/*自定义create()*/
-	static SelectBrawler* create(string map);
+	static SelectBrawler* create(SceneManager::AllMap map);
 };
 
 #endif // !__SELECTBRAWLER_H_

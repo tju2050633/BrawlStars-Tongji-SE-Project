@@ -12,7 +12,7 @@ public:
 	static Scene* createScene();
 	virtual bool init();
 
-	/*按键回调函数*/
+	void EnterMenu(float dt);
 
 	/*自动生成create()的宏*/
 	CREATE_FUNC(OpeningAnimation);

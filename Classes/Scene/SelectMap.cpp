@@ -1,11 +1,13 @@
+#include <vector>
+#include <string>
 #include "cocos2d.h"
 #include "Scene/SelectMap.h"
 #include "Scene/SceneManager.h"
-#include "Scene/SceneInfo.h"
 #include "audio/include/SimpleAudioEngine.h"
 
 USING_NS_CC;
 using namespace CocosDenshion;
+using namespace std;
 
 /*获得场景对象 √*/
 Scene* SelectMap::createScene()
@@ -14,13 +16,6 @@ Scene* SelectMap::createScene()
 	auto layer = SelectMap::create();
 	scene->addChild(layer);
 	return scene;
-}
-
-/*错误处理函数 √*/
-static void problemLoading(const char* filename)
-{
-	printf("Error while loading: %s\n", filename);
-	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in SelectModeScene.cpp\n");
 }
 
 /*选择地图 场景初始化 ×*/
@@ -42,7 +37,7 @@ bool SelectMap::init()
 	initMenu();
 
 	/*背景*/
-	initBG();
+	SceneManager::setBGimage("BGimage2.png", this);
 
 	return true;
 }
@@ -54,129 +49,74 @@ void SelectMap::initMenu()
 	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();//获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
 
-	/*地图A选项*/
-	MenuItemImage* MapAButton = MenuItemImage::create(
-		"地图A-Normal.png",
-		"地图A-Active.png",
-		CC_CALLBACK_1(SelectMap::menuMapACallback, this)
-	);
-	if (MapAButton == nullptr ||
-		MapAButton->getContentSize().width <= 0 ||
-		MapAButton->getContentSize().height <= 0)
+	/*菜单所有按钮统一处理，必须用用cocos::Vector*/
+	Vector<MenuItem*> MenuItemVector;
+	//文件名所用的字符串
+	vector<string> stringVector = { "MapA", "MapB", "MapC", "Back" };
+	//按钮回调函数
+	vector<void (SelectMap::*)(Ref* pSender)> CallbackVector = {
+		&SelectMap::menuMapACallback,&SelectMap::menuMapBCallback,
+		&SelectMap::menuMapCCallback,&SelectMap::menuBackCallback
+	};
+	//按钮尺寸
+	vector<float> ScaleVector = { 0.2 ,0.15,0.1,1 };
+	//按钮锚点
+	vector<Vec2> AnchorVector = {
+		Vec2(0.5, 0.5), Vec2(0.5, 0.5),
+		Vec2(0.5, 0.5),Vec2(0, 1)
+	};
+	//按钮坐标
+	vector<Vec2> PositionVector = {
+		Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 4 + origin.y),
+		Vec2(visibleSize.width / 2 + origin.x, 2 * visibleSize.height / 4 + origin.y),
+		Vec2(visibleSize.width / 2 + origin.x, 3 * visibleSize.height / 4 + origin.y),
+		Vec2(origin.x, visibleSize.height + origin.y)
+	};
+	/*逐个创建按钮，分配信息，存入Vector*/
+	for (int i = 0; i < stringVector.size(); i++)
 	{
-		problemLoading("'地图A按钮'");
-	}
-	else
-	{
-		float x = visibleSize.width / 2;/*地图A x值,暂定*/
-		float y = visibleSize.height / 2;/*地图A y值,暂定*/
-		MapAButton->setPosition(Vec2(x, y));
-	}
+		string filename = "button/" + stringVector[i];
+		MenuItemImage* button = MenuItemImage::create(
+			filename + "-Normal.png",
+			filename + "-Active.png",
+			bind(CallbackVector[i], this, std::placeholders::_1)
+		);
+		if (button == nullptr || button->getContentSize().width <= 0 || button->getContentSize().height <= 0)
+			SceneManager::problemLoading(filename.c_str());//
+		else
+		{
+			button->setScale(ScaleVector[i]);
+			button->setAnchorPoint(AnchorVector[i]);
+			button->setPosition(PositionVector[i]);
+		}
 
-	/*地图B选项*/
-	MenuItemImage* MapBButton = MenuItemImage::create(
-		"地图B-Normal.png",
-		"地图B-Active.png",
-		CC_CALLBACK_1(SelectMap::menuMapBCallback, this)
-	);
-	if (MapBButton == nullptr ||
-		MapBButton->getContentSize().width <= 0 ||
-		MapBButton->getContentSize().height <= 0)
-	{
-		problemLoading("'地图B按钮'");
-	}
-	else
-	{
-		float x = visibleSize.width / 2;/*地图B x值,暂定*/
-		float y = visibleSize.height / 2;/*地图B y值,暂定*/
-		MapBButton->setPosition(Vec2(x, y));
-	}
-
-	/*地图C选项*/
-	MenuItemImage* MapCButton = MenuItemImage::create(
-		"地图C-Normal.png",
-		"地图C-Active.png",
-		CC_CALLBACK_1(SelectMap::menuMapCCallback, this)
-	);
-	if (MapCButton == nullptr ||
-		MapCButton->getContentSize().width <= 0 ||
-		MapCButton->getContentSize().height <= 0)
-	{
-		problemLoading("'地图C按钮'");
-	}
-	else
-	{
-		float x = visibleSize.width / 2;/*地图C x值,暂定*/
-		float y = visibleSize.height / 2;/*地图C y值,暂定*/
-		MapCButton->setPosition(Vec2(x, y));
-	}
-
-	/*返回按钮*/
-	MenuItemImage* backButton = MenuItemImage::create(
-		"返回按钮-Normal.png",
-		"返回按钮-Active.png",
-		CC_CALLBACK_1(SelectMap::menuBackCallback, this)
-	);
-	if (backButton == nullptr ||
-		backButton->getContentSize().width <= 0 ||
-		backButton->getContentSize().height <= 0)
-	{
-		problemLoading("'返回按钮'");
-	}
-	else
-	{
-		float x = visibleSize.width / 2;/*返回按钮 x值,暂定*/
-		float y = visibleSize.height / 2;/*返回按钮 y值,暂定*/
-		backButton->setPosition(Vec2(x, y));
+		MenuItemVector.pushBack(button);
 	}
 
 	/*总的菜单，包含以上菜单选项*/
-	Menu* selectMap = Menu::create(MapAButton, MapBButton, MapCButton, backButton, NULL);
-	selectMap->setPosition(Vec2::ZERO);
-	this->addChild(selectMap, 1);
-}
-
-/*选择地图 初始化背景 ×*/
-void SelectMap::initBG()
-{
-	/*获取visibleSize和origin*/
-	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();//获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
-
-	/*加载背景图片*/
-	auto background = Sprite::create("选择地图背景图片");
-	if (background == nullptr)
-	{
-		problemLoading("'选择地图背景图片'");
-	}
-	else
-	{
-		background->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-		this->addChild(background, 0);
-	}
+	Menu* menu = Menu::createWithArray(MenuItemVector);
+	menu->setPosition(Vec2::ZERO);
+	this->addChild(menu, 1);
 }
 
 /*选择地图 地图A回调函数 √*/
-//场景从SelectMap切换至SelectBrawler（参数为'A'）
 void SelectMap::menuMapACallback(cocos2d::Ref* pSender)
 {
-	SceneInfo::map = "A";
+	SceneManager::map = SceneManager::AllMap::MapA;
 	SceneManager::getInstance()->changeScene(SceneManager::SelectBrawler);
 }
 
 /*选择地图 地图B回调函数 √*/
-//场景从SelectMap切换至SelectBrawler（参数为'B'）
 void SelectMap::menuMapBCallback(cocos2d::Ref* pSender)
 {
-	SceneInfo::map = "B";
+	SceneManager::map = SceneManager::AllMap::MapB;
 	SceneManager::getInstance()->changeScene(SceneManager::SelectBrawler);
 }
 
 /*选择地图 地图C回调函数 √*/
-//场景从SelectMap切换至SelectBrawler（参数为'C'）
 void SelectMap::menuMapCCallback(cocos2d::Ref* pSender)
 {
-	SceneInfo::map = "C";
+	SceneManager::map = SceneManager::AllMap::MapC;
 	SceneManager::getInstance()->changeScene(SceneManager::SelectBrawler);
 }
 

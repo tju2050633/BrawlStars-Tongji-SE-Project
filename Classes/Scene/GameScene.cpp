@@ -9,7 +9,7 @@ using namespace CocosDenshion;
 /*获得场景对象 √*/
 //init需接受参数，不能用CREATE_FUNC自动生成的create()
 //用以下模板（仅需改init内参数，效果和create()一样）
-Scene* GameScene::createScene(std::string map, std::string brawler)
+Scene* GameScene::createScene(SceneManager::AllMap map, SceneManager::AllBrawler brawler)
 {
 	auto scene = Scene::create();
 	auto layer = GameScene::create( map, brawler);
@@ -18,7 +18,7 @@ Scene* GameScene::createScene(std::string map, std::string brawler)
 }
 
 /*自定义create()*/
-GameScene* GameScene::create(std::string map, std::string brawler)
+GameScene* GameScene::create(SceneManager::AllMap map, SceneManager::AllBrawler brawler)
 {
 	auto scene = new(std::nothrow)GameScene;
 	if (scene && scene->init(map, brawler))
@@ -38,7 +38,7 @@ static void problemLoading(const char* filename)
 }
 
 /*游戏主场景初始化 ×*/
-bool GameScene::init(std::string map, std::string brawler)
+bool GameScene::init(SceneManager::AllMap map, SceneManager::AllBrawler brawler)
 {
 	/*初始化父类*/
 	if (!Scene::init())
@@ -62,8 +62,8 @@ bool GameScene::init(std::string map, std::string brawler)
 
 	/*返回按钮*/
 	MenuItemImage* backButton = MenuItemImage::create(
-		"button/Return.png",
-		"button/Return-Active.png",
+		"button/Back-Normal.png",
+		"button/Back-Active.png",
 		CC_CALLBACK_1(GameScene::menuBackCallback, this)
 	);
 	if (backButton == nullptr ||
@@ -85,16 +85,7 @@ bool GameScene::init(std::string map, std::string brawler)
 	this->addChild(gameScene, 1);
 
 	/*背景*/
-	auto background = Sprite::create("选择英雄背景图片");
-	if (background == nullptr)
-	{
-		problemLoading("'选择英雄背景图片'");
-	}
-	else
-	{
-		background->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-		this->addChild(background, 0);
-	}
+	SceneManager::setBGimage("BGimage1.png", this);
 
 	return true;
 }

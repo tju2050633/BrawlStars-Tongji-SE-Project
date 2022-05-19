@@ -7,9 +7,6 @@
 这部分主要实现init函数，那几个回调函数只是切换场景而已，基本不用太管
 init部分也写的差不多了，还剩素材路径、坐标y值两个细节，都用中文标出来了
 还有音频，需要单独一位同学负责一下，SimpleAudioEngine似乎是cocos引擎音频的一部分
-
-另外，关于problemLoading()这个函数每个cpp都写一遍感觉不好，应该可以写一份然后external拓展作用文件啥的？
-这块知识忘了，还记得的就给他优化一下
 */
 
 USING_NS_CC;
@@ -19,7 +16,6 @@ class GameMenu : public Scene
 private:
 	/*给init使用的初始化函数*/
 	void initMenu();	//初始化菜单
-	void initBG();		//初始化背景
 
 	/*按键回调函数*/
 	void menuSinglePlayerCallback(Ref* pSender);   //单人模式
