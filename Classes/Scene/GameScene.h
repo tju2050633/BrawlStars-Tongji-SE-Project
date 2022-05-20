@@ -4,25 +4,39 @@
 #include "cocos2d.h"
 #include "SceneManager.h"
 
-/*【行动指示】游戏主界面
-*/
+USING_NS_CC;
 
-class GameScene : public cocos2d::Scene
+class GameScene : public Scene
 {
 private:
-	std::string m_map;       //地图A、B、C，暂定
-	std::string m_brawler; //英雄Shelly、Primo、Nita、Stu，暂定
+	/*初始化 地图*/
+	void initMap();
+
+	/*初始化 人物*/
+	void initBrawler();
+
+	/*初始化 标签*/
+	void initLabel();
+
+	/*初始化 按钮*/
+	void initButton();
+
+	/*初始化 操作器*/
+	void initControler();
+
+	/*表情 回调函数*/
+	void menuEmotionCallback(Ref *pSender);
+
+	/*返回 回调函数*/
+	void menuBackCallback(Ref *pSender);
 
 public:
 	/*创建场景和初始化*/
-	static cocos2d::Scene* createScene(SceneManager::AllMap map, SceneManager::AllBrawler brawler);
-	virtual bool init(SceneManager::AllMap map, SceneManager::AllBrawler brawler);
+	static Scene *createScene();
+	virtual bool init();
 
-	/*返回 回调函数*/
-	void menuBackCallback(cocos2d::Ref* pSender);
-
-	/*自定义create()*/
-	static GameScene* create(SceneManager::AllMap map, SceneManager::AllBrawler brawler);
+	/*自动生成create()的宏*/
+	CREATE_FUNC(GameScene);
 };
 
 #endif // !__GAMESCENE_H_

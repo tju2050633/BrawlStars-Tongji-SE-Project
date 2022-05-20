@@ -15,18 +15,18 @@ class GameMenu : public Scene
 {
 private:
 	/*给init使用的初始化函数*/
-	void initMenu();	//初始化菜单
+	void initMenu(); //初始化菜单
 
 	/*按键回调函数*/
-	void menuSinglePlayerCallback(Ref* pSender);   //单人模式
-	void menuMultiPlayerCallback(Ref* pSender);    //多人模式
-	void menuSettingsCallback(Ref* pSender);       //游戏设置
-	void menuInstructionCallback(Ref* pSender);    //游戏说明
-	void menuQuitCallback(Ref* pSender);           //退出游戏
+	void menuSinglePlayerCallback(Ref *pSender); //单人模式
+	void menuMultiPlayerCallback(Ref *pSender);	 //多人模式
+	void menuSettingsCallback(Ref *pSender);	 //游戏设置
+	void menuInstructionCallback(Ref *pSender);	 //游戏说明
+	void menuQuitCallback(Ref *pSender);		 //退出游戏
 
 public:
 	/*创建场景和初始化*/
-	static Scene* createScene();
+	static Scene *createScene();
 	virtual bool init();
 
 	/*自动生成create()的宏*/

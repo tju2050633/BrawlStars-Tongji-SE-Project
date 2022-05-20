@@ -12,6 +12,13 @@ public:
 	static Scene* createScene();
 	virtual bool init();
 
+	/*加载欢迎图标*/
+	void LoadWelcomeLabel();
+
+	/*预加载所有图片、音频等资源*/
+	void PreloadResource();
+
+	/*切换到游戏菜单*/
 	void EnterMenu(float dt);
 
 	/*自动生成create()的宏*/

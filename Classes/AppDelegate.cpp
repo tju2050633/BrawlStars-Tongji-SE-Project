@@ -41,8 +41,6 @@ AppDelegate::~AppDelegate()
 #endif
 }
 
-/*glContextAttrs 暂时不管*/
-
 // if you want a different context, modify the value of glContextAttrs
 // it will affect all platforms
 void AppDelegate::initGLContextAttrs()
@@ -52,8 +50,6 @@ void AppDelegate::initGLContextAttrs()
 
 	GLView::setGLContextAttrs(glContextAttrs);
 }
-
-/*安装包 暂时不管*/
 
 // if you want to use the package manager to install more packages,
 // don't modify or remove this function
@@ -78,8 +74,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
 		director->setOpenGLView(glview);
 	}
 
-	// turn on display FPS
-	director->setDisplayStats(true);
+	// turn on display FPS 不展示FPS
+	director->setDisplayStats(false);
 
 	// set FPS. the default value is 1.0/60 if you don't call this
 	director->setAnimationInterval(1.0f / 60);

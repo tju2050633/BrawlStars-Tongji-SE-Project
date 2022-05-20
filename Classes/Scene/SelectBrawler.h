@@ -15,27 +15,25 @@ using namespace std;
 class SelectBrawler : public Scene
 {
 private:
-	string _map;   //地图A、B、C，暂定
-
 	/*给init使用的初始化函数*/
-	void initMenu();	//初始化菜单
+	void initMenu(); //初始化菜单
 
 	/*选择英雄 回调函数*/
-	void menuShellyCallback(Ref* pSender); //雪莉
-	void menuPrimoCallback(Ref* pSender);  //普里莫
-	void menuNitaCallback(Ref* pSender);   //妮塔
-	void menuStuCallback(Ref* pSender);    //斯图
+	void menuShellyCallback(Ref *pSender); //雪莉
+	void menuPrimoCallback(Ref *pSender);  //普里莫
+	void menuNitaCallback(Ref *pSender);   //妮塔
+	void menuStuCallback(Ref *pSender);	   //斯图
 
 	/*返回 回调函数*/
-	void menuBackCallback(Ref* pSender);
+	void menuBackCallback(Ref *pSender);
 
 public:
 	/*创建场景和初始化*/
-	static Scene* createScene(SceneManager::AllMap map);/*暂时用的char表示三张地图，后面改*/
-	virtual bool init(SceneManager::AllMap map);
+	static Scene *createScene(); /*暂时用的char表示三张地图，后面改*/
+	virtual bool init();
 
-	/*自定义create()*/
-	static SelectBrawler* create(SceneManager::AllMap map);
+	/*自动生成create()的宏*/
+	CREATE_FUNC(SelectBrawler);
 };
 
 #endif // !__SELECTBRAWLER_H_
