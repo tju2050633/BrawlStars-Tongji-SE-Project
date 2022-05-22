@@ -1,18 +1,12 @@
-#ifndef __SELECTBRAWLER_H_
-#define __SELECTBRAWLER_H_
+#ifndef __SELECT_BRAWLER_H_
+#define __SELECT_BRAWLER_H_
 
 #include "cocos2d.h"
-#include "SceneManager.h"
-
-/*【行动指示】选择英雄界面
-类似，基本完成，完善几个细节：
-资源路径、xy坐标值、向下一场景传递的参数类型和值（四个回调函数中createScene()）
-*/
 
 USING_NS_CC;
 using namespace std;
 
-class SelectBrawler : public Scene
+class SelectBrawler : public Layer
 {
 private:
 	/*给init使用的初始化函数*/
@@ -29,11 +23,9 @@ private:
 
 public:
 	/*创建场景和初始化*/
-	static Scene *createScene(); /*暂时用的char表示三张地图，后面改*/
+	static Scene *createScene();
 	virtual bool init();
-
-	/*自动生成create()的宏*/
 	CREATE_FUNC(SelectBrawler);
 };
 
-#endif // !__SELECTBRAWLER_H_
+#endif // !__SELECT_BRAWLER_H_

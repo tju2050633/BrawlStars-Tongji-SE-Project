@@ -1,12 +1,11 @@
-#ifndef __GAMESCENE_H_
-#define __GAMESCENE_H_
+#ifndef __GAME_SCENE_H_
+#define __GAME_SCENE_H_
 
 #include "cocos2d.h"
-#include "SceneManager.h"
 
 USING_NS_CC;
 
-class GameScene : public Scene
+class GameScene : public Layer
 {
 private:
 	/*初始化 地图*/
@@ -34,9 +33,7 @@ public:
 	/*创建场景和初始化*/
 	static Scene *createScene();
 	virtual bool init();
-
-	/*自动生成create()的宏*/
 	CREATE_FUNC(GameScene);
 };
 
-#endif // !__GAMESCENE_H_
+#endif // !__GAME_SCENE_H_

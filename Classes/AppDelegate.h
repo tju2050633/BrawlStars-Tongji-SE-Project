@@ -3,11 +3,6 @@
 
 #include "cocos2d.h"
 
-/*【行动指示】启动程序准备
-cpp里我改好了最初启动场景为OpeningAnimation开场动画，
-但有三个地方可能要修改：包含头文件，音频，窗口尺寸
-*/
-
 class  AppDelegate : private cocos2d::Application
 {
 public:

@@ -11,7 +11,7 @@ init部分也写的差不多了，还剩素材路径、坐标y值两个细节，都用中文标出来了
 
 USING_NS_CC;
 
-class GameMenu : public Scene
+class GameMenu : public Layer
 {
 private:
 	/*给init使用的初始化函数*/
@@ -28,8 +28,6 @@ public:
 	/*创建场景和初始化*/
 	static Scene *createScene();
 	virtual bool init();
-
-	/*自动生成create()的宏*/
 	CREATE_FUNC(GameMenu);
 };
 

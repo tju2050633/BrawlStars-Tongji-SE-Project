@@ -1,11 +1,9 @@
 #include "cocos2d.h"
 #include "Scene/OpeningAnimation.h"
-#include "Scene/SceneManager.h"
+#include "Scene/SceneUtils.h"
 #include "Scene/GameMenu.h"
-#include "audio/include/SimpleAudioEngine.h"
 
 USING_NS_CC;
-using namespace CocosDenshion;
 
 /*获得场景对象 √*/
 Scene* OpeningAnimation::createScene()
@@ -20,7 +18,7 @@ Scene* OpeningAnimation::createScene()
 bool OpeningAnimation::init()
 {
 	/*初始化父类*/
-	if (!Scene::init())
+	if (!Layer::init())
 	{
 		return false;
 	}
@@ -29,13 +27,13 @@ bool OpeningAnimation::init()
 	scheduleOnce(schedule_selector(OpeningAnimation::EnterMenu), 3.0f);
 
 	/*声音*/
-	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	if (!audio->isBackgroundMusicPlaying()) {
-		audio->playBackgroundMusic("开场动画音乐", true);
-	}
+	// auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	// if (!audio->isBackgroundMusicPlaying()) {
+	// 	audio->playBackgroundMusic("开场动画音乐", true);
+	// }
 
 	/*背景*/
-	SceneManager::setBGimage("BGimage1.png", this);
+	SceneUtils::setBGimage("BGimage/OpeningAnimation.png", this);
 
 	/*欢迎图标*/
 	LoadWelcomeLabel();
@@ -53,11 +51,11 @@ void LoadWelcomeLabel()
 	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();//获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
 
-	auto welcome = Sprite::create("Welcome.png");
+	auto welcome = Sprite::create("BGimage/Welcome.png");
 	
 	if (welcome == nullptr)
 	{
-		SceneManager::problemLoading("'Welcome.png'");
+		SceneUtils::problemLoading("'BGimage/Welcome.png'");
 	}
 	else
 	{
@@ -71,8 +69,9 @@ void LoadWelcomeLabel()
 void PreloadResource()
 {
 	/*后续背景图*/
-	TextureCache::getInstance()->addImageAsync("BGimage2.png");
-	TextureCache::getInstance()->addImageAsync("BGimage3.png");
+	TextureCache::getInstance()->addImageAsync("BGimage/GameMenu.png");
+	TextureCache::getInstance()->addImageAsync("BGimage/SelectMap.png");
+	TextureCache::getInstance()->addImageAsync("BGimage/SelectBrawler.png");
 	/*按钮图片*/
 	TextureCache::getInstance()->addImageAsync("button/SinglePlayer-Normal.png");
 	TextureCache::getInstance()->addImageAsync("button/SinglePlayer-Active.png");
@@ -96,5 +95,5 @@ void PreloadResource()
 /*切换到游戏菜单*/
 void OpeningAnimation::EnterMenu(float dt)
 {
-	SceneManager::changeScene(SceneManager::GameMenu);
+	SceneUtils::changeScene(SceneUtils::GameMenu);
 }

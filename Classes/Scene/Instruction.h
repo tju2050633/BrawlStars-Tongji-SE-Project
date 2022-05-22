@@ -5,11 +5,10 @@
 
 USING_NS_CC;
 
-class Instruction : public Scene 
+class Instruction : public Layer 
 {
 public:
 	/*创建场景和初始化*/
-	static Scene* createScene();
 	virtual bool init();
 
 	/*按键回调函数*/

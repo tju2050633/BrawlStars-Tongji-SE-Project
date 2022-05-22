@@ -1,16 +1,17 @@
-#ifndef __OPENINGANIMATION_H_
-#define __OPENINGANIMATION_H_
+#ifndef __OPENING_ANIMATION_H_
+#define __OPENING_ANIMATION_H_
 
 #include "cocos2d.h"
 
 USING_NS_CC;
 
-class OpeningAnimation : public Scene
+class OpeningAnimation : public Layer
 {
 public:
 	/*创建场景和初始化*/
 	static Scene* createScene();
 	virtual bool init();
+	CREATE_FUNC(OpeningAnimation);
 
 	/*加载欢迎图标*/
 	void LoadWelcomeLabel();
@@ -20,9 +21,6 @@ public:
 
 	/*切换到游戏菜单*/
 	void EnterMenu(float dt);
-
-	/*自动生成create()的宏*/
-	CREATE_FUNC(OpeningAnimation);
 };
 
-#endif // !__OPENINGANIMATION_H_
+#endif // !__OPENING_ANIMATION_H_

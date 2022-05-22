@@ -4,20 +4,11 @@
 
 USING_NS_CC;
 
-/*获得场景对象 √*/
-Scene* Settings::createScene()
-{
-	auto scene = Scene::create();
-	auto layer = Settings::create();
-	scene->addChild(layer);
-	return scene;
-}
-
 /*游戏设置场景初始化 ×*/
 bool Settings::init()
 {
 	/*初始化父类*/
-	if (!Scene::init())
+	if (!Layer::init())
 	{
 		return false;
 	}

@@ -1,12 +1,9 @@
-#include <vector>
 #include <string>
 #include "cocos2d.h"
 #include "Scene/SelectMap.h"
-#include "Scene/SceneManager.h"
-#include "audio/include/SimpleAudioEngine.h"
+#include "Scene/SceneUtils.h"
 
 USING_NS_CC;
-using namespace CocosDenshion;
 using namespace std;
 
 /*获得场景对象 √*/
@@ -22,23 +19,23 @@ Scene *SelectMap::createScene()
 bool SelectMap::init()
 {
 	/*初始化父类*/
-	if (!Scene::init())
+	if (!Layer::init())
 	{
 		return false;
 	}
 
 	/*声音，这个SimpleAudioEngine后期看是加上还是换别的*/
-	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	if (!audio->isBackgroundMusicPlaying())
-	{
-		audio->playBackgroundMusic("选择地图背景音乐", true);
-	}
+	// auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	// if (!audio->isBackgroundMusicPlaying())
+	// {
+	// 	audio->playBackgroundMusic("选择地图背景音乐", true);
+	// }
 
 	/*菜单*/
 	initMenu();
 
 	/*背景*/
-	SceneManager::setBGimage("BGimage2.png", this);
+	SceneUtils::setBGimage("BGimage/SelectMap", this);
 
 	return true;
 }
@@ -53,21 +50,21 @@ void SelectMap::initMenu()
 	/*菜单所有按钮统一处理，必须用用cocos::Vector*/
 	Vector<MenuItem *> MenuItemVector;
 	//文件名所用的字符串
-	vector<string> stringVector = {"MapA", "MapB", "MapC", "Back"};
+	Vector<string> stringVector = {"MapA", "MapB", "MapC", "Back"};
 	//按钮回调函数
-	vector<void (SelectMap::*)(Ref * pSender)> CallbackVector = {
+	Vector<void (SelectMap::*)(Ref * pSender)> CallbackVector = {
 		&SelectMap::menuMapACallback, &SelectMap::menuMapBCallback,
 		&SelectMap::menuMapCCallback, &SelectMap::menuBackCallback};
 	//按钮尺寸
-	vector<float> ScaleVector = {0.2, 0.15, 0.1, 1};
+	Vector<float> ScaleVector = {0.2, 0.15, 0.1, 1};
 	//按钮锚点
-	vector<Vec2> AnchorVector = {
+	Vector<Vec2> AnchorVector = {
 		Vec2(0.5, 0.5),
 		Vec2(0.5, 0.5),
 		Vec2(0.5, 0.5),
 		Vec2(0, 1)};
 	//按钮坐标
-	vector<Vec2> PositionVector = {
+	Vector<Vec2> PositionVector = {
 		Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 4 + origin.y),
 		Vec2(visibleSize.width / 2 + origin.x, 2 * visibleSize.height / 4 + origin.y),
 		Vec2(visibleSize.width / 2 + origin.x, 3 * visibleSize.height / 4 + origin.y),
@@ -76,16 +73,16 @@ void SelectMap::initMenu()
 	for (int i = 0; i < stringVector.size(); i++)
 	{
 		MenuItemImage *button = MenuItemImage::create(
-			StringUtils::format("button/%s-Normal.png", stringVector[i]),
-			StringUtils::format("button/%s-Active.png", stringVector[i]),
-			bind(CallbackVector[i], this, std::placeholders::_1));
+			StringUtils::format("button/%s-Normal.png", stringVector.at(i)),
+			StringUtils::format("button/%s-Active.png", stringVector.at(i)),
+			bind(CallbackVector.at(i), this, std::placeholders::_1));
 		if (button == nullptr || button->getContentSize().width <= 0 || button->getContentSize().height <= 0)
-			SceneManager::problemLoading(stringVector[i]);
+			SceneUtils::problemLoading(stringVector.at(i));
 		else
 		{
-			button->setScale(ScaleVector[i]);
-			button->setAnchorPoint(AnchorVector[i]);
-			button->setPosition(PositionVector[i]);
+			button->setScale(ScaleVector.at(i));
+			button->setAnchorPoint(AnchorVector.at(i));
+			button->setPosition(PositionVector.at(i));
 		}
 		MenuItemVector.pushBack(button);
 	}
@@ -99,27 +96,27 @@ void SelectMap::initMenu()
 /*选择地图 地图A回调函数 √*/
 void SelectMap::menuMapACallback(cocos2d::Ref *pSender)
 {
-	SceneManager::map = SceneManager::AllMap::MapA;
-	SceneManager::getInstance()->changeScene(SceneManager::SelectBrawler);
+	SceneUtils::_map = SceneUtils::AllMap::MapA;
+	SceneUtils::changeScene(SceneUtils::SelectBrawler);
 }
 
 /*选择地图 地图B回调函数 √*/
 void SelectMap::menuMapBCallback(cocos2d::Ref *pSender)
 {
-	SceneManager::map = SceneManager::AllMap::MapB;
-	SceneManager::getInstance()->changeScene(SceneManager::SelectBrawler);
+	SceneUtils::_map = SceneUtils::AllMap::MapB;
+	SceneUtils::changeScene(SceneUtils::SelectBrawler);
 }
 
 /*选择地图 地图C回调函数 √*/
 void SelectMap::menuMapCCallback(cocos2d::Ref *pSender)
 {
-	SceneManager::map = SceneManager::AllMap::MapC;
-	SceneManager::getInstance()->changeScene(SceneManager::SelectBrawler);
+	SceneUtils::_map = SceneUtils::AllMap::MapC;
+	SceneUtils::changeScene(SceneUtils::SelectBrawler);
 }
 
 /*选择地图 返回回调函数 √*/
 //场景从SelectMap切换至GameMenu
 void SelectMap::menuBackCallback(cocos2d::Ref *pSender)
 {
-	SceneManager::getInstance()->changeScene(SceneManager::GameMenu);
+	SceneUtils::changeScene(SceneUtils::GameMenu);
 }

@@ -1,17 +1,11 @@
-#ifndef __SELECTMAP_H_
-#define __SELECTMAP_H_
+#ifndef __SELECT_MAP_H_
+#define __SELECT_MAP_H_
 
 #include "cocos2d.h"
 
-/*【行动指示】选择地图界面
-和Menu界面类似，基本已经完成
-需要完善的细节：
-init里面资源路径、xy坐标值、三个回调函数中create()参数的类型和值（向下一场景传递信息）
-*/
-
 USING_NS_CC;
 
-class SelectMap : public Scene
+class SelectMap : public Layer
 {
 private:
 	/*给init使用的初始化函数*/
@@ -29,9 +23,7 @@ public:
 	/*创建场景和初始化*/
 	static Scene* createScene();
 	virtual bool init();
-
-	/*自动生成create()的宏*/
 	CREATE_FUNC(SelectMap);
 };
 
-#endif // !__SELECTMAP_H_
+#endif // !__SELECT_MAP_H_
