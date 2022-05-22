@@ -1,1 +1,0 @@
-#include "Object/Bear.h"

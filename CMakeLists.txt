@@ -60,24 +60,48 @@ list(APPEND GAME_SOURCE
      Classes/HelloWorldScene.cpp
      Classes/Scene/OpeningAnimation.cpp
      Classes/Scene/GameMenu.cpp
+     Classes/Scene/Settings.cpp
      Classes/Scene/Instruction.cpp
      Classes/Scene/GameScene.cpp	
-     Classes/Scene/GameScene.cpp
      Classes/Scene/SelectBrawler.cpp
      Classes/Scene/SelectMap.cpp
-     Classes/Scene/Settings.cpp	 
+     Classes/Entity/Bear.cpp
+     Classes/Entity/Box.cpp
+     Classes/Entity/Brawler.cpp
+     Classes/Entity/Bullet.cpp
+     Classes/Entity/Entity.cpp
+     Classes/Brawler/AIBrawler.cpp
+     Classes/Brawler/Nita.cpp
+     Classes/Brawler/Primo.cpp
+     Classes/Brawler/Shelly.cpp
+     Classes/Brawler/Stu.cpp
+     Classes/Utils/AIUtils.cpp
+     Classes/Utils/AnimationUtils.cpp
+     Classes/Utils/SceneUtils.cpp
     )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
      Classes/HelloWorldScene.h
      Classes/Scene/OpeningAnimation.h
      Classes/Scene/GameMenu.h
+     Classes/Scene/Settings.h
      Classes/Scene/Instruction.h
-     Classes/Scene/GameScene.h
      Classes/Scene/GameScene.h
      Classes/Scene/SelectBrawler.h
      Classes/Scene/SelectMap.h
-     Classes/Scene/Settings.h
+     Classes/Entity/Bear.h
+     Classes/Entity/Box.h
+     Classes/Entity/Brawler.h
+     Classes/Entity/Bullet.h
+     Classes/Entity/Entity.h
+     Classes/Brawler/AIBrawler.h
+     Classes/Brawler/Nita.h
+     Classes/Brawler/Primo.h
+     Classes/Brawler/Shelly.h
+     Classes/Brawler/Stu.h
+     Classes/Utils/AIUtils.h
+     Classes/Utils/AnimationUtils.h
+     Classes/Utils/SceneUtils.h
     )
 
 if(ANDROID)

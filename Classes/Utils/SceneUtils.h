@@ -38,13 +38,13 @@ public:
 	static int _brawlerNumber;
 
 	/*共用的problemLoading，避免代码重复*/
-	static void problemLoading(const char *filename);
+	static void problemLoading(const char* filename);
 
 	/*共用，切换场景时使用，参数为该对象内枚举数*/
 	static void changeScene(AllScenes targetScene);
 
 	/*放置背景图，所有场景类共用*/
-	static void setBGimage(const char *filename, Scene *scene);
+	static void setBGimage(const char* filename, Layer* layer);
 };
 
 #endif // !_SCENE_UTILS_H_

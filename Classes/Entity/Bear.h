@@ -2,13 +2,12 @@
 #define __BEAR_H_
 
 #include "cocos2d.h"
-#include "Object/Unit.h"
+#include "Entity/Entity.h"
 
 USING_NS_CC;
 
-class Bear : public Unit {
+class Bear : public Entity {
 public:
-    
 };
 
 #endif// !__BEAR_H_
