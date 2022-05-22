@@ -1,7 +1,7 @@
 #include "AppDelegate.h"
 #include "Scene/OpeningAnimation.h"
 #include "Scene/GameMenu.h"
-#include "Scene/SceneUtils.h"
+#include "Utils/SceneUtils.h"
 // #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
 
@@ -34,9 +34,9 @@ AppDelegate::AppDelegate()
 AppDelegate::~AppDelegate()
 {
 #if USE_AUDIO_ENGINE
-    AudioEngine::end();
+	AudioEngine::end();
 #elif USE_SIMPLE_AUDIO_ENGINE
-    SimpleAudioEngine::end();
+	SimpleAudioEngine::end();
 #endif
 }
 
@@ -112,10 +112,10 @@ void AppDelegate::applicationDidEnterBackground() {
 	Director::getInstance()->stopAnimation();
 
 #if USE_AUDIO_ENGINE
-    AudioEngine::pauseAll();
+	AudioEngine::pauseAll();
 #elif USE_SIMPLE_AUDIO_ENGINE
-    SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
-    SimpleAudioEngine::getInstance()->pauseAllEffects();
+	SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+	SimpleAudioEngine::getInstance()->pauseAllEffects();
 #endif
 }
 
@@ -126,9 +126,9 @@ void AppDelegate::applicationWillEnterForeground() {
 	Director::getInstance()->startAnimation();
 
 #if USE_AUDIO_ENGINE
-    AudioEngine::resumeAll();
+	AudioEngine::resumeAll();
 #elif USE_SIMPLE_AUDIO_ENGINE
-    SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
-    SimpleAudioEngine::getInstance()->resumeAllEffects();
+	SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+	SimpleAudioEngine::getInstance()->resumeAllEffects();
 #endif
 }

@@ -1,28 +1,30 @@
 #include "Entity/Entity.h"
+#include "Entity/Bullet.h"
+#include "Entity/Brawler.h"
 
 /*构造函数*/
-Bullet(): _launcher(nullptr)
+Bullet::Bullet() : _launcher(nullptr), _range(0)
 {}
 
 /*初始化*/
 bool Bullet::init()
 {
-    /*初始化父类*/
-    if (!Entity::init())
+	/*初始化父类*/
+	if (!Entity::init())
 	{
 		return false;
 	}
 
 	/*设置属性*/
-	healthPoint = 0;
-	attackInterval = 0;
-	inBush = false;
+	_healthPoint = 0;
+	_attackInterval = 0;
+	_inBush = false;
 
-    return true;
-}   
+	return true;
+}
 
 /*自定义属性*/
-void setAttributes(INT32 attackDamage, INT32 moveSpeed, float range, Brawler* launcher)
+void Bullet::setAttributes(INT32 attackDamage, INT32 moveSpeed, float range, Brawler* launcher)
 {
 	setAttackDamage(attackDamage);
 	setMoveSpeed(moveSpeed);

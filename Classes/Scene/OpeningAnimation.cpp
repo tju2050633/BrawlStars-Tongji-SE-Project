@@ -1,6 +1,6 @@
 #include "cocos2d.h"
 #include "Scene/OpeningAnimation.h"
-#include "Scene/SceneUtils.h"
+#include "Utils/SceneUtils.h"
 #include "Scene/GameMenu.h"
 
 USING_NS_CC;
@@ -24,7 +24,7 @@ bool OpeningAnimation::init()
 	}
 
 	/*三秒后进入菜单界面*/
-	scheduleOnce(schedule_selector(OpeningAnimation::EnterMenu), 3.0f);
+	scheduleOnce(SEL_SCHEDULE(&OpeningAnimation::EnterMenu), 3.0f);
 
 	/*声音*/
 	// auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
@@ -45,14 +45,14 @@ bool OpeningAnimation::init()
 }
 
 /*加载欢迎图标*/
-void LoadWelcomeLabel()
+void OpeningAnimation::LoadWelcomeLabel()
 {
 	/*获取visibleSize和origin*/
 	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();//获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
 
 	auto welcome = Sprite::create("BGimage/Welcome.png");
-	
+
 	if (welcome == nullptr)
 	{
 		SceneUtils::problemLoading("'BGimage/Welcome.png'");
@@ -66,30 +66,30 @@ void LoadWelcomeLabel()
 }
 
 /*预加载所有图片、音频等资源*/
-void PreloadResource()
+void OpeningAnimation::PreloadResource()
 {
 	/*后续背景图*/
-	TextureCache::getInstance()->addImageAsync("BGimage/GameMenu.png");
-	TextureCache::getInstance()->addImageAsync("BGimage/SelectMap.png");
-	TextureCache::getInstance()->addImageAsync("BGimage/SelectBrawler.png");
-	/*按钮图片*/
-	TextureCache::getInstance()->addImageAsync("button/SinglePlayer-Normal.png");
-	TextureCache::getInstance()->addImageAsync("button/SinglePlayer-Active.png");
-	TextureCache::getInstance()->addImageAsync("button/MultiPlayer-Normal.png");
-	TextureCache::getInstance()->addImageAsync("button/MultiPlayer-Active.png");
-	TextureCache::getInstance()->addImageAsync("button/Settings-Normal.png");
-	TextureCache::getInstance()->addImageAsync("button/Settings-Active.png");
-	TextureCache::getInstance()->addImageAsync("button/Instruction-Normal.png");
-	TextureCache::getInstance()->addImageAsync("button/Instruction-Active.png");
-	TextureCache::getInstance()->addImageAsync("button/Quit-Normal.png");
-	TextureCache::getInstance()->addImageAsync("button/Quit-Active.png");
-	/*选择地图图片*/
-	TextureCache::getInstance()->addImageAsync("button/MapA-Normal.png");
-	TextureCache::getInstance()->addImageAsync("button/MapA-Active.png");
-	TextureCache::getInstance()->addImageAsync("button/MapB-Normal.png");
-	TextureCache::getInstance()->addImageAsync("button/MapB-Active.png");
-	TextureCache::getInstance()->addImageAsync("button/MapC-Normal.png");
-	TextureCache::getInstance()->addImageAsync("button/MapC-Active.png");
+	Director::getInstance()->getTextureCache()->addImage("BGimage/GameMenu.png");
+	Director::getInstance()->getTextureCache()->addImage("BGimage/SelectMap.png");
+	Director::getInstance()->getTextureCache()->addImage("BGimage/SelectBrawler.png");
+	/*菜单按钮*/
+	Director::getInstance()->getTextureCache()->addImage("button/SinglePlayer-Normal.png");
+	Director::getInstance()->getTextureCache()->addImage("button/SinglePlayer-Active.png");
+	Director::getInstance()->getTextureCache()->addImage("button/MultiPlayer-Normal.png");
+	Director::getInstance()->getTextureCache()->addImage("button/MultiPlayer-Active.png");
+	Director::getInstance()->getTextureCache()->addImage("button/Settings-Normal.png");
+	Director::getInstance()->getTextureCache()->addImage("button/Settings-Active.png");
+	Director::getInstance()->getTextureCache()->addImage("button/Instruction-Normal.png");
+	Director::getInstance()->getTextureCache()->addImage("button/Instruction-Active.png");
+	Director::getInstance()->getTextureCache()->addImage("button/Quit-Normal.png");
+	Director::getInstance()->getTextureCache()->addImage("button/Quit-Active.png");
+	/*地图按钮*/
+	Director::getInstance()->getTextureCache()->addImage("button/MapA-Normal.png");
+	Director::getInstance()->getTextureCache()->addImage("button/MapA-Active.png");
+	Director::getInstance()->getTextureCache()->addImage("button/MapB-Normal.png");
+	Director::getInstance()->getTextureCache()->addImage("button/MapB-Active.png");
+	Director::getInstance()->getTextureCache()->addImage("button/MapC-Normal.png");
+	Director::getInstance()->getTextureCache()->addImage("button/MapC-Active.png");
 }
 
 /*切换到游戏菜单*/
