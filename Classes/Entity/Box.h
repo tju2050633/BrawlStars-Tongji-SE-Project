@@ -8,7 +8,11 @@ USING_NS_CC;
 
 class Box : public Entity {
 public:
-	virtual void die();  //死亡，掉落buff
+	/*创建对象和初始化函数*/
+	CREATE_FUNC(Box);
+	virtual bool init();
+
+	void destroyed();  //被打碎，掉落buff
 };
 
 #endif// !__BOX_H_

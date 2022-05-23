@@ -14,6 +14,13 @@ void Entity::bindSprite(Sprite* sprite)
 	addChild(_sprite);
 }
 
+/*∞Û∂®—™Ãı*/
+void Entity::bindHpBar(Sprite* hpBar)
+{
+	_hpBar = hpBar;
+	addChild(_hpBar);
+}
+
 /*≥– ‹…À∫¶*/
 void Entity::takeDamage(INT32 damage)
 {

@@ -17,8 +17,13 @@ public:
 	CREATE_FUNC(Brawler);
 	virtual bool init();
 
+	/*继承自Entity的函数*/
+	void move();  //移动
+	void die();  //死亡
+
+	/*Brawler特有函数*/
 	void takeBuff();               //获得buff，增加属性
-	virtual void castAbility() {}  //释放大招
+	
 };
 
 #endif// !__BRAWLER_H_

@@ -6,6 +6,19 @@ bool Brawler::init()
 	return true;
 }
 
+/*移动*/
+void Brawler::move()
+{
+
+}
+
+/*死亡*/
+void Brawler::die()
+{
+
+
+}
+
 /*获得buff，增加属性*/
 void Brawler::takeBuff()
 {
