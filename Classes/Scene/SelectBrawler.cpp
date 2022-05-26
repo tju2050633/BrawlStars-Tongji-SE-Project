@@ -53,7 +53,7 @@ void SelectBrawler::initMenu()
 	/*菜单所有按钮统一处理，必须用用cocos::Vector*/
 	Vector<MenuItem*> MenuItemVector;
 	//文件名所用的字符串
-	vector<string> stringVector = { "Shelly", "Primo", "Nita", "Stu", "Back" };
+	vector<string> stringVector = { "Shelly", "Shelly", "Nita", "Nita", "Back" };
 	//按钮回调函数
 	vector<void (SelectBrawler::*)(Ref* pSender)> CallbackVector = {
 		&SelectBrawler::menuShellyCallback,
@@ -62,7 +62,7 @@ void SelectBrawler::initMenu()
 		&SelectBrawler::menuStuCallback,
 		&SelectBrawler::menuBackCallback };
 	//按钮尺寸
-	vector<float> ScaleVector = { 1, 1, 1, 1, 1 };
+	vector<float> ScaleVector = { 0.4, 0.4, 0.4, 0.4, 1 };
 	//按钮锚点
 	vector<Vec2> AnchorVector = {
 		Vec2(0.5, 0.5), Vec2(0.5, 0.5),
@@ -79,8 +79,8 @@ void SelectBrawler::initMenu()
 	for (ssize_t i = 0; i < stringVector.size(); i++)
 	{
 		MenuItemImage* button = MenuItemImage::create(
-			StringUtils::format("button/%s-Normal.png", stringVector.at(i)),
-			StringUtils::format("button/%s-Active.png", stringVector.at(i)),
+			"Portrait/" + stringVector.at(i) + "-Normal.png",
+			"Portrait/" + stringVector.at(i) + "-Active.png",
 			bind(CallbackVector.at(i), this, std::placeholders::_1));
 		if (button == nullptr || button->getContentSize().width <= 0 || button->getContentSize().height <= 0)
 			SceneUtils::problemLoading(stringVector.at(i).c_str());
@@ -103,33 +103,33 @@ void SelectBrawler::initMenu()
 void SelectBrawler::menuShellyCallback(cocos2d::Ref* pSender)
 {
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Shelly;
-	SceneUtils::changeScene(SceneUtils::GameScene);
+	SceneUtils::changeScene(SceneUtils::AllScenes::GameScene);
 }
 
 /*选择英雄 普里莫回调函数 √*/
 void SelectBrawler::menuPrimoCallback(cocos2d::Ref* pSender)
 {
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Primo;
-	SceneUtils::changeScene(SceneUtils::GameScene);
+	SceneUtils::changeScene(SceneUtils::AllScenes::GameScene);
 }
 
 /*选择英雄 妮塔回调函数 √*/
 void SelectBrawler::menuNitaCallback(cocos2d::Ref* pSender)
 {
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Nita;
-	SceneUtils::changeScene(SceneUtils::GameScene);
+	SceneUtils::changeScene(SceneUtils::AllScenes::GameScene);
 }
 
 /*选择英雄 斯图回调函数 √*/
 void SelectBrawler::menuStuCallback(cocos2d::Ref* pSender)
 {
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Stu;
-	SceneUtils::changeScene(SceneUtils::GameScene);
+	SceneUtils::changeScene(SceneUtils::AllScenes::GameScene);
 }
 
 /*菜单 返回回调函数 √*/
 //场景从SelectBrawler切换至SelectMap
 void SelectBrawler::menuBackCallback(cocos2d::Ref* pSender)
 {
-	SceneUtils::changeScene(SceneUtils::SelectMap);
+	SceneUtils::changeScene(SceneUtils::AllScenes::SelectMap);
 }

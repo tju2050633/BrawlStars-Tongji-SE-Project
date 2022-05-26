@@ -66,6 +66,33 @@ void SceneUtils::changeScene(AllScenes targetScene)
 	}
 }
 
+/*增添层*/
+void SceneUtils::addLayer(AllLayers targetLayer, Scene* currentScene)
+{
+	Layer* layer = nullptr;
+
+	/*新建层*/
+	switch (targetLayer)
+	{
+	case Settings:
+		layer = Settings::create();
+	case Instruction:
+		layer = Instruction::create();
+	default:
+		break;
+	}
+
+	/*新建失败*/
+	if (!layer)
+	{
+		return;
+	}
+
+	/*新建成功，当前场景添加层*/
+	currentScene->addChild(layer);
+	
+}
+
 /*放置背景图，所有场景类共用*/
 void SceneUtils::setBGimage(const char* filename, Layer* layer)
 {

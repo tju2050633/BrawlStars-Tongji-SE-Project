@@ -79,8 +79,8 @@ void GameMenu::initMenu()
 	for (int i = 0; i < stringVector.size(); i++)
 	{
 		MenuItem* button = MenuItemImage::create(
-			StringUtils::format("button/%s-Normal.png", stringVector.at(i)),
-			StringUtils::format("button/%s-Active.png", stringVector.at(i)),
+			"button/" + stringVector.at(i) + "-Normal.png",
+			"button/" + stringVector.at(i) + "-Active.png",
 			bind(CallbackVector.at(i), this, std::placeholders::_1));
 		if (button == nullptr || button->getContentSize().width <= 0 || button->getContentSize().height <= 0)
 			SceneUtils::problemLoading(stringVector.at(i).c_str());
@@ -102,7 +102,7 @@ void GameMenu::initMenu()
 /*菜单 单人模式回调函数 切换至SelectMap*/
 void GameMenu::menuSinglePlayerCallback(cocos2d::Ref* pSender)
 {
-	SceneUtils::changeScene(SceneUtils::SelectMap);
+	SceneUtils::changeScene(SceneUtils::AllScenes::SelectMap);
 }
 
 /*菜单 多人模式回调函数 */
@@ -114,13 +114,13 @@ void GameMenu::menuMultiPlayerCallback(cocos2d::Ref* pSender)
 /*菜单 设置回调函数 切换至Settings*/
 void GameMenu::menuSettingsCallback(cocos2d::Ref* pSender)
 {
-	addChild(Settings::create());
+	SceneUtils::addLayer(SceneUtils::AllLayers::Settings, dynamic_cast<Scene*>(this->getParent()));
 }
 
 /*菜单 游戏说明回调函数 切换至Instruction*/
 void GameMenu::menuInstructionCallback(cocos2d::Ref* pSender)
 {
-	addChild(Instruction::create());
+	SceneUtils::addLayer(SceneUtils::AllLayers::Instruction, dynamic_cast<Scene*>(this->getParent()));
 }
 
 /*菜单 退出游戏回调函数 √*/

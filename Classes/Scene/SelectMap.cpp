@@ -35,7 +35,7 @@ bool SelectMap::init()
 	initMenu();
 
 	/*背景*/
-	SceneUtils::setBGimage("BGimage/SelectMap", this);
+	SceneUtils::setBGimage("BGimage/SelectMap.png", this);
 
 	return true;
 }
@@ -56,7 +56,7 @@ void SelectMap::initMenu()
 		&SelectMap::menuMapACallback, &SelectMap::menuMapBCallback,
 		&SelectMap::menuMapCCallback, &SelectMap::menuBackCallback };
 	//按钮尺寸
-	vector<float> ScaleVector = { 0.2, 0.15, 0.1, 1 };
+	vector<float> ScaleVector = { 0.75, 0.75, 0.75, 1 };
 	//按钮锚点
 	vector<Vec2> AnchorVector = {
 		Vec2(0.5, 0.5),
@@ -73,8 +73,8 @@ void SelectMap::initMenu()
 	for (int i = 0; i < stringVector.size(); i++)
 	{
 		MenuItemImage* button = MenuItemImage::create(
-			StringUtils::format("button/%s-Normal.png", stringVector.at(i)),
-			StringUtils::format("button/%s-Active.png", stringVector.at(i)),
+			"MapBanner/" + stringVector.at(i) + "-Normal.png",
+			"MapBanner/" + stringVector.at(i) + "-Active.png",
 			bind(CallbackVector.at(i), this, std::placeholders::_1));
 		if (button == nullptr || button->getContentSize().width <= 0 || button->getContentSize().height <= 0)
 			SceneUtils::problemLoading(stringVector.at(i).c_str());
@@ -97,26 +97,26 @@ void SelectMap::initMenu()
 void SelectMap::menuMapACallback(cocos2d::Ref* pSender)
 {
 	SceneUtils::_map = SceneUtils::AllMap::MapA;
-	SceneUtils::changeScene(SceneUtils::SelectBrawler);
+	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }
 
 /*选择地图 地图B回调函数 √*/
 void SelectMap::menuMapBCallback(cocos2d::Ref* pSender)
 {
 	SceneUtils::_map = SceneUtils::AllMap::MapB;
-	SceneUtils::changeScene(SceneUtils::SelectBrawler);
+	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }
 
 /*选择地图 地图C回调函数 √*/
 void SelectMap::menuMapCCallback(cocos2d::Ref* pSender)
 {
 	SceneUtils::_map = SceneUtils::AllMap::MapC;
-	SceneUtils::changeScene(SceneUtils::SelectBrawler);
+	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }
 
 /*选择地图 返回回调函数 √*/
 //场景从SelectMap切换至GameMenu
 void SelectMap::menuBackCallback(cocos2d::Ref* pSender)
 {
-	SceneUtils::changeScene(SceneUtils::GameMenu);
+	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 }

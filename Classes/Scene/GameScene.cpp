@@ -94,8 +94,8 @@ void GameScene::initButton()
 	for (int i = 0; i < stringVector.size(); i++)
 	{
 		MenuItem* button = MenuItemImage::create(
-			StringUtils::format("button/%s-Normal.png", stringVector.at(i)),
-			StringUtils::format("button/%s-Active.png", stringVector.at(i)),
+			"button/" + stringVector.at(i) + "-Normal.png",
+			"button/" + stringVector.at(i) + "-Active.png",
 			bind(CallbackVector.at(i), this, std::placeholders::_1));
 		if (button == nullptr || button->getContentSize().width <= 0 || button->getContentSize().height <= 0)
 			SceneUtils::problemLoading(stringVector.at(i).c_str());
@@ -127,5 +127,5 @@ void GameScene::menuEmotionCallback(cocos2d::Ref* pSender)
 /*菜单 返回回调函数 √*/
 void GameScene::menuBackCallback(cocos2d::Ref* pSender)
 {
-	SceneUtils::changeScene(SceneUtils::GameMenu);
+	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 }

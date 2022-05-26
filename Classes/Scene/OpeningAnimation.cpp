@@ -95,5 +95,5 @@ void OpeningAnimation::PreloadResource()
 /*«–ªªµΩ”Œœ∑≤Àµ•*/
 void OpeningAnimation::EnterMenu(float dt)
 {
-	SceneUtils::changeScene(SceneUtils::GameMenu);
+	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 }
