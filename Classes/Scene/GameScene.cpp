@@ -3,6 +3,13 @@
 #include <string>
 #include "Scene/GameScene.h"
 #include "Utils/SceneUtils.h"
+#include "Player/Player.h"
+#include "Player/AI.h"
+#include "Brawler/Shelly.h"
+#include "Brawler/Nita.h"
+#include "Brawler/Primo.h"
+#include "Brawler/Stu.h"
+#include "Controller/PlayerController.h"
 
 USING_NS_CC;
 using namespace std;
@@ -38,7 +45,7 @@ bool GameScene::init()
 	initBrawler();
 	initLabel();
 	initButton();
-	initControler();
+	initController();
 
 	return true;
 }
@@ -46,11 +53,27 @@ bool GameScene::init()
 /*初始化 地图*/
 void GameScene::initMap()
 {
+	TMXTiledMap* map = TMXTiledMap::create("TileGameResources/TileMap.tmx");
+
+	this->addChild(map);
 }
 
 /*初始化 人物*/
 void GameScene::initBrawler()
 {
+	/*创建Player*/
+	_player = Player::create();
+	/*绑定英雄*/
+	_player->setBrawler(Shelly::create());
+	_player->addChild(_player->getBrawler());
+	/*英雄绑定精灵图像*/
+	_player->getBrawler()->bindSprite(Sprite::create("Portrait/Shelly.png"));
+	_player->getBrawler()->setScale(0.1);
+	/*设置初始位置*/
+	_player->setPosition(Vec2(100, 100));
+
+
+	this->addChild(_player);
 }
 
 /*初始化 标签*/
@@ -60,11 +83,11 @@ void GameScene::initLabel()
 	auto visibleSize = Director::getInstance()->getVisibleSize(); //得到屏幕大小
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();	  //获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
 
-	auto label = Label::createWithTTF(StringUtils::format("剩余英雄：%d", SceneUtils::_brawlerNumber), "fonts/Marker Felt.ttf", 24);
+	auto label = Label::createWithTTF(StringUtils::format("Brawler Left: %d", SceneUtils::_brawlerNumber).c_str(), "fonts/Marker Felt.ttf", 24);
 	label->setAnchorPoint(Vec2(1, 1));
 	label->setPosition(Vec2(visibleSize.width + origin.x, visibleSize.height + origin.y));
 
-	this->addChild(label, 10);
+	this->addChild(label);
 }
 
 /*初始化 按钮*/
@@ -115,8 +138,15 @@ void GameScene::initButton()
 }
 
 /*初始化 操作器*/
-void GameScene::initControler()
+void GameScene::initController()
 {
+	/*创建控制器*/
+	_playerController = PlayerController::create();
+	/*绑定玩家为操作器的对象*/
+	_playerController->setControllerListener(_player);	
+
+
+	this->addChild(_playerController);
 }
 
 /*表情 回调函数*/

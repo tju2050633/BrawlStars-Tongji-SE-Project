@@ -2,30 +2,29 @@
 #define __GAME_SCENE_H_
 
 #include "cocos2d.h"
+#include "Player/Player.h"
+#include "Controller/PlayerController.h"
 
 USING_NS_CC;
 
 class GameScene : public Layer
 {
 private:
+	Player* _player;
+	PlayerController* _playerController;
+
 	/*初始化 地图*/
 	void initMap();
-
 	/*初始化 人物*/
 	void initBrawler();
-
 	/*初始化 标签*/
 	void initLabel();
-
 	/*初始化 按钮*/
 	void initButton();
-
 	/*初始化 操作器*/
-	void initControler();
-
+	void initController();
 	/*表情 回调函数*/
 	void menuEmotionCallback(Ref *pSender);
-
 	/*返回 回调函数*/
 	void menuBackCallback(Ref *pSender);
 

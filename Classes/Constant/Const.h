@@ -5,7 +5,7 @@
 
 const int SHELLY_HP = 1000;		//血量HealthPoint
 const int SHELLY_AD = 100;		//攻击力AttackDamage
-const int SHELLY_MS = 5;		//移速MoveSpeed
+const int SHELLY_MS = 50;		//移速MoveSpeed
 const int SHELLY_AI = 1;		//攻击间隔AttackInterval
 const int SHELLY_EB = 1000;		//能量条EnergeBar
 

@@ -12,6 +12,11 @@ void Entity::bindSprite(Sprite* sprite)
 {
 	_sprite = sprite;
 	addChild(_sprite);
+
+	/*调整精灵和实体碰撞体积位置*/
+	Size size = _sprite->getContentSize();
+	_sprite->setPosition(Vec2(size.width * 0.5f, size.height * 0.5f));
+	this->setContentSize(size);
 }
 
 /*绑定血条*/

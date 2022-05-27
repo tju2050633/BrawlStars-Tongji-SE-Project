@@ -8,8 +8,7 @@ USING_NS_CC;
 
 class Brawler : public Entity {
 	/*属性*/
-	CC_SYNTHESIZE(INT32, _bulletNum, BulletNum);//子弹数量
-	CC_SYNTHESIZE(float, _reloadTime, ReloadTime);//子弹装填时间
+	CC_SYNTHESIZE(INT32, _ammo, Ammo);//弹药
 	CC_SYNTHESIZE(INT32, _energyBar, EnergyBar);//充能条（释放大招用）
 
 public:
