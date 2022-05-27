@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="left-down" width="50" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="2">
+ <tileset firstgid="1" name="meta_tiles" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="2" columns="2">
+  <image source="meta_tiles.png" width="67" height="34"/>
+ </tileset>
+ <tileset firstgid="3" name="tmw_desert_spacing" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="48" columns="8">
+  <image source="tmw_desert_spacing.png" width="265" height="199"/>
+ </tileset>
+ <layer id="1" name="Background" width="50" height="40">
+  <data encoding="base64" compression="zlib">
+   eJzt2dENwjAMRdGs0A2aDRiho2W0jMZPiyyrSdO8GDuRP64KRYAPVpEQWwhhA4qdz/uA7ytRr0WifdL4Z6k9D+pYZR/usJE7bOUOW7lDvHTmjglTdqTC7ddFfQcN2gf9LaPsSOT8a4fy9VGyzOYYkjt+HaS7862vk88COf57H3zmko3PXbuv4bhm54YnB7SDO8f13Yu8VsHUug8o4eu85hhqAhytMyI1+4w6MjtKOkxFDdHAPCMcq+zDHfq5w1busNWqjhmKlccs/v/b0xfQSADE
+  </data>
+ </layer>
+ <layer id="5" name="Wall" width="50" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztmF1OwzAMxyPBnoAn2NO2F6YOTesoR8jRehSOkqNha0TyrCR2mjR0Yn/JL2vr+DfHzocxdy1RG7DtjdkuwLEHO4D1N2IfYF2EI/T7UhWLtybHeyU/KaU4Po08/1Cvxnw/gJXEwesxNlZIR5PmoPURm3+oN2B4LOQ4Kcfy4txD5BvOh+OcIz7XwLAq5DgKY/G5Sbmn1HmLuT5FLeq8he4cYYX2AaneA8/GLTPwMUrj8B4pcRwDz1Bfkfixb/B9QKw/mMuzsScG346Dgof3SA1HjIW/7+NPxS3pTHjA5xgbm/fIUg6ah5r11Cnz4lVaH5o8TOnVPC+aOEo55uxrXSOO1DpPBb3FPDJbKb7DvJwacGj1BPbM7KWSb+ydc3CE6mHpHJBzC7m30nuwbmHPv7J1IB4u8O1gDCf5z+Xg/zW8ZzsFx1SBb7efgSPwnoXeaHtlXrTCPIBPd2jEAWuUhbXKDpXzgnkAnw58u00DDvL+VV40e5mQtHkIzO8qHDQvnqdXzDcfd0/iz8lDLkeol6R4qO0SHLvfmKnlxB+LV/p9qWrFAWuFy9mP5CqHw+/R8XyXW8erC4cLrX+SNka+z8rh8HctuC/Unq9KpD3bYO/6q/rQnEnoHdVZ+Oa/1Lk/N2hqUzOPqWre6Ukcfp+KtSnVA/U1970jX89y7tslGyZ8U8tivYDfA9+Cldw33TWvfgBPe4Js
+  </data>
+ </layer>
+ <layer id="4" name="Grass" width="50" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztl1kKgDAMRHOc4v0PKIIfUgTTbE3iPMhnO31dDBIBAKpzPCoD465VPD1W5x4EDwncHK2Hp9Mgv32b547MkozNgNTDc287kKlnaICHPpNb0XBy5/VldFn1yHwmX3DXB48Y9z97ZKTrO6/qcdHBAQAOEf+eEVh7SN62Re7b2J0e0mztHbL41ma401a9YrdHRbr16C4eAHTjBNc0JQk=
+  </data>
+ </layer>
+ <objectgroup id="3" name="Objects">
+  <object id="1" name="SpawnPoint" x="843.75" y="518.295" width="6.5" height="5"/>
+ </objectgroup>
+ <layer id="2" name="Meta" width="50" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztVUEOgDAIm///tHczlJbCptKEg8lWKKN4jDGOjo4OV7wFFToq+qF4H4XmSA9Vc7ZCB1t3hY47vtl3pP+7er/31V5Q60B52LyWf5kd5amH1eG9h+hA+hOdR3bXR3Vk+Snax4x3UPgMPR/1mxq76VjFnz3vSn7FnrJ4vbkUUO5bNtf1jJrfuj/L/SWf/+H/waBaxx0PAy+HNd8ZOrz1VOb3cqp0oFD1YzWqdGT3B9ERqUVxF+FHdGTPHZJrlT/YfwJy9os+RzQxO18FRId3RtU1WrlmuTs6Op7jBJWxA4s=
+  </data>
+ </layer>
+</map>
