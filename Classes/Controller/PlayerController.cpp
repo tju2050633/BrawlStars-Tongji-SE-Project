@@ -6,7 +6,6 @@ bool PlayerController::init()
 	initKeyboardListener();
 	initMouseListener();
 
-	this->scheduleUpdate();
 	return true;
 }
 
@@ -114,14 +113,7 @@ void PlayerController::onMouseUp(Event* event)
 
 	auto mouseKey = e->getMouseButton();
 	if(mouseKey == EventMouse::MouseButton::BUTTON_LEFT)
-		_controllerListener->setTargetPostion(cursorPosition);
+		_controllerListener->setTargetPosition(cursorPosition);
 	else if(mouseKey == EventMouse::MouseButton::BUTTON_RIGHT)
-		_controllerListener->setTargetPostion(cursorPosition + Vec2(100, 100));
-}
-
-void PlayerController::update(float dt)
-{
-	/*每帧更新目标位置，即当前位置+速度*每帧时间产生的移动量*/
-	_controllerListener->setTargetPostion(_controllerListener->getTargetPostion() +
-		Vec2(_controllerListener->getTargetMoveSpeedY() * dt, _controllerListener->getTargetMoveSpeedX() * dt));
+		_controllerListener->setTargetPosition(cursorPosition + Vec2(100, 100));
 }

@@ -12,7 +12,6 @@ Scene* BattleScene::createScene()
 	return scene;
 }
 
-
 /* 初始化场景 */
 bool BattleScene::init()
 {
@@ -22,9 +21,17 @@ bool BattleScene::init()
 		return false;
 	}
 
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	initMap();
+	initPlayer();
+	initKeyboardListener();
 
+	this->scheduleUpdate();
+
+	return true;
+}
+
+void BattleScene::initMap()
+{
 	/* 添加地图 */
 	_tileMap = TMXTiledMap::create("TileGameResources/TileMap.tmx");
 	_background = _tileMap->getLayer("Background");
@@ -41,19 +48,15 @@ bool BattleScene::init()
 	_grass = _tileMap->getLayer("Grass");
 
 	/* 获取地图中对象层 */
-	TMXObjectGroup* objectGroup = _tileMap->getObjectGroup("Objects");
+	_objectGroup = _tileMap->getObjectGroup("Objects");
+}
 
-	if (!objectGroup)
-	{
-		log("tile map has no objects object layer");
-		return  false;
-	}
-
+void BattleScene::initPlayer()
+{
 	/* 获取对象层对象出生点即其坐标 */
-	auto spawnPoint = objectGroup->getObject("SpawnPoint"); //出生点
+	auto spawnPoint = _objectGroup->getObject("SpawnPoint"); //出生点
 	float x = spawnPoint["x"].asFloat();
 	float y = spawnPoint["y"].asFloat();
-
 	/*******************************************
 			   创建玩家后需替换
 	********************************************/
@@ -64,10 +67,69 @@ bool BattleScene::init()
 	this->addChild(_player);
 	this->setViewPointCenter(_player->getPosition());
 	this->playerMove();
-
-	return true;
 }
 
+void BattleScene::update(float dt)
+{
+	/*每帧更新目标位置，即当前位置+速度*每帧时间产生的移动量*/
+	_player->setPosition(_player->getPosition() + Vec2(_moveSpeedX * dt, _moveSpeedY * dt));
+
+}
+
+/*初始化键盘监听器*/
+void BattleScene::initKeyboardListener()
+{
+	_keyboardListener = EventListenerKeyboard::create();
+	_keyboardListener->onKeyPressed = CC_CALLBACK_2(BattleScene::onKeyPressed, this);
+	_keyboardListener->onKeyReleased = CC_CALLBACK_2(BattleScene::onKeyReleased, this);
+
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(_keyboardListener, this);
+}
+
+/*键盘监听回调函数*/
+void BattleScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
+{
+	/*按下键盘监听，WASD（及对应大写情况）分别设置对象速度*/
+	switch (keyCode)
+	{
+	case cocos2d::EventKeyboard::KeyCode::KEY_W:
+		_moveSpeedY = 50;
+		break;
+	case cocos2d::EventKeyboard::KeyCode::KEY_A:
+		_moveSpeedX = -50;
+		break;
+	case cocos2d::EventKeyboard::KeyCode::KEY_S:
+		_moveSpeedY = -50;
+		break;
+	case cocos2d::EventKeyboard::KeyCode::KEY_D:
+		_moveSpeedX = 50;
+		break;
+	default:
+		break;
+	}
+}
+
+void BattleScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
+{
+	/*松开键盘监听，WASD（及对应大写情况）分别设置对应速度为0*/
+	switch (keyCode)
+	{
+	case cocos2d::EventKeyboard::KeyCode::KEY_W:
+		_moveSpeedY = 0;
+		break;
+	case cocos2d::EventKeyboard::KeyCode::KEY_A:
+		_moveSpeedX = 0;
+		break;
+	case cocos2d::EventKeyboard::KeyCode::KEY_S:
+		_moveSpeedY = 0;
+		break;
+	case cocos2d::EventKeyboard::KeyCode::KEY_D:
+		_moveSpeedX = 0;
+		break;
+	default:
+		break;
+	}
+}
 
 /* 设置窗口镜头位置 */
 void BattleScene::setViewPointCenter(Point position)

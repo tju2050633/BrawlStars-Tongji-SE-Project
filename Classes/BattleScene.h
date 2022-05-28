@@ -21,6 +21,23 @@ public:
 	void setGrassOpacity(Point position); //设置草丛透明度
 	void breakWall(Point position); //墙壁被大招摧毁
 
+	/************************************************************************************/
+	void initMap();
+	void initPlayer();
+	void initKeyboardListener();
+
+	/*键盘监听器*/
+	CC_SYNTHESIZE(EventListenerKeyboard*, _keyboardListener, KeyboardListener);
+	/*键盘监听回调函数*/
+	void onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event);
+	void onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event);
+
+	void update(float dt) override;
+
+	int _moveSpeedX;
+	int _moveSpeedY;
+	/************************************************************************************/
+
 private:
 	TMXTiledMap* _tileMap; //战斗地图.tmx格式
 	TMXLayer* _background; //背景层
@@ -30,6 +47,8 @@ private:
 	TMXLayer* _meta; //属性图层
 	TMXLayer* _grass; //草丛图层
 	Sprite* _grassCell; //草丛单元格
+
+	TMXObjectGroup* _objectGroup;/* 地图中对象层 */
 };
 
 

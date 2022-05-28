@@ -17,35 +17,18 @@ public:
 	CREATE_FUNC(Player);
 	virtual bool init();
 
-	/*实现ControllerListener接口*/
-	void setTargetPostion(Vec2 position)
-	{
-		setPosition(position);
-	}
-	Vec2 getTargetPostion()
-	{
-		return getPosition();
-	}
-	void setTargetMoveSpeedX(int speedX)
-	{
-		setMoveSpeedX(speedX);
-	}
-	void setTargetMoveSpeedY(int speedY)
-	{
-		setMoveSpeedY(speedY);
-	}
-	INT32 getTargetMoveSpeedY()
-	{
-		return _moveSpeedX;
-	}
-	INT32 getTargetMoveSpeedX()
-	{
-		return _moveSpeedY;
-	}
-	Brawler* getTargetBrawler()
-	{
-		return _brawler;
-	}
+	/*实现继承自ControllerListener的纯虚函数*/
+
+	/*设置、获取位置*/
+	virtual void setTargetPosition(Vec2 position);
+	virtual Vec2 getTargetPosition();
+	/*设置和获取目标当前速度（不是英雄固有移速属性）*/
+	virtual void setTargetMoveSpeedX(int speedX);
+	virtual void setTargetMoveSpeedY(int speedY);
+	virtual INT32 getTargetMoveSpeedX();
+	virtual INT32 getTargetMoveSpeedY();
+	/*获取英雄*/
+	virtual Brawler* getTargetBrawler();
 };
 
 #endif // !__PLAYER_H_

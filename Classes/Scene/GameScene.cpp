@@ -25,7 +25,7 @@ Scene* GameScene::createScene()
 	return scene;
 }
 
-/*游戏主场景初始化 ×*/
+/*游戏主场景初始化*/
 bool GameScene::init()
 {
 	/*初始化父类*/
@@ -47,15 +47,43 @@ bool GameScene::init()
 	initButton();
 	initController();
 
+	//临时用follow实现镜头跟随！
+	auto follow = Follow::create(_player);
+	this->runAction(follow);
+
+	this->scheduleUpdate();
+
 	return true;
+}
+
+/*每帧刷新*/
+void GameScene::update(float dt)
+{
+	/*每帧更新目标位置，即当前位置+速度*每帧时间产生的移动量*/
+	setPlayerPosition(_player->getTargetPosition() +
+		Vec2(_player->getTargetMoveSpeedY() * dt, _player->getTargetMoveSpeedX() * dt));
 }
 
 /*初始化 地图*/
 void GameScene::initMap()
 {
-	TMXTiledMap* map = TMXTiledMap::create("TileGameResources/TileMap.tmx");
+	/* 添加地图 */
+	_map = TMXTiledMap::create("TileGameResources/TileMap.tmx");
+	_background = _map->getLayer("Background");
+	this->addChild(_map);
 
-	this->addChild(map);
+	/* 添加墙壁图层 */
+	_wall = _map->getLayer("Wall");
+
+	/* 添加属性图层并不可见化 */
+	_meta = _map->getLayer("Meta");
+	_meta->setVisible(false);
+
+	/* 添加草丛图层 */
+	_grass = _map->getLayer("Grass");
+
+	/* 获取地图中对象层 */
+	_objectGroup = _map->getObjectGroup("Objects");
 }
 
 /*初始化 人物*/
@@ -68,10 +96,15 @@ void GameScene::initBrawler()
 	_player->addChild(_player->getBrawler());
 	/*英雄绑定精灵图像*/
 	_player->getBrawler()->bindSprite(Sprite::create("Portrait/Shelly.png"));
-	_player->getBrawler()->setScale(0.1);
-	/*设置初始位置*/
-	_player->setPosition(Vec2(100, 100));
+	_player->setScale(0.1);
 
+	/*将玩家放置在出生点*/
+	auto spawnPoint = _objectGroup->getObject("SpawnPoint"); //出生点
+	float x = spawnPoint["x"].asFloat();
+	float y = spawnPoint["y"].asFloat();
+	_player->setPosition(Vec2(x, y));
+	/*镜头移到玩家所在处*/
+	setViewPointCenter(_player->getPosition());
 
 	this->addChild(_player);
 }
@@ -145,7 +178,6 @@ void GameScene::initController()
 	/*绑定玩家为操作器的对象*/
 	_playerController->setControllerListener(_player);	
 
-
 	this->addChild(_playerController);
 }
 
@@ -158,4 +190,98 @@ void GameScene::menuEmotionCallback(cocos2d::Ref* pSender)
 void GameScene::menuBackCallback(cocos2d::Ref* pSender)
 {
 	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
+}
+
+/* 设置窗口镜头位置 */
+void GameScene::setViewPointCenter(Point position)
+{
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	/* 防止玩家超出边界 */
+	int x = MAX(position.x, visibleSize.width / 2);
+	int y = MAX(position.y, visibleSize.height / 2);
+	x = MIN(x, (_map->getMapSize().width * _map->getTileSize().width) - visibleSize.width / 2);
+	y = MIN(y, (_map->getMapSize().height * _map->getTileSize().height) - visibleSize.height / 2);
+
+	Point actualPosition = Vec2(x, y);
+	Point centerOfView = Vec2(visibleSize.width / 2, visibleSize.height / 2);
+	Point viewPoint = Vec2(centerOfView.x - actualPosition.x, centerOfView.y - actualPosition.y);
+
+	this->setPosition(viewPoint);
+}
+
+/* 将坐标转化为tile坐标 */
+Point GameScene::tileCoordForPosition(Point position)
+{
+	//tilemap以左上角为坐标(0,0)
+	int x = position.x / _map->getTileSize().width;
+	int y = ((_map->getMapSize().height * _map->getTileSize().height) - position.y) / _map->getTileSize().height;
+
+	return Vec2(x, y);
+}
+
+/* 设置玩家位置，添加物理碰撞 */
+void GameScene::setPlayerPosition(Point position)
+{
+	Vec2 tileSize = _map->getTileSize(); //获得单个瓦片尺寸
+	Point pos = Vec2(position.x + 1.7 * tileSize.x, position.y + tileSize.y); //消除位置偏差
+
+	Point tileCoord = this->tileCoordForPosition(pos); //通过指定坐标对应tile坐标
+	if (_wall->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定墙壁单元格
+	{
+		return; //与墙体发生碰撞时不移动
+	}
+	_player->setPosition(position);
+}
+
+/* 设置草丛透明度 */
+void GameScene::setGrassOpacity(Point position)
+{
+	static vector<Point> vision = {}; //使用静态变量，便于移动位置后复原草丛
+
+	/* 使之前位置上可视的草丛恢复不透明状态 */
+	int i; //用于遍历vision容器
+	for (i = 0; i < vision.size(); i++)
+	{
+		Point tileCoord = this->tileCoordForPosition(vision[i]); //通过指定坐标对应tile坐标
+		if (_grass->getTileAt(tileCoord))
+		{
+			_grassCell = _grass->getTileAt(tileCoord); //通过tile坐标访问指定草丛单元格
+			_grassCell->setOpacity(255); //将指定草丛单元格设为不透明
+		}
+	}
+
+	Vec2 tileSize = _map->getTileSize(); //获得单个瓦片尺寸
+
+	Point pos = Vec2(position.x + 1.7 * tileSize.x, position.y + tileSize.y); //消除位置偏差
+	vision =
+	{
+		pos,
+		Vec2(pos.x + tileSize.x, pos.y),
+		Vec2(pos.x - tileSize.x, pos.y),
+		Vec2(pos.x, pos.y + tileSize.y),
+		Vec2(pos.x, pos.y - tileSize.y)
+	}; //玩家可视草丛范围（玩家位置即相邻四格）
+
+	/* 使玩家可视范围内的草丛变为半透明 */
+	for (i = 0; i < vision.size(); i++)
+	{
+		Point tileCoord = this->tileCoordForPosition(vision[i]); //通过指定坐标对应tile坐标
+		if (_grass->getTileAt(tileCoord))
+		{
+			_grassCell = _grass->getTileAt(tileCoord); //通过tile坐标指定草丛单元格
+			_grassCell->setOpacity(100); //将指定草丛单元格设为半透明
+		}
+	}
+}
+
+/* 墙壁被大招摧毁 */
+void GameScene::breakWall(Point position)
+{
+	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
+	if (_wall->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定墙壁单元格
+	{
+		_wall->removeTileAt(tileCoord); //移除该单元格，表示墙壁被炸毁
+	}
 }

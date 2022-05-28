@@ -32,9 +32,6 @@ public:
 	void initKeyboardListener();
 	/*³õÊ¼»¯Êó±ê¼àÌıÆ÷*/
 	void initMouseListener();
-
-	void update(float dt) override;
-
 };
 
 #endif // !__CONTROLLER_H_

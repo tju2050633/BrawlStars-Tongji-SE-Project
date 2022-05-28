@@ -1,6 +1,7 @@
 #include "AppDelegate.h"
 #include "Scene/OpeningAnimation.h"
 #include "Scene/GameMenu.h"
+#include "BattleScene.h"
 #include "Utils/SceneUtils.h"
 // #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1

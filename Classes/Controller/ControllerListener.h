@@ -10,9 +10,9 @@ USING_NS_CC;
 //控制器可以设置、获取目标位置、速度
 class ControllerListener {
 public:
-	/*设置和获取位置*/
-	virtual void setTargetPostion(Vec2 position) = 0;
-	virtual Vec2 getTargetPostion() = 0;
+	/*设置、获取位置*/
+	virtual void setTargetPosition(Vec2 position) = 0;
+	virtual Vec2 getTargetPosition() = 0;
 	/*设置和获取目标当前速度（不是英雄固有移速属性）*/
 	virtual void setTargetMoveSpeedX(int speedX) = 0;
 	virtual void setTargetMoveSpeedY(int speedY) = 0;
