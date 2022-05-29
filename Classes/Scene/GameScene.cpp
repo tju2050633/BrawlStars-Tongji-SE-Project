@@ -47,10 +47,6 @@ bool GameScene::init()
 	initButton();
 	initController();
 
-	//临时用follow实现镜头跟随！
-	auto follow = Follow::create(_player);
-	this->runAction(follow);
-
 	this->scheduleUpdate();
 
 	return true;
@@ -60,8 +56,11 @@ bool GameScene::init()
 void GameScene::update(float dt)
 {
 	/*每帧更新目标位置，即当前位置+速度*每帧时间产生的移动量*/
-	setPlayerPosition(_player->getTargetPosition() +
-		Vec2(_player->getTargetMoveSpeedY() * dt, _player->getTargetMoveSpeedX() * dt));
+	Vec2 playerPos = _player->getTargetPosition() +
+		Vec2(_player->getTargetMoveSpeedY() * dt, _player->getTargetMoveSpeedX() * dt);
+	setPlayerPosition(playerPos);//设置玩家位置
+	this->setGrassOpacity(_player->getPosition());//设置草丛透明度
+	this->setViewPointCenter(_player->getPosition());//设置镜头跟随
 }
 
 /*初始化 地图*/
@@ -95,7 +94,7 @@ void GameScene::initBrawler()
 	_player->setBrawler(Shelly::create());
 	_player->addChild(_player->getBrawler());
 	/*英雄绑定精灵图像*/
-	_player->getBrawler()->bindSprite(Sprite::create("Portrait/Shelly.png"));
+	_player->getBrawler()->bindSprite(Sprite::create("Portrait/Shelly-Normal.png"));
 	_player->setScale(0.1);
 
 	/*将玩家放置在出生点*/
@@ -225,8 +224,8 @@ Point GameScene::tileCoordForPosition(Point position)
 void GameScene::setPlayerPosition(Point position)
 {
 	Vec2 tileSize = _map->getTileSize(); //获得单个瓦片尺寸
-	Point pos = Vec2(position.x + 1.7 * tileSize.x, position.y + tileSize.y); //消除位置偏差
-
+	Point pos = Vec2(position.x + 2.5 * tileSize.x, position.y + 2.3 * tileSize.y); //消除位置偏差
+	
 	Point tileCoord = this->tileCoordForPosition(pos); //通过指定坐标对应tile坐标
 	if (_wall->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定墙壁单元格
 	{
