@@ -96,7 +96,7 @@ void SceneUtils::addLayer(AllLayers targetLayer, Scene* currentScene)
 	//currentScene->addChild(layer);
 }
 
-/*放置背景图，所有场景类共用*/
+/*放置背景图，所有场景类共用，自动适配整块屏幕大小*/
 void SceneUtils::setBGimage(const char* filename, Layer* layer)
 {
 	/*获取visibleSize和origin*/
