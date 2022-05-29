@@ -53,7 +53,7 @@ void SelectBrawler::initMenu()
 	/*菜单所有按钮统一处理，必须用用cocos::Vector*/
 	Vector<MenuItem*> MenuItemVector;
 	//文件名所用的字符串
-	vector<string> stringVector = { "Shelly", "Shelly", "Nita", "Nita", "Back" };
+	vector<string> stringVector = { "Shelly", "Primo", "Nita", "Stu", "Back" };
 	//按钮回调函数
 	vector<void (SelectBrawler::*)(Ref* pSender)> CallbackVector = {
 		&SelectBrawler::menuShellyCallback,

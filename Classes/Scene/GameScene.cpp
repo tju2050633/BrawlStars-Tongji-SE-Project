@@ -95,7 +95,7 @@ void GameScene::initBrawler()
 	_player->setBrawler(Shelly::create());
 	_player->addChild(_player->getBrawler());
 	/*英雄绑定精灵图像*/
-	_player->getBrawler()->bindSprite(Sprite::create("Portrait/Shelly.png"));
+	_player->getBrawler()->bindSprite(Sprite::create("Portrait/Shelly-Normal.png"));
 	_player->setScale(0.1);
 
 	/*将玩家放置在出生点*/
@@ -176,7 +176,7 @@ void GameScene::initController()
 	/*创建控制器*/
 	_playerController = PlayerController::create();
 	/*绑定玩家为操作器的对象*/
-	_playerController->setControllerListener(_player);	
+	_playerController->setControllerListener(_player);
 
 	this->addChild(_playerController);
 }
