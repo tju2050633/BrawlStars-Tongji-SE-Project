@@ -11,6 +11,9 @@ public:
 	/*创建对象和初始化函数*/
 	CREATE_FUNC(Shelly);
 	virtual bool init();
+
+	void attack(float angle);
+	void castAbility(float angle);
 };
 
 #endif // !__SHELLY_H_

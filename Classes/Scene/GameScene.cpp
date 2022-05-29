@@ -57,7 +57,7 @@ void GameScene::update(float dt)
 {
 	/*每帧更新目标位置，即当前位置+速度*每帧时间产生的移动量*/
 	Vec2 playerPos = _player->getTargetPosition() +
-		Vec2(_player->getTargetMoveSpeedY() * dt, _player->getTargetMoveSpeedX() * dt);
+		Vec2(_player->getTargetMoveSpeedX() * dt, _player->getTargetMoveSpeedY() * dt);
 	setPlayerPosition(playerPos);//设置玩家位置
 	this->setGrassOpacity(_player->getPosition());//设置草丛透明度
 	this->setViewPointCenter(_player->getPosition());//设置镜头跟随

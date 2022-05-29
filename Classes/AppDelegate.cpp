@@ -1,7 +1,6 @@
 #include "AppDelegate.h"
 #include "Scene/OpeningAnimation.h"
 #include "Scene/GameMenu.h"
-#include "BattleScene.h"
 #include "Utils/SceneUtils.h"
 // #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
@@ -101,7 +100,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	register_all_packages();
 
 	/*创建开场动画Scene，运行之*/
-	SceneUtils::changeScene(SceneUtils::OpeningAnimation);
+	SceneUtils::changeScene(SceneUtils::GameScene);
 
 	return true;
 }

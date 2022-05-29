@@ -3,19 +3,14 @@
 
 bool Brawler::init()
 {
+	_ammo = 3;
+	_energyBar = 0;
 	return true;
-}
-
-/*“∆∂Ø*/
-void Brawler::move()
-{
-
 }
 
 /*À¿Õˆ*/
 void Brawler::die()
 {
-
 
 }
 

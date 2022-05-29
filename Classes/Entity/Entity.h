@@ -26,8 +26,7 @@ public:
 	/*°ó¶¨ÑªÌõ*/
 	void bindHpBar(Sprite* hpBar);
 
-	virtual void attack() {}  //¹¥»÷
-	virtual void move() {}  //ÒÆ¶¯
+	virtual void attack(float angle) {}  //¹¥»÷
 	virtual void die() {}  //ËÀÍö
 	void takeDamage(INT32 damage);  //³ĞÊÜÉËº¦
 };

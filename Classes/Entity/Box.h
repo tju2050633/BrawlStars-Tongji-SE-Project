@@ -12,7 +12,7 @@ public:
 	CREATE_FUNC(Box);
 	virtual bool init();
 
-	void destroyed();  //被打碎，掉落buff
+	void die();  //被打碎，掉落buff
 };
 
 #endif// !__BOX_H_

@@ -26,11 +26,11 @@ void Player::setTargetMoveSpeedY(int speedY)
 {
 	setMoveSpeedY(speedY);
 }
-INT32 Player::getTargetMoveSpeedY()
+INT32 Player::getTargetMoveSpeedX()
 {
 	return _moveSpeedX;
 }
-INT32 Player::getTargetMoveSpeedX()
+INT32 Player::getTargetMoveSpeedY()
 {
 	return _moveSpeedY;
 }

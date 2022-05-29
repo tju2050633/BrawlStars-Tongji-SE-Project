@@ -14,7 +14,7 @@ bool Box::init()
 }
 
 /*±»´òËé£¬µôÂäbuff*/
-void Box::destroyed()
+void Box::die()
 {
 
 }
