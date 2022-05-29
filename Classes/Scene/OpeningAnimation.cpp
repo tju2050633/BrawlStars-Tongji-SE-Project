@@ -23,8 +23,8 @@ bool OpeningAnimation::init()
 		return false;
 	}
 
-	/*三秒后进入菜单界面*/
-	scheduleOnce(SEL_SCHEDULE(&OpeningAnimation::EnterMenu), 3.0f);
+	/*三秒后进入菜单界面*/    //改为2秒
+	scheduleOnce(SEL_SCHEDULE(&OpeningAnimation::EnterMenu), 2.0f);   // why 1s ？
 
 	/*声音*/
 	// auto audio = CocosDenshion::SimpleAudioEngine::getInstance();

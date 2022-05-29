@@ -44,6 +44,10 @@ void SceneUtils::changeScene(AllScenes targetScene)
 		case GameScene:
 			scene = GameScene::createScene();
 			break;
+		case Settings:
+			scene = Settings::createScene();
+		case Instruction:
+			scene = Instruction::createScene();
 		default:
 			break;
 	}
@@ -53,44 +57,43 @@ void SceneUtils::changeScene(AllScenes targetScene)
 	{
 		return;
 	}
-
 	/*新建成功，通过导演启动场景（初始场景）或切换场景*/
+	TransitionScene* pTransScene = TransitionCrossFade::create(1.0f, scene);
 	Director* director = Director::getInstance();
 	if (!director->getRunningScene())
 	{
-		director->runWithScene(scene);
+		director->runWithScene(pTransScene);
 	}
 	else
 	{
-		director->replaceScene(scene);
+		director->replaceScene(pTransScene);
 	}
 }
 
 /*增添层*/
 void SceneUtils::addLayer(AllLayers targetLayer, Scene* currentScene)
 {
-	Layer* layer = nullptr;
+	//Layer* layer = nullptr;
 
-	/*新建层*/
-	switch (targetLayer)
-	{
-	case Settings:
-		layer = Settings::create();
-	case Instruction:
-		layer = Instruction::create();
-	default:
-		break;
-	}
+	///*新建层*/
+	//switch (targetLayer)
+	//{
+	//	case Settings:
+	//		layer = Settings::create();
+	//	case Instruction:
+	//		layer = Instruction::create();
+	//	default:
+	//		break;
+	//}
 
-	/*新建失败*/
-	if (!layer)
-	{
-		return;
-	}
+	///*新建失败*/
+	//if (!layer)
+	//{
+	//	return;
+	//}
 
-	/*新建成功，当前场景添加层*/
-	currentScene->addChild(layer);
-	
+	///*新建成功，当前场景添加层*/
+	//currentScene->addChild(layer);
 }
 
 /*放置背景图，所有场景类共用*/

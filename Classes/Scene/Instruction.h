@@ -5,13 +5,18 @@
 
 USING_NS_CC;
 
-class Instruction : public Layer 
+class Instruction : public Layer
 {
+private:
+
+	/*返回 回调函数*/
+	void menuBackCallback(Ref* pSender);
+
 public:
 	/*创建场景和初始化*/
 	virtual bool init();
 
-	/*按键回调函数*/
+	static Scene* createScene();
 
 	/*自动生成create()的宏*/
 	CREATE_FUNC(Instruction);

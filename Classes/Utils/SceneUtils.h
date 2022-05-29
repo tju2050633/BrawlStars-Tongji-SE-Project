@@ -15,13 +15,13 @@ public:
 		GameMenu,
 		SelectMap,
 		SelectBrawler,
-		GameScene
+		GameScene,
+		Settings,
+		Instruction
 	};
 	/*枚举所有层*/
 	enum AllLayers
 	{
-		Settings,
-		Instruction
 	};
 	/*枚举所有地图*/
 	enum AllMap

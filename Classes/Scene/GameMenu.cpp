@@ -114,13 +114,13 @@ void GameMenu::menuMultiPlayerCallback(cocos2d::Ref* pSender)
 /*菜单 设置回调函数 切换至Settings*/
 void GameMenu::menuSettingsCallback(cocos2d::Ref* pSender)
 {
-	SceneUtils::addLayer(SceneUtils::AllLayers::Settings, dynamic_cast<Scene*>(this->getParent()));
+	SceneUtils::changeScene(SceneUtils::AllScenes::Settings);
 }
 
 /*菜单 游戏说明回调函数 切换至Instruction*/
 void GameMenu::menuInstructionCallback(cocos2d::Ref* pSender)
 {
-	SceneUtils::addLayer(SceneUtils::AllLayers::Instruction, dynamic_cast<Scene*>(this->getParent()));
+	SceneUtils::changeScene(SceneUtils::AllScenes::Instruction);
 }
 
 /*菜单 退出游戏回调函数 √*/
