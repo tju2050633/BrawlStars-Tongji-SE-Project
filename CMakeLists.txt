@@ -1,6 +1,7 @@
 #/****************************************************************************
+# Copyright (c) 2013-2014 cocos2d-x.org
 # Copyright (c) 2015-2017 Chukong Technologies Inc.
-
+#
 # http://www.cocos2d-x.org
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,20 +22,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 # ****************************************************************************/
-cmake_minimum_required(VERSION 3.1)
 
-set(APP_NAME cpp-empty-test)
+cmake_minimum_required(VERSION 3.6)
+
+set(APP_NAME BrawlStars)
 
 project(${APP_NAME})
 
-if(NOT DEFINED BUILD_ENGINE_DONE)
-    set(COCOS2DX_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+if(XCODE)
+    if(NOT DEFINED CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET)
+        SET (CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET 8.0)
+    endif()
+endif()
+
+if(NOT DEFINED BUILD_ENGINE_DONE) # to test BrawlStars into root project
+    set(COCOS2DX_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cocos2d)
     set(CMAKE_MODULE_PATH ${COCOS2DX_ROOT_PATH}/cmake/Modules/)
 
     include(CocosBuildSet)
-    if(NOT USE_COCOS_PREBUILT)
-        add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos ${ENGINE_BINARY_PATH}/cocos/core)
-    endif()
+    add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos ${ENGINE_BINARY_PATH}/cocos/core)
 endif()
 
 # record sources, headers, resources...
@@ -44,25 +50,79 @@ set(GAME_HEADER)
 set(GAME_RES_FOLDER
     "${CMAKE_CURRENT_SOURCE_DIR}/Resources"
     )
-if(APPLE OR VS)
-    cocos_mark_multi_resources(cc_common_res RES_TO "Resources" FOLDERS ${GAME_RES_FOLDER})
+if(APPLE OR WINDOWS)
+    cocos_mark_multi_resources(common_res_files RES_TO "Resources" FOLDERS ${GAME_RES_FOLDER})
 endif()
 
-list(APPEND GAME_HEADER
-     Classes/AppMacros.h
-     Classes/HelloWorldScene.h
-     Classes/AppDelegate.h
-     )
+# add cross-platforms source files and header files 
 list(APPEND GAME_SOURCE
      Classes/AppDelegate.cpp
-     Classes/HelloWorldScene.cpp
-     )
+  
+     Classes/Scene/OpeningAnimation.cpp
+     Classes/Scene/GameMenu.cpp
+     Classes/Scene/Settings.cpp
+     Classes/Scene/Instruction.cpp
+     Classes/Scene/GameScene.cpp	
+     Classes/Scene/SelectBrawler.cpp
+     Classes/Scene/SelectMap.cpp
+
+     Classes/Entity/Bear.cpp
+     Classes/Entity/Box.cpp
+     Classes/Entity/Brawler.cpp
+     Classes/Entity/Bullet.cpp
+     Classes/Entity/Entity.cpp
+
+     Classes/Controller/PlayerController.cpp
+     Classes/Brawler/Nita.cpp
+     Classes/Brawler/Primo.cpp
+     Classes/Brawler/Shelly.cpp
+     Classes/Brawler/Stu.cpp
+
+     Classes/Utils/AIUtils.cpp
+     Classes/Utils/AnimationUtils.cpp
+     Classes/Utils/SceneUtils.cpp
+
+     Classes/Player/AI.cpp
+     Classes/Player/Player.cpp
+    )
+list(APPEND GAME_HEADER
+     Classes/AppDelegate.h
+     Classes/Scene/OpeningAnimation.h
+     Classes/Scene/GameMenu.h
+     Classes/Scene/Settings.h
+     Classes/Scene/Instruction.h
+     Classes/Scene/GameScene.h
+     Classes/Scene/SelectBrawler.h
+     Classes/Scene/SelectMap.h
+
+     Classes/Entity/Bear.h
+     Classes/Entity/Box.h
+     Classes/Entity/Brawler.h
+     Classes/Entity/Bullet.h
+     Classes/Entity/Entity.h
+    
+     Classes/Brawler/Nita.h
+     Classes/Brawler/Primo.h
+     Classes/Brawler/Shelly.h
+     Classes/Brawler/Stu.h
+
+     Classes/Utils/AIUtils.h
+     Classes/Utils/AnimationUtils.h
+     Classes/Utils/SceneUtils.h
+
+     Classes/Constant/Const.h
+     Classes/Controller/ControllerListener.h
+     Classes/Controller/PlayerController.h
+
+     Classes/Player/AI.h
+     Classes/Player/Player.h
+    )
 
 if(ANDROID)
     # change APP_NAME to the share library name for Android, it's value depend on AndroidManifest.xml
-    set(APP_NAME cpp_empty_test)
+    set(APP_NAME MyGame)
     list(APPEND GAME_SOURCE
-         proj.android/app/jni/main.cpp
+         proj.android/app/jni/hellocpp/main.cpp
          )
 elseif(LINUX)
     list(APPEND GAME_SOURCE
@@ -71,72 +131,83 @@ elseif(LINUX)
 elseif(WINDOWS)
     list(APPEND GAME_HEADER
          proj.win32/main.h
+         proj.win32/resource.h
          )
     list(APPEND GAME_SOURCE
          proj.win32/main.cpp
-         ${cc_common_res}
+         proj.win32/game.rc
+         ${common_res_files}
          )
 elseif(APPLE)
     if(IOS)
         list(APPEND GAME_HEADER
-             proj.ios/AppController.h
-             proj.ios/RootViewController.h
+             proj.ios_mac/ios/AppController.h
+             proj.ios_mac/ios/RootViewController.h
              )
         set(APP_UI_RES
-            proj.ios/LaunchScreen.storyboard
-            proj.ios/LaunchScreenBackground.png
-            proj.ios/Images.xcassets
+            proj.ios_mac/ios/LaunchScreen.storyboard
+            proj.ios_mac/ios/LaunchScreenBackground.png
+            proj.ios_mac/ios/Images.xcassets
             )
         list(APPEND GAME_SOURCE
-             proj.ios/main.m
-             proj.ios/AppController.mm
-             proj.ios/RootViewController.mm
+             proj.ios_mac/ios/main.m
+             proj.ios_mac/ios/AppController.mm
+             proj.ios_mac/ios/RootViewController.mm
+             proj.ios_mac/ios/Prefix.pch
              ${APP_UI_RES}
              )
     elseif(MACOSX)
         set(APP_UI_RES
-            proj.mac/Icon.icns
-            proj.mac/Info.plist
-            proj.mac/en.lproj/MainMenu.xib
-            proj.mac/en.lproj/InfoPlist.strings
+            proj.ios_mac/mac/Icon.icns
+            proj.ios_mac/mac/Info.plist
             )
         list(APPEND GAME_SOURCE
-             proj.mac/main.cpp
+             proj.ios_mac/mac/main.cpp
+             proj.ios_mac/mac/Prefix.pch
              ${APP_UI_RES}
              )
     endif()
-    list(APPEND GAME_SOURCE ${cc_common_res})
+    list(APPEND GAME_SOURCE ${common_res_files})
 endif()
 
+# mark app complie info and libs info
 set(all_code_files
     ${GAME_HEADER}
     ${GAME_SOURCE}
     )
+if(NOT ANDROID)
+    add_executable(${APP_NAME} ${all_code_files})
+else()
+    add_library(${APP_NAME} SHARED ${all_code_files})
+    add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/platform/android ${ENGINE_BINARY_PATH}/cocos/platform)
+    target_link_libraries(${APP_NAME} -Wl,--whole-archive cpp_android_spec -Wl,--no-whole-archive)
+endif()
 
-include_directories(Classes)
-
-# mark app complie info and libs info
-cocos_build_app(${APP_NAME}
-                APP_SRC "${all_code_files}"
-                DEPEND_COMMON_LIBS "cocos2d"
-                DEPEND_ANDROID_LIBS "cocos2d_android"
-                )
+target_link_libraries(${APP_NAME} cocos2d)
+target_include_directories(${APP_NAME}
+        PRIVATE Classes
+        PRIVATE ${COCOS2DX_ROOT_PATH}/cocos/audio/include/
+)
 
 # mark app resources
+setup_cocos_app_config(${APP_NAME})
 if(APPLE)
     set_target_properties(${APP_NAME} PROPERTIES RESOURCE "${APP_UI_RES}")
+
     if(MACOSX)
-        set_target_properties(${APP_NAME} PROPERTIES
-                              MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/proj.mac/Info.plist"
-                              )
+        set_xcode_property(${APP_NAME} INFOPLIST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/proj.ios_mac/mac/Info.plist")
     elseif(IOS)
-        cocos_pak_xcode(${APP_NAME} INFO_PLIST "iOSBundleInfo.plist.in")
-        set_xcode_property(${APP_NAME} ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon-${APP_NAME}")
+        set_xcode_property(${APP_NAME} INFOPLIST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/proj.ios_mac/ios/Info.plist")
+        set_xcode_property(${APP_NAME} ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon")
     endif()
+
+    # For code-signing, set the DEVELOPMENT_TEAM:
+    #set_xcode_property(${APP_NAME} DEVELOPMENT_TEAM "GRLXXXX2K9")
 elseif(WINDOWS)
-    cocos_copy_target_dll(${APP_NAME} COPY_TO ${APP_BIN_DIR})
+    cocos_copy_target_dll(${APP_NAME})
 endif()
 
 if(LINUX OR WINDOWS)
-    cocos_copy_target_res(${APP_NAME} COPY_TO ${APP_RES_DIR} FOLDERS ${GAME_RES_FOLDER})
+    cocos_get_resource_path(APP_RES_DIR ${APP_NAME})
+    cocos_copy_target_res(${APP_NAME} LINK_TO ${APP_RES_DIR} FOLDERS ${GAME_RES_FOLDER})
 endif()
