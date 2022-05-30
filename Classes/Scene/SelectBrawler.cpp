@@ -38,7 +38,7 @@ bool SelectBrawler::init()
 	initMenu();
 
 	/*背景*/
-	SceneUtils::setBGimage("BGimage/SelectBrawler.png", this);
+	SceneUtils::setBGimage("SelectBrawler.png", this, 2);
 
 	return true;
 }
@@ -75,6 +75,7 @@ void SelectBrawler::initMenu()
 		Vec2(3 * visibleSize.width / 5 + origin.x, visibleSize.height / 3 + origin.y),
 		Vec2(4 * visibleSize.width / 5 + origin.x, visibleSize.height / 3 + origin.y),
 		Vec2(origin.x, visibleSize.height + origin.y) };
+
 	/*逐个创建按钮，分配信息，存入Vector*/
 	for (ssize_t i = 0; i < stringVector.size(); i++)
 	{

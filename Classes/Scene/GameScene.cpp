@@ -117,8 +117,11 @@ void GameScene::initLabel()
 
 	auto label = Label::createWithTTF(StringUtils::format("Brawler Left: %d", SceneUtils::_brawlerNumber).c_str(), "fonts/Marker Felt.ttf", 24);
 	label->setAnchorPoint(Vec2(1, 1));
-	label->setPosition(Vec2(visibleSize.width + origin.x, visibleSize.height + origin.y));
 
+	//visibleSize.width + origin.x, visibleSize.height + origin.y
+	Vec2 place = label->convertToWorldSpace(Vec2(visibleSize.width + origin.x, visibleSize.height + origin.y));
+	label->setPosition(place);
+	CCLOG("wordSpace--x : y = %f : %f ", place.x, place.y);
 	this->addChild(label);
 }
 
@@ -225,7 +228,7 @@ void GameScene::setPlayerPosition(Point position)
 {
 	Vec2 tileSize = _map->getTileSize(); //获得单个瓦片尺寸
 	Point pos = Vec2(position.x + 2.5 * tileSize.x, position.y + 2.3 * tileSize.y); //消除位置偏差
-	
+
 	Point tileCoord = this->tileCoordForPosition(pos); //通过指定坐标对应tile坐标
 	if (_wall->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定墙壁单元格
 	{

@@ -11,7 +11,8 @@ Entity::~Entity()
 void Entity::bindSprite(Sprite* sprite)
 {
 	_sprite = sprite;
-	addChild(_sprite);
+	addChild(_sprite)
+		;
 
 	/*调整精灵和实体碰撞体积位置*/
 	_sprite->setAnchorPoint(Vec2(0.5, 0.5));

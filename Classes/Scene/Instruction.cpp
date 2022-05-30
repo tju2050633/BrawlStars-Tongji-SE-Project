@@ -34,7 +34,7 @@ bool Instruction::init()
 
 	/*背景*/
 
-	SceneUtils::setBGimage("Instroction.png", this);
+	SceneUtils::setBGimage("BGimage/Instruction.png", this);
 
 	//菜单
 	Menu* menu = Menu::create();
@@ -43,8 +43,13 @@ bool Instruction::init()
 
 	//返回按钮
 
-	MenuItemImage* button = MenuItemImage::create("button/Back-Normal.png", "button/Back-Active.png",
-		CC_CALLBACK_1(Instruction::menuBackCallback, this));
+	MenuItemImage* button = MenuItemImage::create("button/Back-Normal.png",
+		"button/Back-Active.png",
+		[](Ref* pSender)
+		{
+			//场景从Instruction切换至GameMenu
+			SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
+		});
 
 	if (button == nullptr || button->getContentSize().width <= 0 || button->getContentSize().height <= 0)
 		SceneUtils::problemLoading("button/Back-Normal.png");
@@ -57,10 +62,4 @@ bool Instruction::init()
 	menu->addChild(button);
 
 	return true;
-}
-
-//场景从Instruction切换至GameMenu
-void Instruction::menuBackCallback(cocos2d::Ref* pSender)
-{
-	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 }

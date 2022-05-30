@@ -54,6 +54,8 @@ public:
 
 	/*放置背景图，所有场景类共用*/
 	static void setBGimage(const char* filename, Layer* layer);
+
+	static void setBGimage(const char* filename, Layer* layer, INT32 a);
 };
 
 #endif // !_SCENE_UTILS_H_
