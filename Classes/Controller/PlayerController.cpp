@@ -192,5 +192,5 @@ void PlayerController::changeControllerSprite()
 	else
 		frame = SpriteFrameCache::getInstance()->getSpriteFrameByName("Controller-Normal.png");
 
-	_controllerSprite->setDisplayFrame(frame);
+	_controllerSprite->setSpriteFrame(frame);
 }
