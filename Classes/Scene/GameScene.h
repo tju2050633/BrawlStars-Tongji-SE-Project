@@ -2,14 +2,22 @@
 #define __GAME_SCENE_H_
 
 #include "cocos2d.h"
+#include <string>
 #include "Player/Player.h"
 #include "Controller/PlayerController.h"
 
 USING_NS_CC;
+using namespace std;
 
 class GameScene : public Layer
 {
 private:
+	/*UI层*/
+	Size _visibleSize;
+	Vec2 _origin;
+	Layer* _UILayer;
+	Label* _label;
+	Sprite* _controllerSprite;
 	/*玩家部分*/
 	Player* _player;
 	PlayerController* _playerController;
@@ -23,13 +31,16 @@ private:
 	Sprite* _grassCell;			//草丛单元格
 	TMXObjectGroup* _objectGroup;/* 地图中对象层 */
 	
+	/*UI层组件*/
+	void initLabel();			//标签
+	void initButton();			//按钮
+	void initControllerSprite(string = "Normal");//控制器图标
 	
 	/*初始化*/
 	void initMap();				//地图
 	void initBrawler();			//英雄
-	void initLabel();			//标签
-	void initButton();			//按钮
 	void initController();		//控制器
+	
 	/*回调函数*/
 	void menuEmotionCallback(Ref *pSender);	//显示表情
 	void menuBackCallback(Ref *pSender);	//返回主菜单

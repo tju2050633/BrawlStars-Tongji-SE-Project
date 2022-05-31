@@ -29,7 +29,7 @@ bool Settings::init()
 	//}
 
 	 /*±³¾°*/
-	SceneUtils::setBGimage("BGimage/beijing.png", this);
+	SceneUtils::setBGimage("BGimage/beijing.png", this, SceneUtils::setBGimageWith::TextureCache);
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 

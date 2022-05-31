@@ -4,48 +4,68 @@
 
 bool PlayerController::init()
 {
-	KeyboardListener();
-	MouseListener();
+	initKeyboardListener();
+	initMouseListener();
+	_keyW = false;
+	_keyA = false;
+	_keyS = false;
+	_keyD = false;
 	return true;
 }
 
 /*键盘监听器*/
-void PlayerController::KeyboardListener()
+void PlayerController::initKeyboardListener()
 {
 	_keyboardListener = EventListenerKeyboard::create();
 
 	_keyboardListener->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event* event) {
-		/*按下键盘监听，WASD（及对应大写情况）分别设置对象速度*/
+		/*按下键盘监听，WASD（及对应大写情况）分别设置对象速度，并替换控制器图标*/
 		switch (keyCode)
 		{
 			case cocos2d::EventKeyboard::KeyCode::KEY_W:
 				_controllerListener->setTargetMoveSpeedY(_controllerListener->getTargetBrawler()->getMoveSpeed());
+				_keyW = true;	//设置对应键的状态为按下，为保证同一时刻最多两个键视作激活，此时对应的键为未按下
+				_keyS = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_A:
 				_controllerListener->setTargetMoveSpeedX(-_controllerListener->getTargetBrawler()->getMoveSpeed());
+				_keyA = true;
+				_keyD = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_S:
 				_controllerListener->setTargetMoveSpeedY(-_controllerListener->getTargetBrawler()->getMoveSpeed());
+				_keyS = true;
+				_keyW = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_D:
 				_controllerListener->setTargetMoveSpeedX(_controllerListener->getTargetBrawler()->getMoveSpeed());
+				_keyD = true;
+				_keyA = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_W:
 				_controllerListener->setTargetMoveSpeedY(_controllerListener->getTargetBrawler()->getMoveSpeed());
+				_keyW = true;
+				_keyS = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_A:
 				_controllerListener->setTargetMoveSpeedX(-_controllerListener->getTargetBrawler()->getMoveSpeed());
+				_keyA = true;
+				_keyD = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_S:
 				_controllerListener->setTargetMoveSpeedY(-_controllerListener->getTargetBrawler()->getMoveSpeed());
+				_keyS = true;
+				_keyW = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_D:
 				_controllerListener->setTargetMoveSpeedX(_controllerListener->getTargetBrawler()->getMoveSpeed());
+				_keyD = true;
+				_keyA = false;
 				break;
 			default:
 				break;
 		}
-		return true;
+		changeControllerSprite();
 	};
 
 	_keyboardListener->onKeyReleased = [&](EventKeyboard::KeyCode keyCode, Event* event) {
@@ -53,37 +73,55 @@ void PlayerController::KeyboardListener()
 		switch (keyCode)
 		{
 			case cocos2d::EventKeyboard::KeyCode::KEY_W:
-				_controllerListener->setTargetMoveSpeedY(0);
+				if(!_keyS)	//判断对应的键未按下，才置该方向速度为0。防止按下S的同时按下W，松开S时W按下了但速度为0.
+					_controllerListener->setTargetMoveSpeedY(0);
+				_keyW = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_A:
-				_controllerListener->setTargetMoveSpeedX(0);
+				if(!_keyD)
+					_controllerListener->setTargetMoveSpeedX(0);
+				_keyA = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_S:
-				_controllerListener->setTargetMoveSpeedY(0);
+				if (!_keyW)
+					_controllerListener->setTargetMoveSpeedY(0);
+				_keyS = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_D:
-				_controllerListener->setTargetMoveSpeedX(0);
+				if (!_keyA)
+					_controllerListener->setTargetMoveSpeedX(0);
+				_keyD = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_W:
-				_controllerListener->setTargetMoveSpeedY(0);
+				if (!_keyS)
+					_controllerListener->setTargetMoveSpeedY(0);
+				_keyW = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_A:
-				_controllerListener->setTargetMoveSpeedX(0);
+				if (!_keyD)
+					_controllerListener->setTargetMoveSpeedX(0);
+				_keyA = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_S:
-				_controllerListener->setTargetMoveSpeedY(0);
+				if (!_keyW)
+					_controllerListener->setTargetMoveSpeedY(0);
+				_keyS = false;
 				break;
 			case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_D:
-				_controllerListener->setTargetMoveSpeedX(0);
+				if (!_keyA)
+					_controllerListener->setTargetMoveSpeedX(0);
+				_keyD = false;
 				break;
 			default:
 				break;
 		}
+		changeControllerSprite();
 	};
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(_keyboardListener, this);
 }
-void PlayerController::MouseListener() {
+/*鼠标监听器*/
+void PlayerController::initMouseListener() {
 	_mouseListener = EventListenerMouse::create();
 	_mouseListener->onMouseDown = [&](Event* event) {
 		/*这里显示攻击、技能方向*/
@@ -120,4 +158,39 @@ void PlayerController::MouseListener() {
 		}
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(_mouseListener, this);
+}
+
+void PlayerController::changeControllerSprite()
+{
+	SpriteFrame* frame;
+
+	//Top
+	if(_keyW && !_keyA && !_keyS && !_keyD)
+		frame = SpriteFrameCache::getInstance()->getSpriteFrameByName("Controller-Active-Top.png");
+	//Left
+	else if (!_keyW && _keyA && !_keyS && !_keyD)
+		frame = SpriteFrameCache::getInstance()->getSpriteFrameByName("Controller-Active-Left.png");
+	//Bottom
+	else if (!_keyW && !_keyA && _keyS && !_keyD)
+		frame = SpriteFrameCache::getInstance()->getSpriteFrameByName("Controller-Active-Bottom.png");
+	//Right
+	else if (!_keyW && !_keyA && !_keyS && _keyD)
+		frame = SpriteFrameCache::getInstance()->getSpriteFrameByName("Controller-Active-Right.png");
+	//LeftTop
+	else if (_keyW && _keyA && !_keyS && !_keyD)
+		frame = SpriteFrameCache::getInstance()->getSpriteFrameByName("Controller-Active-LeftTop.png");
+	//LeftBottom
+	else if (!_keyW && _keyA && _keyS && !_keyD)
+		frame = SpriteFrameCache::getInstance()->getSpriteFrameByName("Controller-Active-LeftBottom.png");
+	//RightTop
+	else if (_keyW && !_keyA && !_keyS && _keyD)
+		frame = SpriteFrameCache::getInstance()->getSpriteFrameByName("Controller-Active-RightTop.png");
+	//RightBottom
+	else if (!_keyW && !_keyA && _keyS && _keyD)
+		frame = SpriteFrameCache::getInstance()->getSpriteFrameByName("Controller-Active-RightBottom.png");
+	//Normal
+	else
+		frame = SpriteFrameCache::getInstance()->getSpriteFrameByName("Controller-Normal.png");
+
+	_controllerSprite->setDisplayFrame(frame);
 }

@@ -37,7 +37,7 @@ bool GameMenu::init()
 	initMenu();
 
 	/*±³¾°*/
-	SceneUtils::setBGimage("BGimage/GameMenu.png", this);
+	SceneUtils::setBGimage("BGimage/GameMenu.png", this, SceneUtils::setBGimageWith::TextureCache);
 
 	return true;
 }

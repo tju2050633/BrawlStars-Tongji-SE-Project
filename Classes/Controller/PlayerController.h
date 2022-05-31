@@ -9,12 +9,21 @@ USING_NS_CC;
 class PlayerController :public Node {
 	/*监听对象*/
 	CC_SYNTHESIZE(ControllerListener*, _controllerListener, ControllerListener);
-	/*精灵图标*/
-	CC_SYNTHESIZE(Sprite*, _sprite, Sprite);
+
 	/*键盘监听器*/
 	CC_SYNTHESIZE(EventListenerKeyboard*, _keyboardListener, KeyboardListener);
+
 	/*鼠标监听器*/
 	CC_SYNTHESIZE(EventListenerMouse*, _mouseListener, MouseListener);
+
+	/*控制器图标*/
+	CC_SYNTHESIZE(Sprite*, _controllerSprite, ControllerSprite);
+
+	/*监听WASD键按下状态*/
+	bool _keyW;
+	bool _keyA;
+	bool _keyS;
+	bool _keyD;
 
 public:
 	CREATE_FUNC(PlayerController);
@@ -22,9 +31,12 @@ public:
 	virtual bool init();
 
 	/*键盘监听器*/
-	void KeyboardListener();
+	void initKeyboardListener();
 	/*鼠标监听器*/
-	void MouseListener();
+	void initMouseListener();
+
+	/*改变控制器图标*/
+	void changeControllerSprite();
 };
 
 #endif // !__CONTROLLER_H_

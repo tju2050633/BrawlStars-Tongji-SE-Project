@@ -20,6 +20,7 @@ public:
 	void EnterMenu(float dt);
 
 	void plistImageAsyncCallback(Texture2D* texture);
+	void plistControllerAsyncCallback(Texture2D* texture);
 };
 
 #endif // !__OPENING_ANIMATION_H_

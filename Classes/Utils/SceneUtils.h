@@ -19,10 +19,6 @@ public:
 		Settings,
 		Instruction
 	};
-	/*枚举所有层*/
-	enum AllLayers
-	{
-	};
 	/*枚举所有地图*/
 	enum AllMap
 	{
@@ -49,13 +45,13 @@ public:
 	/*共用，切换场景时使用，参数为该对象内枚举数*/
 	static void changeScene(AllScenes targetScene);
 
-	/*共用，增添层*/
-	static void addLayer(AllLayers targetLayer, Scene* currentScene);
-
-	/*放置背景图，所有场景类共用*/
-	static void setBGimage(const char* filename, Layer* layer);
-
-	static void setBGimage(const char* filename, Layer* layer, INT32 a);
+	/*两种加载背景图的方式*/
+	enum setBGimageWith {
+		TextureCache,
+		SpriteFrameCache
+	};
+	/*放置背景图，所有场景类共用，loadWay区分加载背景图方式*/
+	static void setBGimage(const char* filename, Layer* layer, setBGimageWith loadWay);
 };
 
 #endif // !_SCENE_UTILS_H_

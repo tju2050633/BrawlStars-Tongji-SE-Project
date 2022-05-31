@@ -15,14 +15,105 @@ USING_NS_CC;
 using namespace std;
 
 /*获得场景对象 √*/
-//init需接受参数，不能用CREATE_FUNC自动生成的create()
-//用以下模板（仅需改init内参数，效果和create()一样）
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::create();
-	auto layer = GameScene::create();
-	scene->addChild(layer);
+
+	/*创建场景的两个互相独立的层：地图层（包含地图、人物等），UI层（包含标签、按钮、操作器图标等）*/
+	auto mapLayer = GameScene::create();
+	auto UILayer = Layer::create();
+	mapLayer->_UILayer = UILayer;	//GameScene类含有UI层的指针，才能调用初始化UI层的成员函数
+
+	/*初始化UI层的UI组件*/
+	mapLayer->initLabel();
+	mapLayer->initButton();
+	mapLayer->initControllerSprite();
+	mapLayer->initController();
+
+	/*将地图层、UI层添加到场景中*/
+	scene->addChild(mapLayer);
+	scene->addChild(UILayer);
 	return scene;
+}
+
+/*UI层 标签*/
+void GameScene::initLabel()
+{
+	_label = Label::createWithTTF(StringUtils::format("Brawler Left: %d", SceneUtils::_brawlerNumber).c_str(), "fonts/Marker Felt.ttf", 48);
+	_label->setAnchorPoint(Vec2(1, 1));
+	_label->setPosition(Vec2(_visibleSize.width + _origin.x, _visibleSize.height + _origin.y));
+
+	_UILayer->addChild(_label);
+}
+
+/*UI层 按钮*/
+void GameScene::initButton()
+{
+	/*菜单所有按钮统一处理，必须用用cocos::Vector*/
+	Vector<MenuItem*> MenuItemVector;
+	//文件名所用的字符串
+	vector<string> stringVector = { "Emotion", "Back" };
+	//按钮回调函数
+	vector<void (GameScene::*)(Ref* pSender)> CallbackVector = { &GameScene::menuEmotionCallback, &GameScene::menuBackCallback };
+	//按钮尺寸
+	vector<float> ScaleVector = { 1, 1 };
+	//按钮锚点
+	vector<Vec2> AnchorVector = {
+		Vec2(1, 1),
+		Vec2(0, 1) };
+	//按钮坐标
+	vector<Vec2> PositionVector = {
+		Vec2(_visibleSize.width + _origin.x, _visibleSize.height + _origin.y - 250),
+		Vec2(_origin.x, _visibleSize.height + _origin.y) };
+	/*逐个设置坐标，存入Vector*/
+	for (int i = 0; i < stringVector.size(); i++)
+	{
+		MenuItem* button = MenuItemImage::create(
+			"button/" + stringVector.at(i) + "-Normal.png",
+			"button/" + stringVector.at(i) + "-Active.png",
+			bind(CallbackVector.at(i), this, std::placeholders::_1));
+		if (button == nullptr || button->getContentSize().width <= 0 || button->getContentSize().height <= 0)
+			SceneUtils::problemLoading(stringVector.at(i).c_str());
+		else
+		{
+			button->setScale(ScaleVector.at(i));
+			button->setAnchorPoint(AnchorVector.at(i));
+			button->setPosition(PositionVector.at(i));
+		}
+		MenuItemVector.pushBack(button);
+	}
+
+	/*总的菜单，包含以上菜单选项*/
+	Menu* menu = Menu::createWithArray(MenuItemVector);
+	menu->setPosition(Vec2::ZERO);
+	_UILayer->addChild(menu, 1);
+}
+
+/*UI层 控制器图标*/
+void GameScene::initControllerSprite(string state)
+{
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Controller/Controller.plist");
+	_controllerSprite = Sprite::createWithSpriteFrameName("Controller-" + state + ".png");
+	_controllerSprite->setScale(0.6);
+	_controllerSprite->setAnchorPoint(Vec2(0, 0));
+	_controllerSprite->setPosition(Vec2(-150, -150));
+
+	_UILayer->addChild(_controllerSprite);
+}
+
+/*控制器*/
+void GameScene::initController()
+{
+	/*创建控制器*/
+	_playerController = PlayerController::create();
+
+	/*绑定玩家为操作器的对象*/
+	_playerController->setControllerListener(_player);
+
+	/*绑定操作器的图标*/
+	_playerController->setControllerSprite(_controllerSprite);
+
+	this->addChild(_playerController);
 }
 
 /*游戏主场景初始化*/
@@ -34,19 +125,15 @@ bool GameScene::init()
 		return false;
 	}
 
-	/*声音，这个SimpleAudioEngine后期看是加上还是换别的*/
-	//auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	//if (!audio->isBackgroundMusicPlaying()) {
-	//audio->playBackgroundMusic("选择地图背景音乐", true);
-	//}
+	/*获取visibleSize和origin*/
+	_visibleSize = Director::getInstance()->getVisibleSize(); //得到屏幕大小
+	_origin = Director::getInstance()->getVisibleOrigin();	  //获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
 
-	/*初始化 地图、人物、两个个按钮（返回，表情）、操作器*/
+	/*初始化*/
 	initMap();
 	initBrawler();
-	initLabel();
-	initButton();
-	initController();
-
+	//initController();
+	
 	this->scheduleUpdate();
 
 	return true;
@@ -58,9 +145,10 @@ void GameScene::update(float dt)
 	/*每帧更新目标位置，即当前位置+速度*每帧时间产生的移动量*/
 	Vec2 playerPos = _player->getTargetPosition() +
 		Vec2(_player->getTargetMoveSpeedX() * dt, _player->getTargetMoveSpeedY() * dt);
-	setPlayerPosition(playerPos);//设置玩家位置
-	this->setGrassOpacity(_player->getPosition());//设置草丛透明度
-	this->setViewPointCenter(_player->getPosition());//设置镜头跟随
+
+	this->setPlayerPosition(playerPos);//设置玩家位置
+	this->setGrassOpacity(playerPos);//设置草丛透明度
+	this->setViewPointCenter(playerPos);//设置镜头跟随
 }
 
 /*初始化 地图*/
@@ -108,81 +196,6 @@ void GameScene::initBrawler()
 	this->addChild(_player);
 }
 
-/*初始化 标签*/
-void GameScene::initLabel()
-{
-	/*获取visibleSize和origin*/
-	auto visibleSize = Director::getInstance()->getVisibleSize(); //得到屏幕大小
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();	  //获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
-
-	auto label = Label::createWithTTF(StringUtils::format("Brawler Left: %d", SceneUtils::_brawlerNumber).c_str(), "fonts/Marker Felt.ttf", 24);
-	label->setAnchorPoint(Vec2(1, 1));
-
-	//visibleSize.width + origin.x, visibleSize.height + origin.y
-	Vec2 place = label->convertToWorldSpace(Vec2(visibleSize.width + origin.x, visibleSize.height + origin.y));
-	label->setPosition(place);
-	CCLOG("wordSpace--x : y = %f : %f ", place.x, place.y);
-	this->addChild(label);
-}
-
-/*初始化 按钮*/
-void GameScene::initButton()
-{
-	/*获取visibleSize和origin*/
-	auto visibleSize = Director::getInstance()->getVisibleSize(); //得到屏幕大小
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();	  //获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
-
-	/*菜单所有按钮统一处理，必须用用cocos::Vector*/
-	Vector<MenuItem*> MenuItemVector;
-	//文件名所用的字符串
-	vector<string> stringVector = { "Emotion", "Back" };
-	//按钮回调函数
-	vector<void (GameScene::*)(Ref* pSender)> CallbackVector = { &GameScene::menuEmotionCallback, &GameScene::menuBackCallback };
-	//按钮尺寸
-	vector<float> ScaleVector = { 1, 1 };
-	//按钮锚点
-	vector<Vec2> AnchorVector = {
-		Vec2(1, 1),
-		Vec2(0, 1) };
-	//按钮坐标
-	vector<Vec2> PositionVector = {
-		Vec2(visibleSize.width + origin.x, visibleSize.height + origin.y - 250),
-		Vec2(origin.x, visibleSize.height + origin.y) };
-	/*逐个设置坐标，存入Vector*/
-	for (int i = 0; i < stringVector.size(); i++)
-	{
-		MenuItem* button = MenuItemImage::create(
-			"button/" + stringVector.at(i) + "-Normal.png",
-			"button/" + stringVector.at(i) + "-Active.png",
-			bind(CallbackVector.at(i), this, std::placeholders::_1));
-		if (button == nullptr || button->getContentSize().width <= 0 || button->getContentSize().height <= 0)
-			SceneUtils::problemLoading(stringVector.at(i).c_str());
-		else
-		{
-			button->setScale(ScaleVector.at(i));
-			button->setAnchorPoint(AnchorVector.at(i));
-			button->setPosition(PositionVector.at(i));
-		}
-		MenuItemVector.pushBack(button);
-	}
-
-	/*总的菜单，包含以上菜单选项*/
-	Menu* menu = Menu::createWithArray(MenuItemVector);
-	menu->setPosition(Vec2::ZERO);
-	this->addChild(menu, 1);
-}
-
-/*初始化 操作器*/
-void GameScene::initController()
-{
-	/*创建控制器*/
-	_playerController = PlayerController::create();
-	/*绑定玩家为操作器的对象*/
-	_playerController->setControllerListener(_player);
-
-	this->addChild(_playerController);
-}
-
 /*表情 回调函数*/
 void GameScene::menuEmotionCallback(cocos2d::Ref* pSender)
 {
@@ -197,17 +210,14 @@ void GameScene::menuBackCallback(cocos2d::Ref* pSender)
 /* 设置窗口镜头位置 */
 void GameScene::setViewPointCenter(Point position)
 {
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
 	/* 防止玩家超出边界 */
-	int x = MAX(position.x, visibleSize.width / 2);
-	int y = MAX(position.y, visibleSize.height / 2);
-	x = MIN(x, (_map->getMapSize().width * _map->getTileSize().width) - visibleSize.width / 2);
-	y = MIN(y, (_map->getMapSize().height * _map->getTileSize().height) - visibleSize.height / 2);
+	int x = MAX(position.x, _visibleSize.width / 2);
+	int y = MAX(position.y, _visibleSize.height / 2);
+	x = MIN(x, (_map->getMapSize().width * _map->getTileSize().width) - _visibleSize.width / 2);
+	y = MIN(y, (_map->getMapSize().height * _map->getTileSize().height) - _visibleSize.height / 2);
 
 	Point actualPosition = Vec2(x, y);
-	Point centerOfView = Vec2(visibleSize.width / 2, visibleSize.height / 2);
+	Point centerOfView = Vec2(_visibleSize.width / 2, _visibleSize.height / 2);
 	Point viewPoint = Vec2(centerOfView.x - actualPosition.x, centerOfView.y - actualPosition.y);
 
 	this->setPosition(viewPoint);

@@ -34,7 +34,7 @@ bool Instruction::init()
 
 	/*±³¾°*/
 
-	SceneUtils::setBGimage("BGimage/Instruction.png", this);
+	SceneUtils::setBGimage("BGimage/Instruction.png", this, SceneUtils::setBGimageWith::TextureCache);
 
 	//²Ëµ¥
 	Menu* menu = Menu::create();

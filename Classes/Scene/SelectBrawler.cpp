@@ -38,7 +38,7 @@ bool SelectBrawler::init()
 	initMenu();
 
 	/*±³¾°*/
-	SceneUtils::setBGimage("SelectBrawler.png", this, 2);
+	SceneUtils::setBGimage("SelectBrawler.png", this, SceneUtils::setBGimageWith::SpriteFrameCache);
 
 	return true;
 }

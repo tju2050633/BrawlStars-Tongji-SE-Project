@@ -99,11 +99,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
 	register_all_packages();
 
-	///*创建开场动画Scene，运行之*/
-	//SceneUtils::changeScene(SceneUtils::GameScene);
-
 	/*创建开场动画Scene，运行之*/
-	SceneUtils::changeScene(SceneUtils::OpeningAnimation);
+	//SceneUtils::changeScene(SceneUtils::OpeningAnimation);
+	SceneUtils::changeScene(SceneUtils::GameScene);
+
 	return true;
 }
 
