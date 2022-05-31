@@ -162,9 +162,12 @@ void GameScene::initMap()
 	/* 添加墙壁图层 */
 	_wall = _map->getLayer("Wall");
 
-	/* 添加属性图层并不可见化 */
-	_meta = _map->getLayer("Meta");
-	_meta->setVisible(false);
+	/* 添加碰撞属性图层并不可见化 */
+	_collidable = _map->getLayer("Collidable");
+	_collidable->setVisible(false);
+
+	/* 添加宝箱图层 */
+	_box = _map->getLayer("Box");
 
 	/* 添加草丛图层 */
 	_grass = _map->getLayer("Grass");
@@ -213,8 +216,8 @@ void GameScene::setViewPointCenter(Point position)
 	/* 防止玩家超出边界 */
 	int x = MAX(position.x, _visibleSize.width / 2);
 	int y = MAX(position.y, _visibleSize.height / 2);
-	x = MIN(x, (_map->getMapSize().width * _map->getTileSize().width) - _visibleSize.width / 2);
-	y = MIN(y, (_map->getMapSize().height * _map->getTileSize().height) - _visibleSize.height / 2);
+	x = MIN(x, (_map->getMapSize().width * _map->getTileSize().width * 1500 / 1600) - _visibleSize.width / 2);
+	y = MIN(y, (_map->getMapSize().height * _map->getTileSize().height * 1195.3 / 1280) - _visibleSize.height / 2);
 
 	Point actualPosition = Vec2(x, y);
 	Point centerOfView = Vec2(_visibleSize.width / 2, _visibleSize.height / 2);
@@ -226,9 +229,13 @@ void GameScene::setViewPointCenter(Point position)
 /* 将坐标转化为tile坐标 */
 Point GameScene::tileCoordForPosition(Point position)
 {
+	//消除位置偏差
+	double X = position.x * 1600 / 1500;
+	double Y = position.y * 1280 / 1195.3;
+	
 	//tilemap以左上角为坐标(0,0)
-	int x = position.x / _map->getTileSize().width;
-	int y = ((_map->getMapSize().height * _map->getTileSize().height) - position.y) / _map->getTileSize().height;
+	int x = X / _map->getTileSize().width;
+	int y = ((_map->getMapSize().height * _map->getTileSize().height) - Y) / _map->getTileSize().height;
 
 	return Vec2(x, y);
 }
@@ -237,12 +244,11 @@ Point GameScene::tileCoordForPosition(Point position)
 void GameScene::setPlayerPosition(Point position)
 {
 	Vec2 tileSize = _map->getTileSize(); //获得单个瓦片尺寸
-	Point pos = Vec2(position.x + 2.5 * tileSize.x, position.y + 2.3 * tileSize.y); //消除位置偏差
 
-	Point tileCoord = this->tileCoordForPosition(pos); //通过指定坐标对应tile坐标
-	if (_wall->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定墙壁单元格
+	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
+	if (_collidable->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定碰撞属性单元格
 	{
-		return; //与墙体发生碰撞时不移动
+		return; //与物体发生碰撞时不移动
 	}
 	_player->setPosition(position);
 }
@@ -266,14 +272,13 @@ void GameScene::setGrassOpacity(Point position)
 
 	Vec2 tileSize = _map->getTileSize(); //获得单个瓦片尺寸
 
-	Point pos = Vec2(position.x + 1.7 * tileSize.x, position.y + tileSize.y); //消除位置偏差
 	vision =
 	{
-		pos,
-		Vec2(pos.x + tileSize.x, pos.y),
-		Vec2(pos.x - tileSize.x, pos.y),
-		Vec2(pos.x, pos.y + tileSize.y),
-		Vec2(pos.x, pos.y - tileSize.y)
+		position,
+		Vec2(position.x + tileSize.x, position.y),
+		Vec2(position.x - tileSize.x, position.y),
+		Vec2(position.x, position.y + tileSize.y),
+		Vec2(position.x, position.y - tileSize.y)
 	}; //玩家可视草丛范围（玩家位置即相邻四格）
 
 	/* 使玩家可视范围内的草丛变为半透明 */
@@ -295,5 +300,29 @@ void GameScene::breakWall(Point position)
 	if (_wall->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定墙壁单元格
 	{
 		_wall->removeTileAt(tileCoord); //移除该单元格，表示墙壁被炸毁
+		_collidable->removeTileAt(tileCoord);
+	}
+}
+
+/* 设置敌人是否可见 */
+void GameScene::setEnemyVisible(Sprite* _enemy)
+{
+	Point position = _enemy->getPosition(); //得到敌人的坐标
+	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
+	if (_grass->getTileAt(tileCoord)) //如果玩家处于草丛中
+	{
+		_grassCell = _grass->getTileAt(tileCoord); //通过tile坐标指定草丛单元格
+		if (_grassCell->getOpacity() == 255) //敌人不在玩家可视范围内
+		{
+			_enemy->setVisible(false); //敌人不可见
+		}
+		else //敌人在玩家可视范围内
+		{
+			_enemy->setVisible(true); //敌人可见
+		}
+	}
+	else //如果玩家不处于草丛中
+	{
+		_enemy->setVisible(true); //敌人可见
 	}
 }
