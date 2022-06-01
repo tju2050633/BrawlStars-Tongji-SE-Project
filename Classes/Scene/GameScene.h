@@ -18,6 +18,9 @@ private:
 	Layer* _UILayer;
 	Label* _label;
 	Sprite* _controllerSprite;
+	Sprite* _attackCenterSprite;
+	Sprite* _abilityCenterSprite;
+	Sprite* _abilityRoundSprite;
 	/*玩家部分*/
 	Player* _player;
 	PlayerController* _playerController;
@@ -36,7 +39,7 @@ private:
 	/*UI层组件*/
 	void initLabel();			//标签
 	void initButton();			//按钮
-	void initControllerSprite(string = "Normal");//控制器图标
+	void initControllerSprite();//控制器图标
 	
 	/*初始化*/
 	void initMap();				//地图

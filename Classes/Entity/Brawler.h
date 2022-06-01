@@ -18,6 +18,12 @@ class Brawler : public Entity {
 	/*已发射的子弹*/
 	Vector<Bullet*> _bulletVector;
 
+	/*范围指示器*/
+	CC_SYNTHESIZE(Sprite*, _rangeIndicator, RangeIndicator); 
+
+	/*正在运行的动画*/
+	CC_SYNTHESIZE(Animate*, _runningAnimate, RunningAnimate);
+
 public:
 	/*创建对象和初始化函数*/
 	CREATE_FUNC(Brawler);

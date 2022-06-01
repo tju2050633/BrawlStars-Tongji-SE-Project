@@ -17,7 +17,8 @@ public:
 		SelectBrawler,
 		GameScene,
 		Settings,
-		Instruction
+		Instruction,
+		Room
 	};
 	/*枚举所有地图*/
 	enum AllMap
@@ -37,7 +38,7 @@ public:
 	/*静态成员变量，存储切换场景时用到的信息*/
 	static AllMap _map;
 	static AllBrawler _brawler;
-	static int _brawlerNumber;
+	static INT32 _brawlerNumber;
 
 	/*共用的problemLoading，避免代码重复*/
 	static void problemLoading(const char* filename);

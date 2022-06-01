@@ -16,6 +16,7 @@ class GameMenu : public Layer
 private:
 	/*给init使用的初始化函数*/
 	void initMenu(); //初始化菜单
+	void initTrophy(); //初始化奖杯标签
 
 	/*按键回调函数*/
 	void menuSinglePlayerCallback(Ref *pSender); //单人模式

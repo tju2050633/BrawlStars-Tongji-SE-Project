@@ -1,5 +1,6 @@
 #include "cocos2d.h"
 #include <string>
+#include <fstream>
 #include "Scene/GameMenu.h"
 #include "Scene/Settings.h"
 #include "Scene/Instruction.h"
@@ -35,6 +36,8 @@ bool GameMenu::init()
 
 	/*菜单*/
 	initMenu();
+	/*奖杯*/
+	initTrophy();
 
 	/*背景*/
 	SceneUtils::setBGimage("BGimage/GameMenu.png", this, SceneUtils::setBGimageWith::TextureCache);
@@ -97,6 +100,36 @@ void GameMenu::initMenu()
 	Menu* menu = Menu::createWithArray(MenuItemVector);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
+}
+
+/*菜单 初始化奖杯标签*/
+void GameMenu::initTrophy()
+{
+	/*获取visibleSize和origin*/
+	auto visibleSize = Director::getInstance()->getVisibleSize(); //得到屏幕大小
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();	  //获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
+
+	/*奖杯图标*/
+	auto trophy = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("trophy.png"));
+	trophy->setAnchorPoint(Vec2(0, 1));
+	trophy->setPosition(Vec2(origin.x, visibleSize.height + origin.y + 10));
+	trophy->setScale(0.2);
+	trophy->setRotation(10);
+	this->addChild(trophy, 1);
+
+	/*奖杯数量*/
+	ifstream in("trophy.txt", ios::in);
+	int iTrophy;
+	if (in.good())
+		in >> iTrophy;
+	else
+		iTrophy = 0;
+
+	auto label = Label::createWithTTF(StringUtils::format("%d", iTrophy).c_str(), "fonts/Marker Felt.ttf", 48);
+	label->setAnchorPoint(Vec2(0, 1));
+	label->setPosition(Vec2(origin.x + 130, visibleSize.height + origin.y - 15));
+	label->setTextColor(Color4B::YELLOW);
+	this->addChild(label, 1);
 }
 
 /*菜单 单人模式回调函数 切换至SelectMap*/

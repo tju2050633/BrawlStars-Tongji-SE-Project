@@ -7,6 +7,7 @@
 USING_NS_CC;
 
 class Shelly : public Brawler {
+	
 public:
 	/*创建对象和初始化函数*/
 	CREATE_FUNC(Shelly);

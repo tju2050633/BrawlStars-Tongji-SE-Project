@@ -8,8 +8,6 @@ USING_NS_CC;
 using namespace std;
 
 /*获得场景对象 √*/
-//init需接受参数，不能用CREATE_FUNC自动生成的create()
-//用以下模板（仅需改init内参数，效果和create()一样）
 Scene* SelectBrawler::createScene()
 {
 	auto scene = Scene::create();

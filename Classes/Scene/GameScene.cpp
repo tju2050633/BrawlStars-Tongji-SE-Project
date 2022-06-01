@@ -91,15 +91,49 @@ void GameScene::initButton()
 }
 
 /*UI层 控制器图标*/
-void GameScene::initControllerSprite(string state)
+void GameScene::initControllerSprite()
 {
+	/*方向控制器*/
 	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Controller/Controller.plist");
-	_controllerSprite = Sprite::createWithSpriteFrameName("Controller-" + state + ".png");
+	_controllerSprite = Sprite::createWithSpriteFrameName("Controller-Normal.png");
 	_controllerSprite->setScale(0.6);
 	_controllerSprite->setAnchorPoint(Vec2(0, 0));
 	_controllerSprite->setPosition(Vec2(-150, -150));
 
 	_UILayer->addChild(_controllerSprite);
+
+	/*攻击和技能图标*/
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Controller/AttackButton.plist");
+	/*攻击 大圆*/
+	auto attackRoundSprite = Sprite::createWithSpriteFrameName("AttackRound.png");
+	attackRoundSprite->setScale(0.6);
+	attackRoundSprite->setPosition(Vec2(_visibleSize.width + _origin.x - 150, _origin.y + 200));
+
+	_UILayer->addChild(attackRoundSprite);
+
+	/*攻击 小圆*/
+	_attackCenterSprite = Sprite::createWithSpriteFrameName("AttackCenter.png");
+	_attackCenterSprite->setScale(0.6);
+	_attackCenterSprite->setPosition(attackRoundSprite->getPosition() - Vec2(0, 80));
+	_attackCenterSprite->setOpacity(150);
+
+	_UILayer->addChild(_attackCenterSprite);
+
+	/*技能 大圆*/
+	_abilityRoundSprite = Sprite::createWithSpriteFrameName("AbilityRound.png");
+	_abilityRoundSprite->setScale(0.6);
+	_abilityRoundSprite->setPosition(attackRoundSprite->getPosition() - Vec2(140, 0));
+	_abilityRoundSprite->setVisible(false);
+
+	_UILayer->addChild(_abilityRoundSprite);
+
+	/*技能 小圆*/
+	_abilityCenterSprite = Sprite::createWithSpriteFrameName("Ability.png");
+	_abilityCenterSprite->setScale(0.6);
+	_abilityCenterSprite->setAnchorPoint(Vec2(0.5, 0.5));
+	_abilityCenterSprite->setPosition(_abilityRoundSprite->getPosition() - Vec2(45, 80));
+
+	_UILayer->addChild(_abilityCenterSprite);
 }
 
 /*控制器*/
@@ -113,6 +147,12 @@ void GameScene::initController()
 
 	/*绑定操作器的图标*/
 	_playerController->setControllerSprite(_controllerSprite);
+	_playerController->setAttackCenterSprite(_attackCenterSprite);
+	_playerController->setAbilityCenterSprite(_abilityCenterSprite);
+	_playerController->setAbilityRoundSprite(_abilityRoundSprite);
+	/*保存攻击和技能图标的原位置*/
+	_playerController->setAttackCenterOriginPosition(_attackCenterSprite->getPosition());
+	_playerController->setAbilityCenterOriginPosition(_abilityCenterSprite->getPosition());
 
 	this->addChild(_playerController);
 }
@@ -203,6 +243,14 @@ void GameScene::initBrawler()
 
 	/*镜头移到玩家所在处*/
 	setViewPointCenter(_player->getPosition());
+
+	/*添加范围指示器*/
+	auto rangeIndicator = Sprite::create("Controller/sector.png");
+	rangeIndicator->setAnchorPoint(Vec2(0.53, 0.55));
+	rangeIndicator->setRotation(15);
+	rangeIndicator->setVisible(false);
+	_player->getBrawler()->setRangeIndicator(rangeIndicator);
+	_player->addChild(rangeIndicator);
 
 	this->addChild(_player);
 }

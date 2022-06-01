@@ -18,6 +18,12 @@ class PlayerController :public Node {
 
 	/*控制器图标*/
 	CC_SYNTHESIZE(Sprite*, _controllerSprite, ControllerSprite);
+	CC_SYNTHESIZE(Sprite*, _attackCenterSprite, AttackCenterSprite);
+	CC_SYNTHESIZE(Sprite*, _abilityCenterSprite, AbilityCenterSprite);
+	CC_SYNTHESIZE(Sprite*, _abilityRoundSprite, AbilityRoundSprite);
+	/*攻击和技能图标的原位置*/
+	CC_SYNTHESIZE(Vec2, _attackCenterOriginPosition, AttackCenterOriginPosition);
+	CC_SYNTHESIZE(Vec2, _abilityCenterOriginPosition, AbilityCenterOriginPosition);
 
 	/*监听WASD键按下状态*/
 	bool _keyW;
@@ -32,11 +38,26 @@ public:
 
 	/*键盘监听器*/
 	void initKeyboardListener();
+
+	/*键盘监听器回调函数*/
+	void onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event);
+	void onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event);
+
 	/*鼠标监听器*/
 	void initMouseListener();
 
+	/*鼠标监听器回调函数*/
+	void onMouseDown(Event* event);
+	void onMouseUp(Event* event);
+	void onMouseMove(Event* event);
+
+	/*计算鼠标相对玩家的角度*/
+	float calculateAngle(Vec2 cursorPosition, Vec2 playerPosition);
+
 	/*改变控制器图标*/
 	void changeControllerSprite();
+	/*攻击、技能按钮偏移*/
+	void buttonMove(Sprite* sprite, Vec2 originPosition, float angle);
 };
 
 #endif // !__CONTROLLER_H_

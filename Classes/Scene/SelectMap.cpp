@@ -35,7 +35,7 @@ bool SelectMap::init()
 	initMenu();
 
 	/*±³¾°*/
-	SceneUtils::setBGimage("BGimage/beijing.png", this, SceneUtils::setBGimageWith::TextureCache);
+	SceneUtils::setBGimage("BGimage/Background.png", this, SceneUtils::setBGimageWith::TextureCache);
 
 	return true;
 }

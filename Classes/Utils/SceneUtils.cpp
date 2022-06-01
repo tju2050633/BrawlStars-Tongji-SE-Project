@@ -6,13 +6,13 @@
 #include "Scene/SelectMap.h"
 #include "Scene/SelectBrawler.h"
 #include "Scene/GameScene.h"
+#include "Scene/Room.h"
 
 USING_NS_CC;
+
 /*菜单信息静态变量，初始化*/
 SceneUtils::AllMap SceneUtils::_map = SceneUtils::MapA;
 SceneUtils::AllBrawler SceneUtils::_brawler = SceneUtils::Shelly;
-
-/*剩余英雄数量静态变量，初始化为10*/
 INT32 SceneUtils::_brawlerNumber = 10;
 
 /*共用的problemLoading，避免代码重复*/
@@ -50,6 +50,9 @@ void SceneUtils::changeScene(AllScenes targetScene)
 			break;
 		case Instruction:
 			scene = Instruction::createScene();
+			break;
+		case Room:
+			scene = Room::createScene();
 			break;
 		default:
 			break;
