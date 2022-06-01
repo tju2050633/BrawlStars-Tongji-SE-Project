@@ -3,9 +3,6 @@
 
 bool Player::init()
 {
-	setMoveSpeedX(0);
-	setMoveSpeedY(0);
-
 	return true;
 }
 
@@ -20,19 +17,19 @@ Vec2 Player::getTargetPosition()
 }
 void Player::setTargetMoveSpeedX(int speedX)
 {
-	setMoveSpeedX(speedX);
+	_brawler->setMoveSpeedX(speedX);
 }
 void Player::setTargetMoveSpeedY(int speedY)
 {
-	setMoveSpeedY(speedY);
+	_brawler->setMoveSpeedY(speedY);
 }
 INT32 Player::getTargetMoveSpeedX()
 {
-	return _moveSpeedX;
+	return _brawler->getMoveSpeedX();
 }
 INT32 Player::getTargetMoveSpeedY()
 {
-	return _moveSpeedY;
+	return _brawler->getMoveSpeedY();
 }
 Brawler* Player::getTargetBrawler()
 {

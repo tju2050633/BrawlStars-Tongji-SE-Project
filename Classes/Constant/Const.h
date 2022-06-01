@@ -3,11 +3,14 @@
 
 /*雪莉Shelly 属性*/
 
-const int SHELLY_HP = 1000;		//血量HealthPoint
+const int SHELLY_HT = 1000;		//血量HealthPoint
 const int SHELLY_AD = 100;		//攻击力AttackDamage
 const int SHELLY_MS = 50;		//移速MoveSpeed
 const int SHELLY_AI = 1;		//攻击间隔AttackInterval
 const int SHELLY_EB = 1000;		//能量条EnergeBar
+
+const int SHELLY_BULLET_SPEED = 500;//子弹速度
+const int SHELLY_BULLET_RANGE = 500;//射程
 
 /*妮塔Nita 属性*/
 

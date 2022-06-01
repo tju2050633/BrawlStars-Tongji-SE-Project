@@ -10,6 +10,7 @@
 #include "Brawler/Primo.h"
 #include "Brawler/Stu.h"
 #include "Controller/PlayerController.h"
+#include "Constant/Const.h"
 
 USING_NS_CC;
 using namespace std;
@@ -39,7 +40,7 @@ Scene* GameScene::createScene()
 /*UI层 标签*/
 void GameScene::initLabel()
 {
-	_label = Label::createWithTTF(StringUtils::format("Brawler Left: %d", SceneUtils::_brawlerNumber).c_str(), "fonts/Marker Felt.ttf", 48);
+	_label = Label::createWithTTF(StringUtils::format("Brawler Left: %d", SceneUtils::_brawlerNumber).c_str(), "fonts/arial.ttf", 48);
 	_label->setAnchorPoint(Vec2(1, 1));
 	_label->setPosition(Vec2(_visibleSize.width + _origin.x, _visibleSize.height + _origin.y));
 
@@ -143,12 +144,13 @@ bool GameScene::init()
 void GameScene::update(float dt)
 {
 	/*每帧更新目标位置，即当前位置+速度*每帧时间产生的移动量*/
-	Vec2 playerPos = _player->getTargetPosition() +
-		Vec2(_player->getTargetMoveSpeedX() * dt, _player->getTargetMoveSpeedY() * dt);
+	Vec2 playerPos = _player->getTargetPosition() + Vec2(_player->getTargetMoveSpeedX() * dt, _player->getTargetMoveSpeedY() * dt);
 
 	this->setPlayerPosition(playerPos);//设置玩家位置
 	this->setGrassOpacity(playerPos);//设置草丛透明度
 	this->setViewPointCenter(playerPos);//设置镜头跟随
+
+	_label->setString(StringUtils::format("Brawler Left: %d", SceneUtils::_brawlerNumber).c_str());//刷新Label显示内容
 }
 
 /*初始化 地图*/
@@ -181,18 +183,24 @@ void GameScene::initBrawler()
 {
 	/*创建Player*/
 	_player = Player::create();
+
 	/*绑定英雄*/
 	_player->setBrawler(Shelly::create());
 	_player->addChild(_player->getBrawler());
+
+	/*英雄所处场景绑定为此游戏场景*/
+	_player->getBrawler()->setGameScene(this);
+
 	/*英雄绑定精灵图像*/
 	_player->getBrawler()->bindSprite(Sprite::create("Portrait/Shelly-Normal.png"));
-	_player->setScale(0.1);
+	_player->getBrawler()->getSprite()->setScale(0.1);
 
 	/*将玩家放置在出生点*/
 	auto spawnPoint = _objectGroup->getObject("SpawnPoint"); //出生点
 	float x = spawnPoint["x"].asFloat();
 	float y = spawnPoint["y"].asFloat();
 	_player->setPosition(Vec2(x, y));
+
 	/*镜头移到玩家所在处*/
 	setViewPointCenter(_player->getPosition());
 

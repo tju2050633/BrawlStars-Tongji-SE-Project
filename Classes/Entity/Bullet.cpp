@@ -15,19 +15,13 @@ void Bullet::bindSprite(Sprite* sprite)
 }
 
 /*设置属性*/
-void Bullet::setAttributes(INT32 damage, INT32 speed, INT32 range, Brawler* launcher)
+void Bullet::setAttributes(INT32 damage, INT32 speed, INT32 range, float angle, Brawler* launcher)
 {
 	setDamage(damage);
 	setSpeed(speed);
 	setRange(range);
+	setAngle(angle);
 	setLauncher(launcher);
-}
-
-/*根据传入角度，发射*/
-void Bullet::launch(Vec2 direction)
-{
-	Vec2 currentPosition = this->getPosition();
-	//////////////////////
 }
 
 /*碰撞到单位，调用此函数*/

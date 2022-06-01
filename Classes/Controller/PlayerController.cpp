@@ -129,28 +129,27 @@ void PlayerController::initMouseListener() {
 	_mouseListener->onMouseUp = [&](Event* event) {
 		/*获取事件、鼠标坐标、玩家坐标、鼠标按键*/
 		EventMouse* e = (EventMouse*)event;
-		Vec2 cursorPosition = Vec2(e->getCursorX(), e->getCursorY());
-		Vec2 playerPosition = _controllerListener->getTargetPosition();
+		Vec2 cursorPosition = Vec2(e->getCursorX(), e->getCursorY());								//鼠标坐标，是窗口坐标系下的坐标
+		Vec2 playerPosition = _controllerListener->getTargetPosition() + getParent()->getPosition();//玩家窗口坐标系下坐标=相对地图坐标+地图偏移量
 		auto mouseKey = e->getMouseButton();
 
 		/*以玩家坐标为原点，计算鼠标坐标的角度*/
 		float angle;
-		if (fabs(cursorPosition.x - playerPosition.x < 1e-6) && cursorPosition.y >= playerPosition.y)
+		if (fabs(cursorPosition.x - playerPosition.x) < 1e-6 && cursorPosition.y >= playerPosition.y)
 			angle = M_PI / 2;
-		else if (fabs(cursorPosition.x - playerPosition.x < 1e-6) && cursorPosition.y < playerPosition.y)
+		else if (fabs(cursorPosition.x - playerPosition.x) < 1e-6 && cursorPosition.y < playerPosition.y)
 			angle = -M_PI / 2;
 		else
 			angle = atan((cursorPosition.y - playerPosition.y) / (cursorPosition.x - playerPosition.x));
 
+		/*角度修正*/
+		if (cursorPosition.x < playerPosition.x)
+			angle += M_PI;
+
 		/*左键攻击，右键技能*/
 		if (mouseKey == EventMouse::MouseButton::BUTTON_LEFT)
 		{
-			//_controllerListener->getTargetBrawler()->attack(angle);
-			log(StringUtils::format("player position x = %f", _controllerListener->getTargetPosition().x).c_str());
-			log(StringUtils::format("player position x = %f", _controllerListener->getTargetPosition().y).c_str());
-			log(StringUtils::format("cursor position x = %f", cursorPosition.x).c_str());
-			log(StringUtils::format("cursor position x = %f", cursorPosition.y).c_str());
-			_controllerListener->setTargetPosition(_controllerListener->getTargetPosition() + Vec2(100 * cos(angle), 100 * sin(angle)));
+			_controllerListener->getTargetBrawler()->attack(angle);
 		}
 		else if (mouseKey == EventMouse::MouseButton::BUTTON_RIGHT)
 		{
@@ -159,7 +158,7 @@ void PlayerController::initMouseListener() {
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(_mouseListener, this);
 }
-
+/*控制器精灵图标变化*/
 void PlayerController::changeControllerSprite()
 {
 	SpriteFrame* frame;

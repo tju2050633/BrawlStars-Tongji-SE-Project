@@ -7,15 +7,14 @@ USING_NS_CC;
 
 class Entity : public Node {
 	/*属性*/
+	CC_SYNTHESIZE(Layer*, _gameScene, GameScene);     //所处场景
 	CC_SYNTHESIZE(Sprite*, _sprite, Sprite);          //精灵
-	CC_SYNTHESIZE(Sprite*, _hpBar, HpBar);      //血条组件
+	CC_SYNTHESIZE(Sprite*, _hpBar, HpBar);			  //血条组件
 	CC_SYNTHESIZE(INT32, _healthPoint, HealthPoint);  //血量
 	CC_SYNTHESIZE(INT32, _attackDamage, AttackDamage);//攻击力
 	CC_SYNTHESIZE(INT32, _moveSpeed, MoveSpeed);      //移速
 	CC_SYNTHESIZE(float, _attackInterval, AttackInterval);  //攻击间隔
 	CC_SYNTHESIZE(bool, _inBush, InBush);           //判断是否在草丛中
-private:
-
 public:
 	/*构造函数 析构函数*/
 	Entity();
