@@ -65,6 +65,7 @@ list(APPEND GAME_SOURCE
      Classes/Scene/GameScene.cpp	
      Classes/Scene/SelectBrawler.cpp
      Classes/Scene/SelectMap.cpp
+     Classes/Scene/Room.cpp
 
      Classes/Entity/Bear.cpp
      Classes/Entity/Box.cpp
@@ -94,6 +95,7 @@ list(APPEND GAME_HEADER
      Classes/Scene/GameScene.h
      Classes/Scene/SelectBrawler.h
      Classes/Scene/SelectMap.h
+     Classes/Scene/Room.h
 
      Classes/Entity/Bear.h
      Classes/Entity/Box.h
