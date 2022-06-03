@@ -18,11 +18,6 @@ public:
 
 	/*切换到游戏菜单*/
 	void EnterMenu(float dt);
-
-	/*异步加载图标回调函数*/
-	void plistImageAsyncCallback(Texture2D* texture);
-	void plistControllerAsyncCallback(Texture2D* texture);
-	void plistAttackAsyncCallback(Texture2D* texture);
 };
 
 #endif // !__OPENING_ANIMATION_H_

@@ -1,6 +1,8 @@
 #include <cmath>
 #include "Controller/PlayerController.h"
 #include "Entity/Brawler.h"
+#include "Utils/AnimationUtils.h"
+#include "Scene/GameScene.h"
 
 bool PlayerController::init()
 {
@@ -29,131 +31,97 @@ void PlayerController::initKeyboardListener()
 /*键盘监听器回调函数*/
 void PlayerController::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
-	/*按下键盘监听，WASD（及对应大写情况）分别设置对象速度，并替换控制器图标*/
-	switch (keyCode)
+	/*动画参数*/
+	AnimationUtils::BrawlerEnum brawler = _controllerListener->getTargetBrawler()->getAnimateBrawler();
+	float time = 0.6;
+	INT32 iFrameNum = brawler == AnimationUtils::Stu? 1 : 3;
+	INT32 loop = -1;
+
+	/*按下键盘监听，WASD（及对应大写情况）分别设置对象速度，运行动画，并替换控制器图标*/
+	if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_W || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_W)
 	{
-	case cocos2d::EventKeyboard::KeyCode::KEY_W:
 		_controllerListener->setTargetMoveSpeedY(_controllerListener->getTargetBrawler()->getMoveSpeed());
-		_keyW = true;	//设置对应键的状态为按下，为保证同一时刻最多两个键视作激活，此时对应的键为未按下
-		_keyS = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_A:
-		_controllerListener->setTargetMoveSpeedX(-_controllerListener->getTargetBrawler()->getMoveSpeed());
-		_keyA = true;
-		_keyD = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_S:
-		_controllerListener->setTargetMoveSpeedY(-_controllerListener->getTargetBrawler()->getMoveSpeed());
-		_keyS = true;
-		_keyW = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_D:
-		_controllerListener->setTargetMoveSpeedX(_controllerListener->getTargetBrawler()->getMoveSpeed());
-		_keyD = true;
-		_keyA = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_W:
-		_controllerListener->setTargetMoveSpeedY(_controllerListener->getTargetBrawler()->getMoveSpeed());
+		AnimationUtils::runAnimate(_controllerListener->getTargetBrawler(), brawler, AnimationUtils::Top, time, iFrameNum, loop);
 		_keyW = true;
 		_keyS = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_A:
+	}
+	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_A || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_A)
+	{
 		_controllerListener->setTargetMoveSpeedX(-_controllerListener->getTargetBrawler()->getMoveSpeed());
+		AnimationUtils::runAnimate(_controllerListener->getTargetBrawler(), brawler, AnimationUtils::Left, time, iFrameNum, loop);
 		_keyA = true;
 		_keyD = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_S:
+	}
+	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_S || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_S)
+	{
 		_controllerListener->setTargetMoveSpeedY(-_controllerListener->getTargetBrawler()->getMoveSpeed());
+		AnimationUtils::runAnimate(_controllerListener->getTargetBrawler(), brawler, AnimationUtils::Bottom, time, iFrameNum, loop);
 		_keyS = true;
 		_keyW = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_D:
+	}
+	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_D || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_D)
+	{
 		_controllerListener->setTargetMoveSpeedX(_controllerListener->getTargetBrawler()->getMoveSpeed());
+		AnimationUtils::runAnimate(_controllerListener->getTargetBrawler(), brawler, AnimationUtils::Right, time, iFrameNum, loop);
 		_keyD = true;
 		_keyA = false;
-		break;
-	default:
-		break;
 	}
+
 	changeControllerSprite();
-	/*播放动画*/
-	if (_keyD)
-	{
-		Vector<SpriteFrame*> frames;
-		auto spriteFrameCache = SpriteFrameCache::getInstance();
-		spriteFrameCache->addSpriteFramesWithFile("Animation/PrimoRight.plist");
-		for (int i = 1; i <= 9; i++)
-		{
-			auto frame = spriteFrameCache->getSpriteFrameByName(StringUtils::format("Primo_%d.png", i).c_str());
-			frames.pushBack(frame);
-		}
-		auto animation = Animation::createWithSpriteFrames(frames, 1.5f / 9.0f, -1);
-
-		auto animate = Animate::create(animation);
-
-		_controllerListener->getTargetBrawler()->setRunningAnimate(animate);
-		_controllerListener->getTargetBrawler()->getSprite()->setScale(1);
-		_controllerListener->getTargetBrawler()->getSprite()->runAction(animate);
-	}
 }
 
 void PlayerController::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 {
+	AnimationUtils::TypeEnum currentDirection = AnimationUtils::Bottom;
 	/*松开键盘监听，WASD（及对应大写情况）分别设置对应速度为0*/
-	switch (keyCode)
+	if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_W || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_W)
 	{
-	case cocos2d::EventKeyboard::KeyCode::KEY_W:
-		if (!_keyS)	//判断对应的键未按下，才置该方向速度为0。防止按下S的同时按下W，松开S时W按下了但速度为0.
+		if (!_keyS)//判断对应的键未按下，才置该方向速度为0。防止按下S的同时按下W，松开S时W按下了但速度为0.
 			_controllerListener->setTargetMoveSpeedY(0);
 		_keyW = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_A:
-		if (!_keyD)
-			_controllerListener->setTargetMoveSpeedX(0);
-		_keyA = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_S:
-		if (!_keyW)
-			_controllerListener->setTargetMoveSpeedY(0);
-		_keyS = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_D:
-		if (!_keyA)
-			_controllerListener->setTargetMoveSpeedX(0);
-		_keyD = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_W:
-		if (!_keyS)
-			_controllerListener->setTargetMoveSpeedY(0);
-		_keyW = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_A:
-		if (!_keyD)
-			_controllerListener->setTargetMoveSpeedX(0);
-		_keyA = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_S:
-		if (!_keyW)
-			_controllerListener->setTargetMoveSpeedY(0);
-		_keyS = false;
-		break;
-	case cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_D:
-		if (!_keyA)
-			_controllerListener->setTargetMoveSpeedX(0);
-		_keyD = false;
-		break;
-	default:
-		break;
+		currentDirection = AnimationUtils::Top;
 	}
+	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_A || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_A)
+	{
+		if (!_keyD)
+			_controllerListener->setTargetMoveSpeedX(0);
+		_keyA = false;
+		currentDirection = AnimationUtils::Left;
+	}
+	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_S || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_S)
+	{
+		if (!_keyW)
+			_controllerListener->setTargetMoveSpeedY(0);
+		_keyS = false;
+		currentDirection = AnimationUtils::Bottom;
+	}
+	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_D || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_D)
+	{
+		if (!_keyA)
+			_controllerListener->setTargetMoveSpeedX(0);
+		_keyD = false;
+		currentDirection = AnimationUtils::Right;
+	}
+
 	changeControllerSprite();
 
-	if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_D)
-	{
-		auto animate = _controllerListener->getTargetBrawler()->getRunningAnimate();
-		_controllerListener->getTargetBrawler()->getSprite()->stopAction(animate);
-		_controllerListener->getTargetBrawler()->setRunningAnimate(nullptr);
-		_controllerListener->getTargetBrawler()->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Primo_1.png"));
-	}
+	/*动画参数*/
+	AnimationUtils::BrawlerEnum brawler = _controllerListener->getTargetBrawler()->getAnimateBrawler();
+	float time = 0.6;
+	INT32 iFrameNum = brawler == AnimationUtils::Stu ? 1 : 3;
+	INT32 loop = -1;
+
+	/*松开按键后还剩一个按键激活，动画设为改方向；无按键激活，设为松开键的方向*/
+	if (_keyW)
+		AnimationUtils::runAnimate(_controllerListener->getTargetBrawler(), brawler, AnimationUtils::Top, time, iFrameNum, loop);
+	else if (_keyA)
+		AnimationUtils::runAnimate(_controllerListener->getTargetBrawler(), brawler, AnimationUtils::Left, time, iFrameNum, loop);
+	else if (_keyS)
+		AnimationUtils::runAnimate(_controllerListener->getTargetBrawler(), brawler, AnimationUtils::Bottom, time, iFrameNum, loop);
+	else if (_keyD)
+		AnimationUtils::runAnimate(_controllerListener->getTargetBrawler(), brawler, AnimationUtils::Right, time, iFrameNum, loop);
+	else
+		AnimationUtils::stopAnimate(_controllerListener->getTargetBrawler(), brawler, currentDirection);
 }
 
 /*鼠标监听器*/
@@ -176,6 +144,10 @@ void PlayerController::onMouseDown(Event* event)
 	Vec2 playerPosition = _controllerListener->getTargetPosition() + getParent()->getPosition();//玩家窗口坐标系下坐标=相对地图坐标+地图偏移量
 	Sprite* rangeIndicator = _controllerListener->getTargetBrawler()->getRangeIndicator();
 	auto mouseKey = e->getMouseButton();
+
+	/*点按钮时无反应*/
+	if (_rectReturnButton.containsPoint(cursorPosition) || _rectEmotionButton.containsPoint(cursorPosition))
+		return;
 
 	/*获得鼠标坐标的角度*/
 	float angle = calculateAngle(cursorPosition, playerPosition);
@@ -220,16 +192,20 @@ void PlayerController::onMouseUp(Event* event)
 	/*左键攻击，右键技能*/
 	if (mouseKey == EventMouse::MouseButton::BUTTON_LEFT)
 	{
-		_controllerListener->getTargetBrawler()->attack(angle);
 		/*攻击按钮图标恢复*/
 		_attackCenterSprite->setOpacity(150);
 		_attackCenterSprite->setPosition(_attackCenterOriginPosition);
 		/*范围指示器不显示*/
 		rangeIndicator->setVisible(false);
+
+		/*点按钮时无反应*/
+		if (_rectReturnButton.containsPoint(cursorPosition) || _rectEmotionButton.containsPoint(cursorPosition))
+			return;
+
+		_controllerListener->getTargetBrawler()->attack(angle);
 	}
 	else if (mouseKey == EventMouse::MouseButton::BUTTON_RIGHT)
 	{
-		_controllerListener->getTargetBrawler()->castAbility(angle);
 		/*技能按钮图标恢复*/
 		_abilityRoundSprite->setVisible(false);
 		_abilityCenterSprite->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Ability.png"));
@@ -238,6 +214,12 @@ void PlayerController::onMouseUp(Event* event)
 		rangeIndicator->setScale(0.8);
 		rangeIndicator->setColor(Color3B::WHITE);
 		rangeIndicator->setVisible(false);
+
+		/*点按钮时无反应*/
+		if (_rectReturnButton.containsPoint(cursorPosition) || _rectEmotionButton.containsPoint(cursorPosition))
+			return;
+
+		_controllerListener->getTargetBrawler()->castAbility(angle);
 	}
 }
 

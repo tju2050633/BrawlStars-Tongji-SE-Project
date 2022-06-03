@@ -5,9 +5,12 @@
 #include "Scene/Settings.h"
 #include "Scene/Instruction.h"
 #include "Utils/SceneUtils.h"
+#include "audio/include/SimpleAudioEngine.h"
 
 USING_NS_CC;
 using namespace std;
+using namespace CocosDenshion;
+
 
 /*获得场景对象 √*/
 Scene* GameMenu::createScene()
@@ -27,15 +30,12 @@ bool GameMenu::init()
 		return false;
 	}
 
-	/*声音，这个SimpleAudioEngine后期看是加上还是换别的*/
-	// auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	// if (!audio->isBackgroundMusicPlaying())
-	// {
-	// 	audio->playBackgroundMusic("菜单背景音乐", true);
-	// }
+	/*声音*/
+	
 
 	/*菜单*/
 	initMenu();
+
 	/*奖杯*/
 	initTrophy();
 
@@ -135,6 +135,7 @@ void GameMenu::initTrophy()
 /*菜单 单人模式回调函数 切换至SelectMap*/
 void GameMenu::menuSinglePlayerCallback(cocos2d::Ref* pSender)
 {
+	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectMap);
 }
 
@@ -142,22 +143,26 @@ void GameMenu::menuSinglePlayerCallback(cocos2d::Ref* pSender)
 void GameMenu::menuMultiPlayerCallback(cocos2d::Ref* pSender)
 {
 	/*暂时不实现联机模式*/
+	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 }
 
 /*菜单 设置回调函数 切换至Settings*/
 void GameMenu::menuSettingsCallback(cocos2d::Ref* pSender)
 {
+	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 	SceneUtils::changeScene(SceneUtils::AllScenes::Settings);
 }
 
 /*菜单 游戏说明回调函数 切换至Instruction*/
 void GameMenu::menuInstructionCallback(cocos2d::Ref* pSender)
 {
+	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 	SceneUtils::changeScene(SceneUtils::AllScenes::Instruction);
 }
 
 /*菜单 退出游戏回调函数 √*/
 void GameMenu::menuQuitCallback(cocos2d::Ref* pSender)
 {
+	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 	Director::getInstance()->end();
 }

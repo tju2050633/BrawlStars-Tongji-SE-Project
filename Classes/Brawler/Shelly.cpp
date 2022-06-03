@@ -10,6 +10,7 @@ bool Shelly::init()
 		return false;
 	}
 	setMoveSpeed(SHELLY_MS);
+	setAnimateBrawler(AnimationUtils::Shelly);
 	return true;
 }
 

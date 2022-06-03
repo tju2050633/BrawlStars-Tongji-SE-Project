@@ -36,9 +36,13 @@ public:
 		Stu
 	};
 	/*静态成员变量，存储切换场景时用到的信息*/
-	static AllMap _map;
-	static AllBrawler _brawler;
-	static INT32 _brawlerNumber;
+	static AllMap _map;				
+	static AllBrawler _brawler;		//玩家使用的brawl
+	static INT32 _brawlerNumber;	//brawler总数
+	static INT32 _shellyNumber;		//AI中Shelly个数
+	static INT32 _nitaNumber;		//AI中Nita个数
+	static INT32 _primoNumber;		//AI中Primo个数
+	static INT32 _stuNumber;		//AI中Stu个数
 
 	/*共用的problemLoading，避免代码重复*/
 	static void problemLoading(const char* filename);

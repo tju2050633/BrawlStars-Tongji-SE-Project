@@ -2,8 +2,11 @@
 #include "Scene/OpeningAnimation.h"
 #include "Utils/SceneUtils.h"
 #include "Scene/GameMenu.h"
+#include "Utils/AnimationUtils.h"
+#include "audio/include/SimpleAudioEngine.h"
 
 USING_NS_CC;
+using namespace CocosDenshion;
 
 /*获得场景对象 √*/
 Scene* OpeningAnimation::createScene()
@@ -38,40 +41,90 @@ bool OpeningAnimation::init()
 /*预加载所有图片、音频等资源*/
 void OpeningAnimation::PreloadResource()
 {
+	/*音乐音效*/
+	SimpleAudioEngine::getInstance()->preloadEffect("Music/ButtonEffect.wav");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Combat.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Defeat.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Final.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Menu.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Victory.mp3");
 	/*精灵图*/
 	Director::getInstance()->getTextureCache()->addImage("trophy.png");
+	Director::getInstance()->getTextureCache()->addImage("Portrait/Shelly-Normal.png");
+	Director::getInstance()->getTextureCache()->addImage("Portrait/Nita-Normal.png");
+	Director::getInstance()->getTextureCache()->addImage("Portrait/Primo-Normal.png");
+	Director::getInstance()->getTextureCache()->addImage("Portrait/Stu-Normal.png");
+	/*雪莉*/
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Shelly/Shelly_Neutral.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Shelly/Shelly_Happy.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Shelly/Shelly_GG.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Shelly/Shelly_Sad.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Shelly/Shelly_Thanks.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Shelly/Shelly_Phew.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Shelly/Shelly_Angry.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Shelly/Shelly_Start.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Shelly/Shelly_Kill.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Shelly/Shelly_Ult.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Shelly/Shelly_Hurt.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Shelly/Shelly_Die.png");
+	/*妮塔*/
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Nita/Nita_Neutral.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Nita/Nita_Happy.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Nita/Nita_GG.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Nita/Nita_Sad.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Nita/Nita_Thanks.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Nita/Nita_Phew.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Nita/Nita_Angry.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Nita/Nita_Start.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Nita/Nita_Kill.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Nita/Nita_Ult.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Nita/Nita_Hurt.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Nita/Nita_Die.png");
+	/*普里莫*/
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Primo/Primo_Neutral.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Primo/Primo_Happy.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Primo/Primo_GG.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Primo/Primo_Sad.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Primo/Primo_Thanks.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Primo/Primo_Phew.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Primo/Primo_Angry.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Primo/Primo_Start.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Primo/Primo_Kill.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Primo/Primo_Ult.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Primo/Primo_Hurt.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Primo/Primo_Die.png");
+	/*斯图*/
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Stu/Stu_Neutral.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Stu/Stu_Happy.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Stu/Stu_GG.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Stu/Stu_Sad.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Stu/Stu_Thanks.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Stu/Stu_Phew.png");
+	Director::getInstance()->getTextureCache()->addImage("Emotion/Stu/Stu_Angry.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Stu/Stu_Start.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Stu/Stu_Kill.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Stu/Stu_Ult.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Stu/Stu_Hurt.png");
+	Director::getInstance()->getTextureCache()->addImage("Music/Stu/Stu_Die.png");
+
 	/*后续背景图*/
 	Director::getInstance()->getTextureCache()->addImage("BGimage/GameMenu.png");
 	Director::getInstance()->getTextureCache()->addImage("BGimage/SelectMap.png");
 	Director::getInstance()->getTextureCache()->addImage("BGimage/SelectBrawler.png");
 	/*加载背景图plist*/
-	Director::getInstance()->getTextureCache()->addImageAsync("BGimage/BGimage.plist", CC_CALLBACK_1(OpeningAnimation::plistImageAsyncCallback, this));
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("BGimage/BGimage.plist");
 	/*加载控制器plist*/
-	Director::getInstance()->getTextureCache()->addImageAsync("Controller/Controller.plist", CC_CALLBACK_1(OpeningAnimation::plistControllerAsyncCallback, this));
-	Director::getInstance()->getTextureCache()->addImageAsync("Controller/AttackButton.plist", CC_CALLBACK_1(OpeningAnimation::plistAttackAsyncCallback, this));
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Controller/Controller.plist");
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Controller/AttackButton.plist");
 	/*加载动画帧plist*/
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Animation/Nita.plist");
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Animation/Primo.plist");
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Animation/Stu.plist");
 }
 
 /*切换到游戏菜单*/
 void OpeningAnimation::EnterMenu(float dt)
 {
 	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
-}
-
-void OpeningAnimation::plistImageAsyncCallback(Texture2D* texture) 
-{
-	SpriteFrameCache* cache = SpriteFrameCache::getInstance();
-	cache->addSpriteFramesWithFile("BGimage/BGimage.plist", texture);
-}
-
-void OpeningAnimation::plistControllerAsyncCallback(Texture2D* texture)
-{
-	SpriteFrameCache* cache = SpriteFrameCache::getInstance();
-	cache->addSpriteFramesWithFile("Controller/Controller.plist");
-}
-
-void OpeningAnimation::plistAttackAsyncCallback(Texture2D* texture)
-{
-	SpriteFrameCache* cache = SpriteFrameCache::getInstance();
-	cache->addSpriteFramesWithFile("Controller/AttackButton.plist");
+	SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Menu.mp3", true);
 }

@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "Entity/Entity.h"
 #include "Entity/Bullet.h"
+#include "Utils/AnimationUtils.h"
 
 USING_NS_CC;
 
@@ -21,8 +22,8 @@ class Brawler : public Entity {
 	/*范围指示器*/
 	CC_SYNTHESIZE(Sprite*, _rangeIndicator, RangeIndicator); 
 
-	/*正在运行的动画*/
-	CC_SYNTHESIZE(Animate*, _runningAnimate, RunningAnimate);
+	/*动画需要的英雄枚举类*/
+	CC_SYNTHESIZE(AnimationUtils::BrawlerEnum, _animateBrawler, AnimateBrawler);
 
 public:
 	/*创建对象和初始化函数*/

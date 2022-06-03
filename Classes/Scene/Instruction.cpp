@@ -2,8 +2,10 @@
 #include "Instruction.h"
 #include "GameMenu.h"
 #include "Utils/SceneUtils.h"
+#include "audio/include/SimpleAudioEngine.h"
 
 USING_NS_CC;
+using namespace CocosDenshion;
 
 /*获得场景对象 √*/
 Scene* Instruction::createScene()
@@ -23,17 +25,10 @@ bool Instruction::init()
 		return false;
 	}
 
-	/*声音，这个SimpleAudioEngine后期看是加上还是换别的*/
-	//auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	//if (!audio->isBackgroundMusicPlaying()) {
-		//audio->playBackgroundMusic("选择地图背景音乐", true);
-	//}
-
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	/*背景*/
-
 	SceneUtils::setBGimage("BGimage/Instruction.png", this, SceneUtils::setBGimageWith::TextureCache);
 
 	//菜单
@@ -43,11 +38,10 @@ bool Instruction::init()
 
 	//返回按钮
 
-	MenuItemImage* button = MenuItemImage::create("button/Back-Normal.png",
-		"button/Back-Active.png",
+	MenuItemImage* button = MenuItemImage::create("button/Back-Normal.png", "button/Back-Active.png",
 		[](Ref* pSender)
 		{
-			//场景从Instruction切换至GameMenu
+			SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 			SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 		});
 

@@ -2,6 +2,7 @@
 #define __MENU_H_
 
 #include "cocos2d.h"
+#include "audio/include/AudioEngine.h"
 
 /*【行动指示】菜单界面
 这部分主要实现init函数，那几个回调函数只是切换场景而已，基本不用太管

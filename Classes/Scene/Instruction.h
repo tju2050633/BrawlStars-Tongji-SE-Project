@@ -10,7 +10,6 @@ class Instruction : public Layer
 public:
 	/*创建场景和初始化*/
 	virtual bool init();
-
 	static Scene* createScene();
 
 	/*自动生成create()的宏*/

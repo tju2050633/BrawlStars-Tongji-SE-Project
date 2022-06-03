@@ -3,9 +3,11 @@
 #include <string>
 #include "Scene/SelectBrawler.h"
 #include "Utils/SceneUtils.h"
+#include "audio/include/SimpleAudioEngine.h"
 
 USING_NS_CC;
 using namespace std;
+using namespace CocosDenshion;
 
 /*获得场景对象 √*/
 Scene* SelectBrawler::createScene()
@@ -24,13 +26,6 @@ bool SelectBrawler::init()
 	{
 		return false;
 	}
-
-	/*声音，这个SimpleAudioEngine后期看是加上还是换别的*/
-	/*lx
-	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	if (!audio->isBackgroundMusicPlaying()) {
-		audio->playBackgroundMusic("选择地图背景音乐", true);
-	}*/
 
 	/*菜单*/
 	initMenu();
@@ -101,34 +96,38 @@ void SelectBrawler::initMenu()
 /*选择英雄 雪莉回调函数 √*/
 void SelectBrawler::menuShellyCallback(cocos2d::Ref* pSender)
 {
+	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Shelly;
-	SceneUtils::changeScene(SceneUtils::AllScenes::GameScene);
+	SceneUtils::changeScene(SceneUtils::AllScenes::Room);
 }
 
 /*选择英雄 普里莫回调函数 √*/
 void SelectBrawler::menuPrimoCallback(cocos2d::Ref* pSender)
 {
+	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Primo;
-	SceneUtils::changeScene(SceneUtils::AllScenes::GameScene);
+	SceneUtils::changeScene(SceneUtils::AllScenes::Room);
 }
 
 /*选择英雄 妮塔回调函数 √*/
 void SelectBrawler::menuNitaCallback(cocos2d::Ref* pSender)
 {
+	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Nita;
-	SceneUtils::changeScene(SceneUtils::AllScenes::GameScene);
+	SceneUtils::changeScene(SceneUtils::AllScenes::Room);
 }
 
 /*选择英雄 斯图回调函数 √*/
 void SelectBrawler::menuStuCallback(cocos2d::Ref* pSender)
 {
+	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Stu;
-	SceneUtils::changeScene(SceneUtils::AllScenes::GameScene);
+	SceneUtils::changeScene(SceneUtils::AllScenes::Room);
 }
 
 /*菜单 返回回调函数 √*/
-//场景从SelectBrawler切换至SelectMap
 void SelectBrawler::menuBackCallback(cocos2d::Ref* pSender)
 {
+	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectMap);
 }

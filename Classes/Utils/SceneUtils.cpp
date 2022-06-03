@@ -10,10 +10,13 @@
 
 USING_NS_CC;
 
-/*菜单信息静态变量，初始化*/
 SceneUtils::AllMap SceneUtils::_map = SceneUtils::MapA;
 SceneUtils::AllBrawler SceneUtils::_brawler = SceneUtils::Shelly;
-INT32 SceneUtils::_brawlerNumber = 10;
+INT32 SceneUtils::_brawlerNumber = 0;
+INT32 SceneUtils::_shellyNumber = 0;
+INT32 SceneUtils::_nitaNumber = 0;
+INT32 SceneUtils::_primoNumber = 0;
+INT32 SceneUtils::_stuNumber = 0;
 
 /*共用的problemLoading，避免代码重复*/
 void SceneUtils::problemLoading(const char* filename)
@@ -64,7 +67,7 @@ void SceneUtils::changeScene(AllScenes targetScene)
 		return;
 	}
 	/*新建成功，通过导演启动场景（初始场景）或切换场景*/
-	TransitionScene* pTransScene = TransitionCrossFade::create(1.0f, scene);
+	TransitionScene* pTransScene = TransitionCrossFade::create(0.5f, scene);
 	Director* director = Director::getInstance();
 	if (!director->getRunningScene())
 	{
@@ -76,7 +79,7 @@ void SceneUtils::changeScene(AllScenes targetScene)
 	}
 }
 
-/*从TextureCache中加载背景图*/
+/*加载背景图*/
 void SceneUtils::setBGimage(const char* filename, Layer* layer, setBGimageWith loadWay)
 {
 	/*获取visibleSize和origin*/

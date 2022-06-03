@@ -11,9 +11,11 @@
 #include "Brawler/Stu.h"
 #include "Controller/PlayerController.h"
 #include "Constant/Const.h"
+#include "audio/include/SimpleAudioEngine.h"
 
 USING_NS_CC;
 using namespace std;
+using namespace CocosDenshion;
 
 /*获得场景对象 √*/
 Scene* GameScene::createScene()
@@ -28,6 +30,7 @@ Scene* GameScene::createScene()
 	/*初始化UI层的UI组件*/
 	mapLayer->initLabel();
 	mapLayer->initButton();
+	mapLayer->initEmotionMenu();
 	mapLayer->initControllerSprite();
 	mapLayer->initController();
 
@@ -36,6 +39,8 @@ Scene* GameScene::createScene()
 	scene->addChild(UILayer);
 	return scene;
 }
+
+/*************************************************************初始化UI层组件*************************************************************/
 
 /*UI层 标签*/
 void GameScene::initLabel()
@@ -50,44 +55,83 @@ void GameScene::initLabel()
 /*UI层 按钮*/
 void GameScene::initButton()
 {
-	/*菜单所有按钮统一处理，必须用用cocos::Vector*/
-	Vector<MenuItem*> MenuItemVector;
-	//文件名所用的字符串
-	vector<string> stringVector = { "Emotion", "Back" };
-	//按钮回调函数
-	vector<void (GameScene::*)(Ref* pSender)> CallbackVector = { &GameScene::menuEmotionCallback, &GameScene::menuBackCallback };
-	//按钮尺寸
-	vector<float> ScaleVector = { 1, 1 };
-	//按钮锚点
-	vector<Vec2> AnchorVector = {
-		Vec2(1, 1),
-		Vec2(0, 1) };
-	//按钮坐标
-	vector<Vec2> PositionVector = {
-		Vec2(_visibleSize.width + _origin.x, _visibleSize.height + _origin.y - 250),
-		Vec2(_origin.x, _visibleSize.height + _origin.y) };
-	/*逐个设置坐标，存入Vector*/
-	for (int i = 0; i < stringVector.size(); i++)
-	{
-		MenuItem* button = MenuItemImage::create(
-			"button/" + stringVector.at(i) + "-Normal.png",
-			"button/" + stringVector.at(i) + "-Active.png",
-			bind(CallbackVector.at(i), this, std::placeholders::_1));
-		if (button == nullptr || button->getContentSize().width <= 0 || button->getContentSize().height <= 0)
-			SceneUtils::problemLoading(stringVector.at(i).c_str());
-		else
-		{
-			button->setScale(ScaleVector.at(i));
-			button->setAnchorPoint(AnchorVector.at(i));
-			button->setPosition(PositionVector.at(i));
-		}
-		MenuItemVector.pushBack(button);
-	}
+	_emotionButton = MenuItemImage::create("button/Emotion-Normal.png", "button/Emotion-Active.png", bind(&GameScene::menuEmotionCallback, this, std::placeholders::_1));
+	_emotionButton->setAnchorPoint(Vec2(1, 1));
+	_emotionButton->setPosition(Vec2(_visibleSize.width + _origin.x, _visibleSize.height + _origin.y - 250));
 
-	/*总的菜单，包含以上菜单选项*/
-	Menu* menu = Menu::createWithArray(MenuItemVector);
+	_returnButton = MenuItemImage::create("button/Back-Normal.png", "button/Back-Active.png", bind(&GameScene::menuBackCallback, this, std::placeholders::_1));
+	_returnButton->setAnchorPoint(Vec2(0, 1));
+	_returnButton->setPosition(Vec2(_origin.x, _visibleSize.height + _origin.y));
+
+	Menu* menu = Menu::create(_emotionButton, _returnButton, NULL);
 	menu->setPosition(Vec2::ZERO);
 	_UILayer->addChild(menu, 1);
+}
+
+/*UI层 表情菜单*/
+void GameScene::initEmotionMenu()
+{
+	string brawlerName;
+	switch (SceneUtils::_brawler)
+	{
+	case SceneUtils::Shelly:
+		brawlerName = "Shelly";
+		break;
+	case SceneUtils::Nita:
+		brawlerName = "Nita";
+		break;
+	case SceneUtils::Primo:
+		brawlerName = "Primo";
+		break;
+	case SceneUtils::Stu:
+		brawlerName = "Stu";
+		break;
+	}
+
+	Vector<MenuItem*> EmotionVector;
+	vector<string> stringVector = { "Neutral","Happy", "GG", "Angry", "Sad", "Phew", "Thanks" };
+
+	for (int i = 0; i < 7; i++)
+	{
+		/*创建*/
+		MenuItem* item = MenuItemImage::create(
+			"Emotion/" + brawlerName + "/" + brawlerName + "_" + stringVector.at(i) + ".png",
+			"Emotion/" + brawlerName + "/" + brawlerName + "_" + stringVector.at(i) + ".png",
+			[=](Ref* sender) {
+				/*表情菜单隐藏*/
+				_emotionMenu->setVisible(false);
+				/*移除旧表情，创建新表情*/
+				_player->removeChildByName("Emotion");
+				auto emotion = Sprite::createWithTexture(Director::getInstance()->getTextureCache()
+					->addImage("Emotion/" + brawlerName + "/" + brawlerName + "_" + stringVector.at(i) + ".png"));
+				/*设置尺寸*/
+				emotion->setScaleX(80 / emotion->getContentSize().width);
+				emotion->setScaleY(80 / emotion->getContentSize().height);
+				/*设置位置*/
+				emotion->setPosition(Vec2(0, 75));
+				_player->addChild(emotion, 1, "Emotion");
+				/*定时器*/
+				scheduleOnce(SEL_SCHEDULE(&GameScene::scheduleRemoveEmotionCallback), 2);
+			});
+		/*设置尺寸*/
+		item->setScaleX(80 / item->getContentSize().width);
+		item->setScaleY(80 / item->getContentSize().height);
+		/*设置位置*/
+		Vec2 position = Vec2(_origin.x + _visibleSize.width, _origin.y + _visibleSize.height / 2);
+		if (i <= 3)
+			item->setPosition(position + Vec2(-400 + i * 100, 100));
+		else
+			item->setPosition(position + Vec2(-400 + (i - 4) * 100, 0));
+		
+		/*存入数组*/
+		EmotionVector.pushBack(item);
+	}
+	/*放置*/
+	_emotionMenu = Menu::createWithArray(EmotionVector);
+	_emotionMenu->setPosition(Vec2::ZERO);
+	_emotionMenu->setVisible(false);
+
+	_UILayer->addChild(_emotionMenu, 2);
 }
 
 /*UI层 控制器图标*/
@@ -136,7 +180,7 @@ void GameScene::initControllerSprite()
 	_UILayer->addChild(_abilityCenterSprite);
 }
 
-/*控制器*/
+/*UI层 控制器*/
 void GameScene::initController()
 {
 	/*创建控制器*/
@@ -150,9 +194,16 @@ void GameScene::initController()
 	_playerController->setAttackCenterSprite(_attackCenterSprite);
 	_playerController->setAbilityCenterSprite(_abilityCenterSprite);
 	_playerController->setAbilityRoundSprite(_abilityRoundSprite);
+
 	/*保存攻击和技能图标的原位置*/
 	_playerController->setAttackCenterOriginPosition(_attackCenterSprite->getPosition());
 	_playerController->setAbilityCenterOriginPosition(_abilityCenterSprite->getPosition());
+
+	/*储存菜单项矩形，防误点*/
+	_playerController->setRectReturnButton(CCRectMake(_returnButton->getPosition().x, _returnButton->getPosition().y - _returnButton->getContentSize().height,
+		_returnButton->getContentSize().width, _returnButton->getContentSize().height));
+	_playerController->setRectEmotionButton(CCRectMake(_emotionButton->getPosition().x - _emotionButton->getContentSize().width, _emotionButton->getPosition().y - _emotionButton->getContentSize().height,
+		_emotionButton->getContentSize().width, _emotionButton->getContentSize().height));
 
 	this->addChild(_playerController);
 }
@@ -169,12 +220,10 @@ bool GameScene::init()
 	/*获取visibleSize和origin*/
 	_visibleSize = Director::getInstance()->getVisibleSize(); //得到屏幕大小
 	_origin = Director::getInstance()->getVisibleOrigin();	  //获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
-
+	
 	/*初始化*/
 	initMap();
 	initBrawler();
-	initAI();
-	//initController();
 	
 	this->scheduleUpdate();
 
@@ -187,15 +236,14 @@ void GameScene::update(float dt)
 	/*每帧更新目标位置，即当前位置+速度*每帧时间产生的移动量*/
 	Vec2 playerPos = _player->getTargetPosition() + Vec2(_player->getTargetMoveSpeedX() * dt, _player->getTargetMoveSpeedY() * dt);
 
-	this->setPlayerPosition(playerPos);  //设置玩家位置
-	this->setGrassOpacity(playerPos);    //设置草丛透明度
-	this->setViewPointCenter(playerPos); //设置镜头跟随
-	this->smokeDamage(playerPos);        //毒烟对玩家伤害
-
-	_label->setString(StringUtils::format("Brawler Left: %d", SceneUtils::_brawlerNumber).c_str());//刷新Label显示内容
+	this->setPlayerPosition(playerPos);//设置玩家位置
+	this->setGrassOpacity(playerPos);//设置草丛透明度
+	this->setViewPointCenter(playerPos);//设置镜头跟随
 }
 
-/*初始化 地图*/
+/*************************************************************初始化地图层*************************************************************/
+
+/*地图层 瓦片地图*/
 void GameScene::initMap()
 {
 	/* 添加地图 */
@@ -210,15 +258,15 @@ void GameScene::initMap()
 	_collidable = _map->getLayer("Collidable");
 	_collidable->setVisible(false);
 
+	/* 添加宝箱图层 */
+	_box = _map->getLayer("Box");
+
 	/* 添加草丛图层 */
 	_grass = _map->getLayer("Grass");
 
 	/* 添加毒烟图层 */
 	_smoke = _map->getLayer("Smoke");
 	this->smokeMove();
-
-	/* 添加宝箱图层 */
-	_box = _map->getLayer("Box");
 
 	/* 添加宝箱对象层 */
 	_boxObjects = _map->getObjectGroup("BoxObjects");
@@ -232,46 +280,80 @@ void GameScene::initMap()
 	_AISpawnPoint = _map->getObjectGroup("AISpawnPoint");
 }
 
-/*初始化 人物*/
+/*地图层 人物*/
 void GameScene::initBrawler()
 {
 	/*创建Player*/
 	_player = Player::create();
 
 	/*绑定英雄*/
-	_player->setBrawler(Shelly::create());
-	_player->addChild(_player->getBrawler());
-
+	string brawlerName = bindBrawler();
+	
 	/*英雄所处场景绑定为此游戏场景*/
 	_player->getBrawler()->setGameScene(this);
 
 	/*英雄绑定精灵图像*/
 	_player->getBrawler()->bindSprite(Sprite::create("Portrait/Shelly-Normal.png"));
-	_player->getBrawler()->getSprite()->setScale(0.1);
+	_player->getBrawler()->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(brawlerName + "_Bottom1.png"));
 
-	/*将玩家放置在出生点*/
-	auto spawnPoint = _playerSpawnPoint->getObject("SpawnPoint"); //出生点
-	float x = spawnPoint["x"].asFloat();
-	float y = spawnPoint["y"].asFloat();
-	_player->setPosition(Vec2(x, y));
+	/*将玩家和AI放置在出生点*/
+	placeInSpawnPoint();
 
 	/*镜头移到玩家所在处*/
 	setViewPointCenter(_player->getPosition());
 
 	/*添加范围指示器*/
-	auto rangeIndicator = Sprite::create("Controller/sector.png");
-	rangeIndicator->setAnchorPoint(Vec2(0.53, 0.55));
-	rangeIndicator->setRotation(15);
-	rangeIndicator->setVisible(false);
-	_player->getBrawler()->setRangeIndicator(rangeIndicator);
-	_player->addChild(rangeIndicator);
+	addRangeIndicator(SceneUtils::_brawler);
+
+	/*播放英雄开场语音*/
+	string filepath = "Music/" + brawlerName + "/" + brawlerName + "_Start.mp3";
+	SimpleAudioEngine::getInstance()->playEffect(filepath.c_str());
 
 	this->addChild(_player);
 }
 
-/*初始化 AI*/
-void GameScene::initAI()
+/*************************************************************初始化英雄 辅助函数*************************************************************/
+
+/*绑定英雄*/
+string GameScene::bindBrawler()
 {
+	string brawlerName;
+	switch (SceneUtils::_brawler)
+	{
+	case SceneUtils::Shelly:
+		_player->setBrawler(Shelly::create());
+		brawlerName = "Shelly";
+		break;
+	case SceneUtils::Nita:
+		_player->setBrawler(Nita::create());
+		brawlerName = "Nita";
+		break;
+	case SceneUtils::Primo:
+		_player->setBrawler(Primo::create());
+		brawlerName = "Primo";
+		break;
+	case SceneUtils::Stu:
+		_player->setBrawler(Stu::create());
+		brawlerName = "Stu";
+		break;
+	default:
+		break;
+	}
+	_player->addChild(_player->getBrawler());
+
+	return brawlerName;
+}
+
+/*放置玩家和AI在出生点*/
+void GameScene::placeInSpawnPoint()
+{
+	/*放置玩家*/
+	auto spawnPoint = _playerSpawnPoint->getObject("SpawnPoint"); //出生点
+	float x = spawnPoint["x"].asFloat();
+	float y = spawnPoint["y"].asFloat();
+	_player->setPosition(Vec2(x, y));
+
+	/*放置AI*/
 	if (_AISpawnPoint != NULL)
 	{
 		ValueVector AIGroup = _AISpawnPoint->getObjects(); //获取AI对象层的所有对象
@@ -283,22 +365,62 @@ void GameScene::initAI()
 			int y = objInfo.at("y").asInt();
 			Point AISpawnPoint = Vec2(x, y); //AI出生点
 			/***************************
-			    在该位置设置AI
+				在该位置设置AI
 			****************************/
 		}
 	}
 }
 
+/*添加范围指示器*/
+void GameScene::addRangeIndicator(SceneUtils::AllBrawler brawler)
+{
+	switch (brawler)
+	{
+	case SceneUtils::Shelly:
+		break;
+	case SceneUtils::Nita:
+		break;
+	case SceneUtils::Primo:
+		break;
+	case SceneUtils::Stu:
+		break;
+	}
+	auto rangeIndicator = Sprite::create("Controller/sector.png");
+	rangeIndicator->setAnchorPoint(Vec2(0.53, 0.55));
+	rangeIndicator->setRotation(15);
+	rangeIndicator->setVisible(false);
+	_player->getBrawler()->setRangeIndicator(rangeIndicator);
+	_player->addChild(rangeIndicator);
+}
+
+/*************************************************************回调函数*************************************************************/
+
 /*表情 回调函数*/
 void GameScene::menuEmotionCallback(cocos2d::Ref* pSender)
 {
+	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if(_emotionMenu->isVisible())
+		_emotionMenu->setVisible(false);
+	else
+		_emotionMenu->setVisible(true);
 }
 
-/*菜单 返回回调函数 √*/
+/*返回 回调函数*/
 void GameScene::menuBackCallback(cocos2d::Ref* pSender)
 {
+	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+	SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Menu.mp3");
 	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 }
+
+/*移除人物表情*/
+void GameScene::scheduleRemoveEmotionCallback(float dt)
+{
+	_player->removeChildByName("Emotion");
+}
+
+/*************************************************************瓦片地图需要的函数*************************************************************/
 
 /* 设置窗口镜头位置 */
 void GameScene::setViewPointCenter(Point position)
@@ -330,26 +452,11 @@ Point GameScene::tileCoordForPosition(Point position)
 	return Vec2(x, y);
 }
 
-/* 获取全部宝箱的位置 */
-void GameScene::getBoxPosition()
-{
-	if (_boxObjects != NULL)
-	{
-		ValueVector boxGroup = _boxObjects->getObjects(); //获取宝箱对象层的所有对象
-		int size = boxGroup.size();
-		for (int i = 0; i < size; i++)
-		{
-			ValueMap objInfo = boxGroup.at(i).asValueMap();
-			int x = objInfo.at("x").asInt();
-			int y = objInfo.at("y").asInt();
-			_boxPos.push_back(Vec2(x, y)); //存储全部宝箱位置坐标
-		}
-	}
-}
-
 /* 设置玩家位置，添加物理碰撞 */
 void GameScene::setPlayerPosition(Point position)
 {
+	Vec2 tileSize = _map->getTileSize(); //获得单个瓦片尺寸
+
 	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
 	if (_collidable->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定碰撞属性单元格
 	{
@@ -409,6 +516,23 @@ void GameScene::breakWall(Point position)
 	}
 }
 
+/* 获取全部宝箱的位置 */
+void GameScene::getBoxPosition()
+{
+	if (_boxObjects != NULL)
+	{
+		ValueVector boxGroup = _boxObjects->getObjects(); //获取宝箱对象层的所有对象
+		int size = boxGroup.size();
+		for (int i = 0; i < size; i++)
+		{
+			ValueMap objInfo = boxGroup.at(i).asValueMap();
+			int x = objInfo.at("x").asInt();
+			int y = objInfo.at("y").asInt();
+			_boxPos.push_back(Vec2(x, y)); //存储全部宝箱位置坐标
+		}
+	}
+}
+
 /* 设置敌人是否可见 */
 void GameScene::setEnemyVisible(Sprite* _enemy)
 {
@@ -453,7 +577,7 @@ void GameScene::boxDie(Point position) //输入死亡宝箱的位置坐标（从_boxPos中获取
 	}
 
 	/**************************************
-	     掉落buff/宝箱破裂动画等
+		 掉落buff/宝箱破裂动画等
 	****************************************/
 }
 
@@ -510,8 +634,9 @@ void GameScene::smokeDamage(Point position)
 		if (_smokeCell->isVisible()) //如果毒烟可见
 		{
 			/**************************
-			     玩家在毒烟中受伤
+				 玩家在毒烟中受伤
 			**************************/
 		}
 	}
 }
+
