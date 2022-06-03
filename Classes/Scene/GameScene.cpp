@@ -173,6 +173,7 @@ bool GameScene::init()
 	/*初始化*/
 	initMap();
 	initBrawler();
+	initAI();
 	//initController();
 	
 	this->scheduleUpdate();
@@ -186,9 +187,10 @@ void GameScene::update(float dt)
 	/*每帧更新目标位置，即当前位置+速度*每帧时间产生的移动量*/
 	Vec2 playerPos = _player->getTargetPosition() + Vec2(_player->getTargetMoveSpeedX() * dt, _player->getTargetMoveSpeedY() * dt);
 
-	this->setPlayerPosition(playerPos);//设置玩家位置
-	this->setGrassOpacity(playerPos);//设置草丛透明度
-	this->setViewPointCenter(playerPos);//设置镜头跟随
+	this->setPlayerPosition(playerPos);  //设置玩家位置
+	this->setGrassOpacity(playerPos);    //设置草丛透明度
+	this->setViewPointCenter(playerPos); //设置镜头跟随
+	this->smokeDamage(playerPos);        //毒烟对玩家伤害
 
 	_label->setString(StringUtils::format("Brawler Left: %d", SceneUtils::_brawlerNumber).c_str());//刷新Label显示内容
 }
@@ -208,14 +210,26 @@ void GameScene::initMap()
 	_collidable = _map->getLayer("Collidable");
 	_collidable->setVisible(false);
 
-	/* 添加宝箱图层 */
-	_box = _map->getLayer("Box");
-
 	/* 添加草丛图层 */
 	_grass = _map->getLayer("Grass");
 
-	/* 获取地图中对象层 */
-	_objectGroup = _map->getObjectGroup("Objects");
+	/* 添加毒烟图层 */
+	_smoke = _map->getLayer("Smoke");
+	this->smokeMove();
+
+	/* 添加宝箱图层 */
+	_box = _map->getLayer("Box");
+
+	/* 添加宝箱对象层 */
+	_boxObjects = _map->getObjectGroup("BoxObjects");
+	/* 获取全部宝箱位置 */
+	this->getBoxPosition();
+
+	/* 添加玩家出生点坐标对象层 */
+	_playerSpawnPoint = _map->getObjectGroup("PlayerSpawnPoint");
+
+	/* 添加AI出生点坐标对象层 */
+	_AISpawnPoint = _map->getObjectGroup("AISpawnPoint");
 }
 
 /*初始化 人物*/
@@ -236,7 +250,7 @@ void GameScene::initBrawler()
 	_player->getBrawler()->getSprite()->setScale(0.1);
 
 	/*将玩家放置在出生点*/
-	auto spawnPoint = _objectGroup->getObject("SpawnPoint"); //出生点
+	auto spawnPoint = _playerSpawnPoint->getObject("SpawnPoint"); //出生点
 	float x = spawnPoint["x"].asFloat();
 	float y = spawnPoint["y"].asFloat();
 	_player->setPosition(Vec2(x, y));
@@ -253,6 +267,26 @@ void GameScene::initBrawler()
 	_player->addChild(rangeIndicator);
 
 	this->addChild(_player);
+}
+
+/*初始化 AI*/
+void GameScene::initAI()
+{
+	if (_AISpawnPoint != NULL)
+	{
+		ValueVector AIGroup = _AISpawnPoint->getObjects(); //获取AI对象层的所有对象
+		int size = AIGroup.size();
+		for (int i = 0; i < size; i++) //遍历AI对象层所有出生点对象坐标
+		{
+			ValueMap objInfo = AIGroup.at(i).asValueMap();
+			int x = objInfo.at("x").asInt();
+			int y = objInfo.at("y").asInt();
+			Point AISpawnPoint = Vec2(x, y); //AI出生点
+			/***************************
+			    在该位置设置AI
+			****************************/
+		}
+	}
 }
 
 /*表情 回调函数*/
@@ -296,11 +330,26 @@ Point GameScene::tileCoordForPosition(Point position)
 	return Vec2(x, y);
 }
 
+/* 获取全部宝箱的位置 */
+void GameScene::getBoxPosition()
+{
+	if (_boxObjects != NULL)
+	{
+		ValueVector boxGroup = _boxObjects->getObjects(); //获取宝箱对象层的所有对象
+		int size = boxGroup.size();
+		for (int i = 0; i < size; i++)
+		{
+			ValueMap objInfo = boxGroup.at(i).asValueMap();
+			int x = objInfo.at("x").asInt();
+			int y = objInfo.at("y").asInt();
+			_boxPos.push_back(Vec2(x, y)); //存储全部宝箱位置坐标
+		}
+	}
+}
+
 /* 设置玩家位置，添加物理碰撞 */
 void GameScene::setPlayerPosition(Point position)
 {
-	Vec2 tileSize = _map->getTileSize(); //获得单个瓦片尺寸
-
 	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
 	if (_collidable->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定碰撞属性单元格
 	{
@@ -380,5 +429,89 @@ void GameScene::setEnemyVisible(Sprite* _enemy)
 	else //如果玩家不处于草丛中
 	{
 		_enemy->setVisible(true); //敌人可见
+	}
+}
+
+/* 宝箱被摧毁（死亡） */
+void GameScene::boxDie(Point position) //输入死亡宝箱的位置坐标（从_boxPos中获取）
+{
+	/* 从地图上移除宝箱 */
+	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
+	if (_box->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定宝箱单元格
+	{
+		_box->removeTileAt(tileCoord); //移除该单元格，表示宝箱死亡
+		_collidable->removeTileAt(tileCoord); //该位置不再受物理碰撞影响
+	}
+
+	/* 从宝箱位置容器中删除该位置坐标 */
+	for (vector<Point>::iterator i = _boxPos.begin(); i < _boxPos.end(); i++)
+	{
+		if (*i == position)
+		{
+			_boxPos.erase(i); //删除该坐标
+		}
+	}
+
+	/**************************************
+	     掉落buff/宝箱破裂动画等
+	****************************************/
+}
+
+/* 毒烟移动(每调用一次毒烟移动一格) */
+void GameScene::smokeMove()
+{
+	/* 初始毒烟位置 */
+	static int
+		xTileCoordMin = 0,
+		xTileCoordMax = _map->getMapSize().width,
+		yTileCoordMin = 0,
+		yTileCoordMax = _map->getMapSize().height;
+
+	/* 全部显示毒烟 */
+	for (int X = xTileCoordMin; X < xTileCoordMax; X++)
+	{
+		for (int Y = yTileCoordMin; Y < yTileCoordMax; Y++)
+		{
+			if (_smoke->getTileAt(Vec2(X, Y))) //如果通过tile坐标能够访问指定毒烟单元格
+			{
+				_smokeCell = _smoke->getTileAt(Vec2(X, Y));
+				_smokeCell->setVisible(true);
+			}
+		}
+	}
+
+	/* 毒烟移动 */
+	++xTileCoordMin;
+	--xTileCoordMax;
+	++yTileCoordMin;
+	--yTileCoordMax;
+
+	/* 中心不显示毒烟 */
+	for (int X = xTileCoordMin; X < xTileCoordMax; X++)
+	{
+		for (int Y = yTileCoordMin; Y < yTileCoordMax; Y++)
+		{
+			if (_smoke->getTileAt(Vec2(X, Y))) //如果通过tile坐标能够访问指定毒烟单元格
+			{
+				_smokeCell = _smoke->getTileAt(Vec2(X, Y));
+				_smokeCell->setVisible(false);
+			}
+		}
+	}
+}
+
+/* 毒烟伤害 */
+void GameScene::smokeDamage(Point position)
+{
+	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
+	if (_smoke->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定毒烟单元格
+	{
+		_smokeCell = _smoke->getTileAt(tileCoord); //通过tile坐标能够访问指定毒烟单元格
+		if (_smokeCell->isVisible()) //如果毒烟可见
+		{
+			/**************************
+			     玩家在毒烟中受伤
+			**************************/
+		}
 	}
 }
