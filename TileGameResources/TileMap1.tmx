@@ -22,11 +22,6 @@
    eJztWMtOAzEMXKn0VDgBJ+ACKmgFpf3/Uz+NWMhSZNnxOMkuW7oj+dI2j2k8YyfDsGKJeErxfGHxovB4S/Ge4utC4iPF3uChfb5UWPvtyeO10zwllHh8D37+ETYpto37kHq01tIwDmUeuT6s/CPsUtwF1tXwCa7FkLyPxhjJj9Y5GHPep3jEt6xidNaSuZnzrtH5HLlegzl0PgdWHjq0PqDkPdHfM6RHejxG5TvCydgP+YbsAyx/IGh6Zb8v8ZEeifCwuMjf8/5L+/bAvNh/rLWlR7byyM+hp57yOozkWas+kHOo8Wp5Lsg+WnlM6Wut+0DHl+p8DvKXGxFIT4bOP1f9IH+5FdHakzHIO6fgoelh6TzIrxA/IZ98ECF7S1mTIvNHecj/+r/oPOrzKKJ1qYdfRXweRbQ/6KVzeS5IL6MBPQc0v6M88nNB7/UE7X5a06ehPDQv0SD712i/W9tnrveoGFKtOEf6kSgiPDiXa3S8/eVx1uqfB6QWRnhwLlP+overFkS866/0gdxJcg84OGOuRed8b0C0ifZ0jJ5veh4P7lNJm54e8rmmfneU9Szy3u7FsWJMr7C8QKuzS4+W96YV0+IHvkZN/g==
   </data>
  </layer>
- <layer id="7" name="Box" width="50" height="40">
-  <data encoding="base64" compression="zlib">
-   eJzt10EKwCAMRFHv7P2hCF2VIkpMOkn/A/eZREVbA7Cq30vZSn3qGYYMNX5BuS87tVlzZDiLADAo3VVKtfyZxxyqzFYtx6yeE2+ZKFVyqPHsa6RMtcLubd78rTQwA3h5nnGlvWa5fyw5lHpgUSVHBl69jv4TsGeAPRdhjBH5
-  </data>
- </layer>
  <objectgroup id="9" name="BoxObjects">
   <object id="2" gid="115" x="128" y="160" width="32" height="32"/>
   <object id="3" gid="115" x="160" y="160" width="32" height="32"/>
