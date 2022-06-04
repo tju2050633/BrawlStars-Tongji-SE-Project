@@ -27,7 +27,7 @@ bool OpeningAnimation::init()
 	}
 
 	/*三秒后进入菜单界面*/    //改为2秒
-	scheduleOnce(SEL_SCHEDULE(&OpeningAnimation::EnterMenu), 1.5f);   // why 1s ？
+	scheduleOnce(SEL_SCHEDULE(&OpeningAnimation::EnterMenu), 1.5f); 
 
 	/*预加载所有图片、音频等资源*/
 	PreloadResource();
@@ -50,6 +50,9 @@ void OpeningAnimation::PreloadResource()
 	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Victory.mp3");
 	/*精灵图*/
 	Director::getInstance()->getTextureCache()->addImage("trophy.png");
+	Director::getInstance()->getTextureCache()->addImage("hpBar.png");
+	Director::getInstance()->getTextureCache()->addImage("ammoBar.png");
+	Director::getInstance()->getTextureCache()->addImage("energyBar.png");
 	Director::getInstance()->getTextureCache()->addImage("Portrait/Shelly-Normal.png");
 	Director::getInstance()->getTextureCache()->addImage("Portrait/Nita-Normal.png");
 	Director::getInstance()->getTextureCache()->addImage("Portrait/Primo-Normal.png");
@@ -62,11 +65,12 @@ void OpeningAnimation::PreloadResource()
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Shelly/Shelly_Thanks.png");
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Shelly/Shelly_Phew.png");
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Shelly/Shelly_Angry.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Shelly/Shelly_Start.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Shelly/Shelly_Kill.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Shelly/Shelly_Ult.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Shelly/Shelly_Hurt.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Shelly/Shelly_Die.png");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Shelly/Shelly_Attack.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Shelly/Shelly_Start.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Shelly/Shelly_Kill.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Shelly/Shelly_Ult.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Shelly/Shelly_Hurt.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Shelly/Shelly_Die.mp3");
 	/*妮塔*/
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Nita/Nita_Neutral.png");
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Nita/Nita_Happy.png");
@@ -75,11 +79,12 @@ void OpeningAnimation::PreloadResource()
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Nita/Nita_Thanks.png");
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Nita/Nita_Phew.png");
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Nita/Nita_Angry.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Nita/Nita_Start.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Nita/Nita_Kill.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Nita/Nita_Ult.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Nita/Nita_Hurt.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Nita/Nita_Die.png");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Nita/Nita_Attack.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Nita/Nita_Start.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Nita/Nita_Kill.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Nita/Nita_Ult.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Nita/Nita_Hurt.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Nita/Nita_Die.mp3");
 	/*普里莫*/
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Primo/Primo_Neutral.png");
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Primo/Primo_Happy.png");
@@ -88,11 +93,12 @@ void OpeningAnimation::PreloadResource()
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Primo/Primo_Thanks.png");
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Primo/Primo_Phew.png");
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Primo/Primo_Angry.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Primo/Primo_Start.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Primo/Primo_Kill.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Primo/Primo_Ult.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Primo/Primo_Hurt.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Primo/Primo_Die.png");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Primo/Primo_Attack.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Primo/Primo_Start.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Primo/Primo_Kill.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Primo/Primo_Ult.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Primo/Primo_Hurt.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Primo/Primo_Die.mp3");
 	/*斯图*/
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Stu/Stu_Neutral.png");
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Stu/Stu_Happy.png");
@@ -101,11 +107,12 @@ void OpeningAnimation::PreloadResource()
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Stu/Stu_Thanks.png");
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Stu/Stu_Phew.png");
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Stu/Stu_Angry.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Stu/Stu_Start.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Stu/Stu_Kill.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Stu/Stu_Ult.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Stu/Stu_Hurt.png");
-	Director::getInstance()->getTextureCache()->addImage("Music/Stu/Stu_Die.png");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Stu/Stu_Attack.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Stu/Stu_Start.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Stu/Stu_Kill.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Stu/Stu_Ult.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Stu/Stu_Hurt.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/Stu/Stu_Die.mp3");
 
 	/*后续背景图*/
 	Director::getInstance()->getTextureCache()->addImage("BGimage/GameMenu.png");

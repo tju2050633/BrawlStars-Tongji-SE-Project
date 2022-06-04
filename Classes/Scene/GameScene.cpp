@@ -1,4 +1,5 @@
 #include "cocos2d.h"
+#include "ui/CocosGUI.h"
 #include <vector>
 #include <string>
 #include "Scene/GameScene.h"
@@ -58,6 +59,7 @@ void GameScene::initButton()
 	_emotionButton = MenuItemImage::create("button/Emotion-Normal.png", "button/Emotion-Active.png", bind(&GameScene::menuEmotionCallback, this, std::placeholders::_1));
 	_emotionButton->setAnchorPoint(Vec2(1, 1));
 	_emotionButton->setPosition(Vec2(_visibleSize.width + _origin.x, _visibleSize.height + _origin.y - 250));
+	_emotionButton->setOpacity(200);
 
 	_returnButton = MenuItemImage::create("button/Back-Normal.png", "button/Back-Active.png", bind(&GameScene::menuBackCallback, this, std::placeholders::_1));
 	_returnButton->setAnchorPoint(Vec2(0, 1));
@@ -108,10 +110,12 @@ void GameScene::initEmotionMenu()
 				emotion->setScaleX(80 / emotion->getContentSize().width);
 				emotion->setScaleY(80 / emotion->getContentSize().height);
 				/*设置位置*/
-				emotion->setPosition(Vec2(0, 75));
+				emotion->setPosition(Vec2(0, 100));
 				_player->addChild(emotion, 1, "Emotion");
 				/*定时器*/
-				scheduleOnce(SEL_SCHEDULE(&GameScene::scheduleRemoveEmotionCallback), 2);
+				scheduleOnce([&](float dt) {
+					_player->removeChildByName("Emotion");
+					}, 2.0f, "removeEmotion");
 			});
 		/*设置尺寸*/
 		item->setScaleX(80 / item->getContentSize().width);
@@ -188,6 +192,7 @@ void GameScene::initController()
 
 	/*绑定玩家为操作器的对象*/
 	_playerController->setControllerListener(_player);
+	_player->getBrawler()->setPlayerController(_playerController);
 
 	/*绑定操作器的图标*/
 	_playerController->setControllerSprite(_controllerSprite);
@@ -205,7 +210,7 @@ void GameScene::initController()
 	_playerController->setRectEmotionButton(CCRectMake(_emotionButton->getPosition().x - _emotionButton->getContentSize().width, _emotionButton->getPosition().y - _emotionButton->getContentSize().height,
 		_emotionButton->getContentSize().width, _emotionButton->getContentSize().height));
 
-	this->addChild(_playerController);
+	this->addChild(_playerController, 0, "controller");
 }
 
 /*游戏主场景初始化*/
@@ -225,7 +230,17 @@ bool GameScene::init()
 	initMap();
 	initBrawler();
 	
-	this->scheduleUpdate();
+	this->scheduleUpdate();						//每帧刷新
+	this->schedule([=](float dt) {				//每1秒刷新
+		for (auto brawler : _brawlerVector)
+		{
+			/*如果在毒雾中，受到伤害*/
+			smokeDamage(brawler->getParent()->getPosition(), brawler);
+			/*如果离上次受伤和攻击超过5s，回血*/
+			if (brawler->getReadyForHeal())
+				brawler->heal(brawler->getHealthPoint() * 0.13);
+		}
+	}, 1.0f, "smoke damaga/auto heal");
 
 	return true;
 }
@@ -233,12 +248,13 @@ bool GameScene::init()
 /*每帧刷新*/
 void GameScene::update(float dt)
 {
-	/*每帧更新目标位置，即当前位置+速度*每帧时间产生的移动量*/
+	/*每帧更新玩家位置，即当前位置+速度*每帧时间产生的移动量*/
 	Vec2 playerPos = _player->getTargetPosition() + Vec2(_player->getTargetMoveSpeedX() * dt, _player->getTargetMoveSpeedY() * dt);
 
 	this->setPlayerPosition(playerPos);//设置玩家位置
 	this->setGrassOpacity(playerPos);//设置草丛透明度
 	this->setViewPointCenter(playerPos);//设置镜头跟随
+	//this->smokeDamage(playerPos,_player->getBrawler());	//毒烟伤害
 }
 
 /*************************************************************初始化地图层*************************************************************/
@@ -247,7 +263,18 @@ void GameScene::update(float dt)
 void GameScene::initMap()
 {
 	/* 添加地图 */
-	_map = TMXTiledMap::create("TileGameResources/TileMap.tmx");
+	switch (SceneUtils::_map)
+	{
+	case SceneUtils::MapA:
+		_map = TMXTiledMap::create("TileGameResources/TileMap1.tmx");
+		break;
+	case SceneUtils::MapB:
+		_map = TMXTiledMap::create("TileGameResources/TileMap2.tmx");
+		break;
+	case SceneUtils::MapC:
+		_map = TMXTiledMap::create("TileGameResources/TileMap3.tmx");
+		break;
+	}
 	_background = _map->getLayer("Background");
 	this->addChild(_map);
 
@@ -258,14 +285,15 @@ void GameScene::initMap()
 	_collidable = _map->getLayer("Collidable");
 	_collidable->setVisible(false);
 
-	/* 添加宝箱图层 */
-	_box = _map->getLayer("Box");
-
 	/* 添加草丛图层 */
 	_grass = _map->getLayer("Grass");
 
 	/* 添加毒烟图层 */
 	_smoke = _map->getLayer("Smoke");
+	_xTileCoordMin = 0,
+	_xTileCoordMax = _map->getMapSize().width,
+	_yTileCoordMin = 0,
+	_yTileCoordMax = _map->getMapSize().height;
 	this->smokeMove();
 
 	/* 添加宝箱对象层 */
@@ -283,6 +311,9 @@ void GameScene::initMap()
 /*地图层 人物*/
 void GameScene::initBrawler()
 {
+	//initPlayer
+	//initAI
+
 	/*创建Player*/
 	_player = Player::create();
 
@@ -293,7 +324,8 @@ void GameScene::initBrawler()
 	_player->getBrawler()->setGameScene(this);
 
 	/*英雄绑定精灵图像*/
-	_player->getBrawler()->bindSprite(Sprite::create("Portrait/Shelly-Normal.png"));
+	_player->getBrawler()->setSprite(Sprite::create("Portrait/Shelly-Normal.png"));
+	_player->getBrawler()->addChild(_player->getBrawler()->getSprite());
 	_player->getBrawler()->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(brawlerName + "_Bottom1.png"));
 
 	/*将玩家和AI放置在出生点*/
@@ -305,9 +337,15 @@ void GameScene::initBrawler()
 	/*添加范围指示器*/
 	addRangeIndicator(SceneUtils::_brawler);
 
+	/*添加血条*/
+	addBar(_player->getBrawler());
+
 	/*播放英雄开场语音*/
 	string filepath = "Music/" + brawlerName + "/" + brawlerName + "_Start.mp3";
 	SimpleAudioEngine::getInstance()->playEffect(filepath.c_str());
+
+	/*添加进渲染树和Vector成员变量*/
+	_brawlerVector.pushBack(_player->getBrawler());
 
 	this->addChild(_player);
 }
@@ -340,6 +378,7 @@ string GameScene::bindBrawler()
 		break;
 	}
 	_player->addChild(_player->getBrawler());
+	_player->getBrawler()->setIsPlayer(true);
 
 	return brawlerName;
 }
@@ -374,23 +413,104 @@ void GameScene::placeInSpawnPoint()
 /*添加范围指示器*/
 void GameScene::addRangeIndicator(SceneUtils::AllBrawler brawler)
 {
+	Sprite* rangeIndicatorAttack;
+	Sprite* rangeIndicatorAbility;
 	switch (brawler)
 	{
 	case SceneUtils::Shelly:
+		/*攻击*/
+		rangeIndicatorAttack = Sprite::create("Controller/sector.png");
+		rangeIndicatorAttack->setAnchorPoint(Vec2(0.53, 0.55));
+		rangeIndicatorAttack->setRotation(15);
+		/*技能*/
+		rangeIndicatorAbility = Sprite::create("Controller/sector.png");
+		rangeIndicatorAbility->setAnchorPoint(Vec2(0.53, 0.55));
+		rangeIndicatorAbility->setRotation(15);
+		rangeIndicatorAbility->setScale(1.25);
+		rangeIndicatorAbility->setColor(Color3B::YELLOW);
 		break;
 	case SceneUtils::Nita:
+		/*攻击*/
+		rangeIndicatorAttack = Sprite::create("Controller/rectangle.png");
+		rangeIndicatorAttack->setAnchorPoint(Vec2(0, 0.5));
+		rangeIndicatorAttack->setScale(0.3);
+		/*技能*/
+		rangeIndicatorAbility = Sprite::create("Controller/circle.png");
+		rangeIndicatorAbility->setAnchorPoint(Vec2(0.37, 0.5));
+		rangeIndicatorAbility->setScale(0.7);
+		rangeIndicatorAbility->setColor(Color3B::YELLOW);
 		break;
 	case SceneUtils::Primo:
+		/*攻击*/
+		rangeIndicatorAttack = Sprite::create("Controller/rectangle.png");
+		rangeIndicatorAttack->setAnchorPoint(Vec2(0, 0.5));
+		rangeIndicatorAttack->setScaleX(0.15);
+		rangeIndicatorAttack->setScaleY(0.3);
+		/*技能*/
+		rangeIndicatorAbility = Sprite::create("Controller/circle.png");
+		rangeIndicatorAbility->setAnchorPoint(Vec2(0.37, 0.5));
+		rangeIndicatorAbility->setScale(0.7);
+		rangeIndicatorAbility->setColor(Color3B::YELLOW);
 		break;
 	case SceneUtils::Stu:
+		/*攻击*/
+		rangeIndicatorAttack = Sprite::create("Controller/rectangle.png");
+		rangeIndicatorAttack->setAnchorPoint(Vec2(0, 0.55));
+		rangeIndicatorAttack->setScale(0.3);
+		/*技能*/
+		rangeIndicatorAbility = Sprite::create("Controller/rectangle.png");
+		rangeIndicatorAbility->setAnchorPoint(Vec2(0, 0.55));
+		rangeIndicatorAbility->setScaleX(0.1);
+		rangeIndicatorAbility->setScaleY(0.4);
+		rangeIndicatorAbility->setColor(Color3B::YELLOW);
 		break;
 	}
-	auto rangeIndicator = Sprite::create("Controller/sector.png");
-	rangeIndicator->setAnchorPoint(Vec2(0.53, 0.55));
-	rangeIndicator->setRotation(15);
-	rangeIndicator->setVisible(false);
-	_player->getBrawler()->setRangeIndicator(rangeIndicator);
-	_player->addChild(rangeIndicator);
+	/*攻击、技能指示器添加到玩家上*/
+	_player->getBrawler()->setRangeIndicatorAttack(rangeIndicatorAttack);
+	_player->addChild(rangeIndicatorAttack);
+	_player->getBrawler()->setRangeIndicatorAbility(rangeIndicatorAbility);
+	_player->addChild(rangeIndicatorAbility);
+	/*设为不可见*/
+	_player->getBrawler()->getRangeIndicatorAttack()->setVisible(false);
+	_player->getBrawler()->getRangeIndicatorAbility()->setVisible(false);
+}
+
+/*添加血条、子弹条和能量条*/
+void GameScene::addBar(Brawler* brawler)
+{
+	/*血条*/
+	auto hpBar = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("hpBar.png"));
+	hpBar->setAnchorPoint(Vec2(0, 0.5));
+	hpBar->setScale(0.5, 0.4);
+	hpBar->setPosition(Vec2(-50, 55));
+	brawler->setHpBar(hpBar);
+	brawler->addChild(hpBar);
+	brawler->setHpBarSize(hpBar->getContentSize());
+	/*血条文字*/
+	auto hpBarLabel = Label::createWithTTF(
+		StringUtils::format("%d", brawler->getCurrentHealthPoint()).c_str(),
+		"fonts/Marker Felt.ttf", 15);
+	hpBarLabel->setPosition(Vec2(0, 55));
+	brawler->setHpBarLabel(hpBarLabel);
+	brawler->addChild(hpBarLabel);
+	/*子弹条*/
+	auto ammoBar = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("ammoBar.png"));
+	ammoBar->setAnchorPoint(Vec2(0, 0.5));
+	ammoBar->setPosition(Vec2(-50, 44));
+	ammoBar->setScale(0.09, 0.06);
+	brawler->setAmmoBar(ammoBar);
+	brawler->addChild(ammoBar);
+	brawler->setAmmoBarSize(ammoBar->getContentSize());
+	/*能量条*/
+	auto energyBar = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("energyBar.png"));
+	energyBar->setAnchorPoint(Vec2(0, 0.5));
+	energyBar->setScale(0.7, 0.4);
+	energyBar->setPosition(Vec2(-50, 35));
+	brawler->setEnergyBar(energyBar);
+	brawler->addChild(energyBar);
+	brawler->setEnergyBarSize(energyBar->getContentSize());
+	
+	brawler->setEnergeBarPercent(0);	//能量条初始为0
 }
 
 /*************************************************************回调函数*************************************************************/
@@ -398,6 +518,8 @@ void GameScene::addRangeIndicator(SceneUtils::AllBrawler brawler)
 /*表情 回调函数*/
 void GameScene::menuEmotionCallback(cocos2d::Ref* pSender)
 {
+	smokeMove();
+
 	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 	if(_emotionMenu->isVisible())
 		_emotionMenu->setVisible(false);
@@ -412,12 +534,6 @@ void GameScene::menuBackCallback(cocos2d::Ref* pSender)
 	SimpleAudioEngine::getInstance()->stopBackgroundMusic();
 	SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Menu.mp3");
 	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
-}
-
-/*移除人物表情*/
-void GameScene::scheduleRemoveEmotionCallback(float dt)
-{
-	_player->removeChildByName("Emotion");
 }
 
 /*************************************************************瓦片地图需要的函数*************************************************************/
@@ -522,8 +638,7 @@ void GameScene::getBoxPosition()
 	if (_boxObjects != NULL)
 	{
 		ValueVector boxGroup = _boxObjects->getObjects(); //获取宝箱对象层的所有对象
-		int size = boxGroup.size();
-		for (int i = 0; i < size; i++)
+		for (int i = 0; i < boxGroup.size(); i++)
 		{
 			ValueMap objInfo = boxGroup.at(i).asValueMap();
 			int x = objInfo.at("x").asInt();
@@ -556,45 +671,13 @@ void GameScene::setEnemyVisible(Sprite* _enemy)
 	}
 }
 
-/* 宝箱被摧毁（死亡） */
-void GameScene::boxDie(Point position) //输入死亡宝箱的位置坐标（从_boxPos中获取）
-{
-	/* 从地图上移除宝箱 */
-	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
-	if (_box->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定宝箱单元格
-	{
-		_box->removeTileAt(tileCoord); //移除该单元格，表示宝箱死亡
-		_collidable->removeTileAt(tileCoord); //该位置不再受物理碰撞影响
-	}
-
-	/* 从宝箱位置容器中删除该位置坐标 */
-	for (vector<Point>::iterator i = _boxPos.begin(); i < _boxPos.end(); i++)
-	{
-		if (*i == position)
-		{
-			_boxPos.erase(i); //删除该坐标
-		}
-	}
-
-	/**************************************
-		 掉落buff/宝箱破裂动画等
-	****************************************/
-}
-
 /* 毒烟移动(每调用一次毒烟移动一格) */
 void GameScene::smokeMove()
 {
-	/* 初始毒烟位置 */
-	static int
-		xTileCoordMin = 0,
-		xTileCoordMax = _map->getMapSize().width,
-		yTileCoordMin = 0,
-		yTileCoordMax = _map->getMapSize().height;
-
 	/* 全部显示毒烟 */
-	for (int X = xTileCoordMin; X < xTileCoordMax; X++)
+	for (int X = _xTileCoordMin; X < _xTileCoordMax; X++)
 	{
-		for (int Y = yTileCoordMin; Y < yTileCoordMax; Y++)
+		for (int Y = _yTileCoordMin; Y < _yTileCoordMax; Y++)
 		{
 			if (_smoke->getTileAt(Vec2(X, Y))) //如果通过tile坐标能够访问指定毒烟单元格
 			{
@@ -605,15 +688,15 @@ void GameScene::smokeMove()
 	}
 
 	/* 毒烟移动 */
-	++xTileCoordMin;
-	--xTileCoordMax;
-	++yTileCoordMin;
-	--yTileCoordMax;
+	_xTileCoordMin++;
+	_xTileCoordMax--;
+	_yTileCoordMin++;
+	_yTileCoordMax--;
 
 	/* 中心不显示毒烟 */
-	for (int X = xTileCoordMin; X < xTileCoordMax; X++)
+	for (int X = _xTileCoordMin; X < _xTileCoordMax; X++)
 	{
-		for (int Y = yTileCoordMin; Y < yTileCoordMax; Y++)
+		for (int Y = _yTileCoordMin; Y < _yTileCoordMax; Y++)
 		{
 			if (_smoke->getTileAt(Vec2(X, Y))) //如果通过tile坐标能够访问指定毒烟单元格
 			{
@@ -625,7 +708,7 @@ void GameScene::smokeMove()
 }
 
 /* 毒烟伤害 */
-void GameScene::smokeDamage(Point position)
+void GameScene::smokeDamage(Point position, Brawler* brawler)
 {
 	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
 	if (_smoke->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定毒烟单元格
@@ -633,9 +716,7 @@ void GameScene::smokeDamage(Point position)
 		_smokeCell = _smoke->getTileAt(tileCoord); //通过tile坐标能够访问指定毒烟单元格
 		if (_smokeCell->isVisible()) //如果毒烟可见
 		{
-			/**************************
-				 玩家在毒烟中受伤
-			**************************/
+			brawler->takeDamage(SMOKE_DAMAGE);
 		}
 	}
 }

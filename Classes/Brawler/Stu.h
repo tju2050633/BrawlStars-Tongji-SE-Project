@@ -13,8 +13,10 @@ public:
 	CREATE_FUNC(Stu);
 	virtual bool init();
 
-	void attack(float angle);
-	void castAbility(float angle);
+	virtual void attack(float angle);
+	virtual void castAbility(float angle);
+	virtual void takeDamage(INT32 damage)override;
+	virtual void die()override;
 };
 
 #endif // !__STU_H_

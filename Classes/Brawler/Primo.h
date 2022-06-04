@@ -13,8 +13,10 @@ public:
 	CREATE_FUNC(Primo);
 	virtual bool init();
 
-	void attack(float angle);
-	void castAbility(float angle);
+	virtual void attack(float angle)override;
+	virtual void castAbility(float angle)override;
+	virtual void takeDamage(INT32 damage)override;
+	virtual void die()override;
 };
 
 #endif // !__PRIMO_H_

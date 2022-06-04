@@ -1,4 +1,4 @@
-#include "cocos2d.h"
+#include <cocos2d.h>
 #include <string>
 #include <fstream>
 #include "Scene/GameMenu.h"
@@ -29,10 +29,7 @@ bool GameMenu::init()
 	{
 		return false;
 	}
-
-	/*ÉùÒô*/
 	
-
 	/*²Ëµ¥*/
 	initMenu();
 
@@ -119,7 +116,7 @@ void GameMenu::initTrophy()
 
 	/*½±±­ÊýÁ¿*/
 	ifstream in("trophy.txt", ios::in);
-	int iTrophy;
+	int iTrophy = 0;
 	if (in.good())
 		in >> iTrophy;
 	else

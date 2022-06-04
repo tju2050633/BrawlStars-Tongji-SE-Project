@@ -2,12 +2,12 @@
 #define __CONTROLLER_LISTENER_H_
 
 #include "cocos2d.h"
-#include "Entity/Brawler.h"
 
 USING_NS_CC;
 
 /*Player类需要继承的接口*/
 //控制器可以设置、获取目标位置、速度
+class Brawler;
 class ControllerListener {
 public:
 	/*设置、获取位置*/

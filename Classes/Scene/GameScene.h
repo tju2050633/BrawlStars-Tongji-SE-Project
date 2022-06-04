@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "Player/Player.h"
+#include "Player/AI.h"
 #include "Controller/PlayerController.h"
 #include "Utils/SceneUtils.h"
 
@@ -28,6 +29,8 @@ private:
 	Sprite* _abilityRoundSprite; //技能键底盘
 	/*玩家部分*/
 	Player* _player;
+	Vector<AI*> _AI_Vector;
+	Vector<Brawler*> _brawlerVector;
 	PlayerController* _playerController;
 	/*瓦片地图部分*/
 	TMXTiledMap* _map;
@@ -37,10 +40,12 @@ private:
 	TMXLayer* _collidable;				//碰撞属性图层
 	TMXLayer* _grass;					//草丛图层
 	Sprite* _grassCell;					//草丛单元格
-	Sprite* _boxCell;		           	//宝箱单元格
 	TMXLayer* _smoke;		         	//毒烟图层
+	INT32   _xTileCoordMin;					//毒烟位置
+	INT32	_xTileCoordMax;					//毒烟位置
+	INT32	_yTileCoordMin;					//毒烟位置
+	INT32	_yTileCoordMax;					//毒烟位置
 	Sprite* _smokeCell;		            //毒烟单元格
-	TMXLayer* _box;			            //宝箱图层
 	TMXObjectGroup* _boxObjects;        //宝箱对象层
 	vector<Point> _boxPos;              //存储全部宝箱位置坐标
 	TMXObjectGroup* _playerSpawnPoint;  //玩家出生点坐标对象层
@@ -61,11 +66,11 @@ private:
 	string bindBrawler();									//绑定英雄，返回英雄名称字符串
 	void placeInSpawnPoint();								//放置玩家和AI在出生点
 	void addRangeIndicator(SceneUtils::AllBrawler brawler);	//添加范围指示器
+	void addBar(Brawler* brawler);						//添加血条
 	
 	/*回调函数*/
 	void menuEmotionCallback(Ref *pSender);	//显示表情
 	void menuBackCallback(Ref *pSender);	//返回主菜单
-	void scheduleRemoveEmotionCallback(float dt);//移除人物表情
 
 public:
 	/*创建场景和初始化*/
@@ -85,7 +90,7 @@ public:
 	void getBoxPosition();                           //获取全部宝箱的位置
 	void boxDie(Point position);                     //宝箱被摧毁（死亡）
 	void smokeMove();                                //毒烟移动
-	void smokeDamage(Point position);                //毒烟伤害
+	void smokeDamage(Point position, Brawler* brawler);//毒烟伤害
 };
 
 #endif // !__GAME_SCENE_H_

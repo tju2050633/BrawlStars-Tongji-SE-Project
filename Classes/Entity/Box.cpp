@@ -8,7 +8,6 @@ bool Box::init()
 	_attackDamage = 0;
 	_moveSpeed = 0;
 	_attackInterval = 0;
-	_inBush = false;
 
 	return true;
 }

@@ -1,36 +1,37 @@
 #include "Entity/Entity.h"
 
 /*构造函数 析构函数*/
-Entity::Entity() : _sprite(nullptr), _hpBar(nullptr)
+Entity::Entity() : _sprite(nullptr), _hpBar(nullptr), _hpBarLabel(nullptr)
 {}
 
 Entity::~Entity()
 {}
 
-/*绑定精灵*/
-void Entity::bindSprite(Sprite* sprite)
+/*设置血条百分比*/
+void Entity::setHpBarPercent(float percent)
 {
-	_sprite = sprite;
-	addChild(_sprite)
-		;
-
-	/*调整精灵和实体碰撞体积位置*/
-	_sprite->setAnchorPoint(Vec2(0.5, 0.5));
-}
-
-/*绑定血条*/
-void Entity::bindHpBar(Sprite* hpBar)
-{
-	_hpBar = hpBar;
-	addChild(_hpBar);
+	if (percent < 0)
+		percent = 0;
+	getHpBar()->setSpriteFrame(SpriteFrame::createWithTexture(Director::getInstance()->getTextureCache()->addImage("hpBar.png"),
+		Rect(0, 0, _hpBarSize.width * percent, _hpBarSize.height)));
 }
 
 /*承受伤害*/
 void Entity::takeDamage(INT32 damage)
 {
-	_healthPoint -= damage;
-	if (_healthPoint <= 0)
+	/*当前血量*/
+	_currentHealthPoint -= damage;
+	float percent = float(_currentHealthPoint) / _healthPoint;
+	if (_currentHealthPoint <= 0)
 	{
 		die();
+		_currentHealthPoint = 0;
+		percent = 0;
 	}
+
+	/*血条*/
+	setHpBarPercent(percent);
+
+	/*血条文字*/
+	getHpBarLabel()->setString(StringUtils::format("%d", _currentHealthPoint));
 }

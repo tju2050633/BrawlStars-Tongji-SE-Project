@@ -102,6 +102,10 @@ void PlayerController::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* even
 		_keyD = false;
 		currentDirection = AnimationUtils::Right;
 	}
+	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_Q || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_Q)
+		_controllerListener->getTargetBrawler()->takeDamage(100);
+	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_E || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_E)
+		_controllerListener->getTargetBrawler()->dealDamage(100);
 
 	changeControllerSprite();
 
@@ -142,7 +146,6 @@ void PlayerController::onMouseDown(Event* event)
 	EventMouse* e = (EventMouse*)event;
 	Vec2 cursorPosition = Vec2(e->getCursorX(), e->getCursorY());								//鼠标坐标，是窗口坐标系下的坐标
 	Vec2 playerPosition = _controllerListener->getTargetPosition() + getParent()->getPosition();//玩家窗口坐标系下坐标=相对地图坐标+地图偏移量
-	Sprite* rangeIndicator = _controllerListener->getTargetBrawler()->getRangeIndicator();
 	auto mouseKey = e->getMouseButton();
 
 	/*点按钮时无反应*/
@@ -153,28 +156,26 @@ void PlayerController::onMouseDown(Event* event)
 	float angle = calculateAngle(cursorPosition, playerPosition);
 
 	/*左键攻击，右键技能*/
+	Sprite* rangeIndicator;
 	if (mouseKey == EventMouse::MouseButton::BUTTON_LEFT)
 	{
+		rangeIndicator = _controllerListener->getTargetBrawler()->getRangeIndicatorAttack();
 		/*攻击按钮图标移动*/
 		_attackCenterSprite->setOpacity(255);
 		buttonMove(_attackCenterSprite, _attackCenterOriginPosition, angle);
-		/*范围指示器显示、旋转*/
-		rangeIndicator->setVisible(true);
-		rangeIndicator->setRotation(-angle * 180 / M_PI + 15);
 	}
 	else if (mouseKey == EventMouse::MouseButton::BUTTON_RIGHT)
 	{
-		/*技能按钮图标移动*/
-		_abilityRoundSprite->setVisible(true);
-		_abilityCenterSprite->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("AbilityCenter.png"));
-		_abilityCenterSprite->setPosition(_abilityCenterSprite->getPosition() + Vec2(45, 85));
-		buttonMove(_abilityCenterSprite, _abilityCenterOriginPosition + Vec2(45, 85), angle);
-		/*范围指示器显示、旋转*/
-		rangeIndicator->setVisible(true);
-		rangeIndicator->setScale(1.25);
-		rangeIndicator->setColor(Color3B::YELLOW);
-		rangeIndicator->setRotation(-angle * 180 / M_PI + 15);
+		rangeIndicator = _controllerListener->getTargetBrawler()->getRangeIndicatorAbility();
+		if (_controllerListener->getTargetBrawler()->getEnergy() == _controllerListener->getTargetBrawler()->getMaxEnergy())
+		{
+			/*能量已满可以释放技能时，技能按钮图标移动*/
+			buttonMove(_abilityCenterSprite, _abilityCenterOriginPosition + Vec2(45, 85), angle);
+		}
 	}
+	/*范围指示器显示、旋转*/
+	rangeIndicator->setVisible(true);
+	rangeIndicator->setRotation(-angle * 180 / M_PI + 15);
 }
 
 void PlayerController::onMouseUp(Event* event)
@@ -183,7 +184,6 @@ void PlayerController::onMouseUp(Event* event)
 	EventMouse* e = (EventMouse*)event;
 	Vec2 cursorPosition = Vec2(e->getCursorX(), e->getCursorY());								//鼠标坐标，是窗口坐标系下的坐标
 	Vec2 playerPosition = _controllerListener->getTargetPosition() + getParent()->getPosition();//玩家窗口坐标系下坐标=相对地图坐标+地图偏移量
-	Sprite* rangeIndicator = _controllerListener->getTargetBrawler()->getRangeIndicator();
 	auto mouseKey = e->getMouseButton();
 
 	/*获得鼠标坐标的角度*/
@@ -196,7 +196,7 @@ void PlayerController::onMouseUp(Event* event)
 		_attackCenterSprite->setOpacity(150);
 		_attackCenterSprite->setPosition(_attackCenterOriginPosition);
 		/*范围指示器不显示*/
-		rangeIndicator->setVisible(false);
+		_controllerListener->getTargetBrawler()->getRangeIndicatorAttack()->setVisible(false);
 
 		/*点按钮时无反应*/
 		if (_rectReturnButton.containsPoint(cursorPosition) || _rectEmotionButton.containsPoint(cursorPosition))
@@ -210,10 +210,8 @@ void PlayerController::onMouseUp(Event* event)
 		_abilityRoundSprite->setVisible(false);
 		_abilityCenterSprite->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Ability.png"));
 		_abilityCenterSprite->setPosition(_abilityCenterOriginPosition);
-		/*范围指示器不显示，恢复原属性*/
-		rangeIndicator->setScale(0.8);
-		rangeIndicator->setColor(Color3B::WHITE);
-		rangeIndicator->setVisible(false);
+		/*范围指示器不显示*/
+		_controllerListener->getTargetBrawler()->getRangeIndicatorAbility()->setVisible(false);
 
 		/*点按钮时无反应*/
 		if (_rectReturnButton.containsPoint(cursorPosition) || _rectEmotionButton.containsPoint(cursorPosition))
@@ -229,7 +227,6 @@ void PlayerController::onMouseMove(Event* event)
 	EventMouse* e = (EventMouse*)event;
 	Vec2 cursorPosition = Vec2(e->getCursorX(), e->getCursorY());								//鼠标坐标，是窗口坐标系下的坐标
 	Vec2 playerPosition = _controllerListener->getTargetPosition() + getParent()->getPosition();//玩家窗口坐标系下坐标=相对地图坐标+地图偏移量
-	Sprite* rangeIndicator = _controllerListener->getTargetBrawler()->getRangeIndicator();
 	auto mouseKey = e->getMouseButton();
 
 	/*获得鼠标坐标的角度*/
@@ -241,14 +238,17 @@ void PlayerController::onMouseMove(Event* event)
 		/*攻击按钮图标移动*/
 		buttonMove(_attackCenterSprite, _attackCenterOriginPosition, angle);
 		/*范围指示器旋转*/
-		rangeIndicator->setRotation(-angle * 180 / M_PI + 15);
+		_controllerListener->getTargetBrawler()->getRangeIndicatorAttack()->setRotation(-angle * 180 / M_PI + 15);
 	}
 	else if (mouseKey == EventMouse::MouseButton::BUTTON_RIGHT)
 	{
-		/*技能按钮图标移动*/
-		buttonMove(_abilityCenterSprite, _abilityCenterOriginPosition + Vec2(45, 85), angle);
+		if (_controllerListener->getTargetBrawler()->getEnergy() == _controllerListener->getTargetBrawler()->getMaxEnergy())
+		{
+			/*能量已满时，技能按钮图标移动*/
+			buttonMove(_abilityCenterSprite, _abilityCenterOriginPosition + Vec2(45, 85), angle);
+		}
 		/*范围指示器旋转*/
-		rangeIndicator->setRotation(-angle * 180 / M_PI + 15);
+		_controllerListener->getTargetBrawler()->getRangeIndicatorAbility()->setRotation(-angle * 180 / M_PI + 15);
 	}
 }
 
