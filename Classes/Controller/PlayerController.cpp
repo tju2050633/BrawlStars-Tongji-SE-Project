@@ -32,7 +32,7 @@ void PlayerController::initKeyboardListener()
 void PlayerController::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
 	/*动画参数*/
-	AnimationUtils::BrawlerEnum brawler = _controllerListener->getTargetBrawler()->getAnimateBrawler();
+	AnimationUtils::EntityEnum brawler = _controllerListener->getTargetBrawler()->getAnimateBrawler();
 	float time = 0.6;
 	INT32 iFrameNum = brawler == AnimationUtils::Stu? 1 : 3;
 	INT32 loop = -1;
@@ -105,17 +105,19 @@ void PlayerController::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* even
 	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_Q || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_Q)
 		_controllerListener->getTargetBrawler()->takeDamage(100);
 	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_E || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_E)
-		_controllerListener->getTargetBrawler()->dealDamage(100);
+		_controllerListener->getTargetBrawler()->dealDamage(1000);
+	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_R || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_R)
+		_controllerListener->getTargetBrawler()->setAnimateBrawler(AnimationUtils::bear);
 
 	changeControllerSprite();
 
 	/*动画参数*/
-	AnimationUtils::BrawlerEnum brawler = _controllerListener->getTargetBrawler()->getAnimateBrawler();
+	AnimationUtils::EntityEnum brawler = _controllerListener->getTargetBrawler()->getAnimateBrawler();
 	float time = 0.6;
 	INT32 iFrameNum = brawler == AnimationUtils::Stu ? 1 : 3;
 	INT32 loop = -1;
 
-	/*松开按键后还剩一个按键激活，动画设为改方向；无按键激活，设为松开键的方向*/
+	/*松开按键后还剩一个按键激活，动画设为该方向；无按键激活，设为松开键的方向*/
 	if (_keyW)
 		AnimationUtils::runAnimate(_controllerListener->getTargetBrawler(), brawler, AnimationUtils::Top, time, iFrameNum, loop);
 	else if (_keyA)
@@ -175,7 +177,7 @@ void PlayerController::onMouseDown(Event* event)
 	}
 	/*范围指示器显示、旋转*/
 	rangeIndicator->setVisible(true);
-	rangeIndicator->setRotation(-angle * 180 / M_PI + 15);
+	rangeIndicator->setRotation(-angle * 180 / M_PI);
 }
 
 void PlayerController::onMouseUp(Event* event)
@@ -238,7 +240,7 @@ void PlayerController::onMouseMove(Event* event)
 		/*攻击按钮图标移动*/
 		buttonMove(_attackCenterSprite, _attackCenterOriginPosition, angle);
 		/*范围指示器旋转*/
-		_controllerListener->getTargetBrawler()->getRangeIndicatorAttack()->setRotation(-angle * 180 / M_PI + 15);
+		_controllerListener->getTargetBrawler()->getRangeIndicatorAttack()->setRotation(-angle * 180 / M_PI);
 	}
 	else if (mouseKey == EventMouse::MouseButton::BUTTON_RIGHT)
 	{
@@ -248,7 +250,7 @@ void PlayerController::onMouseMove(Event* event)
 			buttonMove(_abilityCenterSprite, _abilityCenterOriginPosition + Vec2(45, 85), angle);
 		}
 		/*范围指示器旋转*/
-		_controllerListener->getTargetBrawler()->getRangeIndicatorAbility()->setRotation(-angle * 180 / M_PI + 15);
+		_controllerListener->getTargetBrawler()->getRangeIndicatorAbility()->setRotation(-angle * 180 / M_PI);
 	}
 }
 

@@ -96,7 +96,9 @@ void SelectBrawler::initMenu()
 /*选择英雄 雪莉回调函数 √*/
 void SelectBrawler::menuShellyCallback(cocos2d::Ref* pSender)
 {
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Shelly;
 	SceneUtils::changeScene(SceneUtils::AllScenes::Room);
 }
@@ -104,7 +106,9 @@ void SelectBrawler::menuShellyCallback(cocos2d::Ref* pSender)
 /*选择英雄 普里莫回调函数 √*/
 void SelectBrawler::menuPrimoCallback(cocos2d::Ref* pSender)
 {
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Primo;
 	SceneUtils::changeScene(SceneUtils::AllScenes::Room);
 }
@@ -112,7 +116,9 @@ void SelectBrawler::menuPrimoCallback(cocos2d::Ref* pSender)
 /*选择英雄 妮塔回调函数 √*/
 void SelectBrawler::menuNitaCallback(cocos2d::Ref* pSender)
 {
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Nita;
 	SceneUtils::changeScene(SceneUtils::AllScenes::Room);
 }
@@ -120,7 +126,9 @@ void SelectBrawler::menuNitaCallback(cocos2d::Ref* pSender)
 /*选择英雄 斯图回调函数 √*/
 void SelectBrawler::menuStuCallback(cocos2d::Ref* pSender)
 {
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Stu;
 	SceneUtils::changeScene(SceneUtils::AllScenes::Room);
 }
@@ -128,6 +136,8 @@ void SelectBrawler::menuStuCallback(cocos2d::Ref* pSender)
 /*菜单 返回回调函数 √*/
 void SelectBrawler::menuBackCallback(cocos2d::Ref* pSender)
 {
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectMap);
 }

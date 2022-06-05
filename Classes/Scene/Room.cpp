@@ -183,9 +183,13 @@ void Room::addPortrait(SceneUtils::AllBrawler brawler)
 /*开始 回调函数*/
 void Room::menuStartCallback(Ref* pSender)
 {
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
-	SimpleAudioEngine::getInstance()->stopBackgroundMusic();
-	SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Combat.mp3");
+	if(SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if (SceneUtils::_musicOn)
+	{
+		SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Combat.mp3");
+	}
 	SceneUtils::changeScene(SceneUtils::GameScene);
 }
 
@@ -197,7 +201,9 @@ void Room::menuAddShellyCallback(Ref* pSender)
 	addPortrait(SceneUtils::Shelly);
 	SceneUtils::_brawlerNumber++;
 	SceneUtils::_shellyNumber++;
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 }
 
 /*添加Nita 回调函数*/
@@ -208,7 +214,9 @@ void Room::menuAddNitaCallback(Ref* pSender)
 	addPortrait(SceneUtils::Nita);
 	SceneUtils::_brawlerNumber++;
 	SceneUtils::_nitaNumber++;
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 }
 
 /*添加Primo 回调函数*/
@@ -219,7 +227,9 @@ void Room::menuAddPrimoCallback(Ref* pSender)
 	addPortrait(SceneUtils::Primo);
 	SceneUtils::_brawlerNumber++;
 	SceneUtils::_primoNumber++;
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 }
 
 /*添加Stu 回调函数*/
@@ -230,12 +240,15 @@ void Room::menuAddStuCallback(Ref* pSender)
 	addPortrait(SceneUtils::Stu);
 	SceneUtils::_brawlerNumber++;
 	SceneUtils::_stuNumber++;
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 }
 
 /*返回SelectBrawler*/
 void Room::menuBackCallback(Ref* pSender)
 {
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }

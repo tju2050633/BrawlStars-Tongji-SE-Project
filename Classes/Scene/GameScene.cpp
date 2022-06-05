@@ -18,6 +18,8 @@ USING_NS_CC;
 using namespace std;
 using namespace CocosDenshion;
 
+GameScene* GameScene::_gameScene = nullptr;
+
 /*获得场景对象 √*/
 Scene* GameScene::createScene()
 {
@@ -222,6 +224,8 @@ bool GameScene::init()
 		return false;
 	}
 
+	_gameScene = this;
+
 	/*获取visibleSize和origin*/
 	_visibleSize = Director::getInstance()->getVisibleSize(); //得到屏幕大小
 	_origin = Director::getInstance()->getVisibleOrigin();	  //获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
@@ -320,9 +324,6 @@ void GameScene::initBrawler()
 	/*绑定英雄*/
 	string brawlerName = bindBrawler();
 	
-	/*英雄所处场景绑定为此游戏场景*/
-	_player->getBrawler()->setGameScene(this);
-
 	/*英雄绑定精灵图像*/
 	_player->getBrawler()->setSprite(Sprite::create("Portrait/Shelly-Normal.png"));
 	_player->getBrawler()->addChild(_player->getBrawler()->getSprite());
@@ -337,12 +338,15 @@ void GameScene::initBrawler()
 	/*添加范围指示器*/
 	addRangeIndicator(SceneUtils::_brawler);
 
-	/*添加血条*/
+	/*添加血条等*/
 	addBar(_player->getBrawler());
 
 	/*播放英雄开场语音*/
-	string filepath = "Music/" + brawlerName + "/" + brawlerName + "_Start.mp3";
-	SimpleAudioEngine::getInstance()->playEffect(filepath.c_str());
+	if (SceneUtils::_effectOn)
+	{
+		string filepath = "Music/" + brawlerName + "/" + brawlerName + "_Start.mp3";
+		SimpleAudioEngine::getInstance()->playEffect(filepath.c_str());
+	}
 
 	/*添加进渲染树和Vector成员变量*/
 	_brawlerVector.pushBack(_player->getBrawler());
@@ -420,13 +424,12 @@ void GameScene::addRangeIndicator(SceneUtils::AllBrawler brawler)
 	case SceneUtils::Shelly:
 		/*攻击*/
 		rangeIndicatorAttack = Sprite::create("Controller/sector.png");
-		rangeIndicatorAttack->setAnchorPoint(Vec2(0.53, 0.55));
-		rangeIndicatorAttack->setRotation(15);
+		rangeIndicatorAttack->setAnchorPoint(Vec2(0.55, 0.55));
+		rangeIndicatorAttack->setScale(1.8);
 		/*技能*/
 		rangeIndicatorAbility = Sprite::create("Controller/sector.png");
-		rangeIndicatorAbility->setAnchorPoint(Vec2(0.53, 0.55));
-		rangeIndicatorAbility->setRotation(15);
-		rangeIndicatorAbility->setScale(1.25);
+		rangeIndicatorAbility->setAnchorPoint(Vec2(0.57, 0.55));
+		rangeIndicatorAbility->setScale(2.7,1.8);
 		rangeIndicatorAbility->setColor(Color3B::YELLOW);
 		break;
 	case SceneUtils::Nita:
@@ -436,7 +439,7 @@ void GameScene::addRangeIndicator(SceneUtils::AllBrawler brawler)
 		rangeIndicatorAttack->setScale(0.3);
 		/*技能*/
 		rangeIndicatorAbility = Sprite::create("Controller/circle.png");
-		rangeIndicatorAbility->setAnchorPoint(Vec2(0.37, 0.5));
+		rangeIndicatorAbility->setAnchorPoint(Vec2(0.35, 0.5));
 		rangeIndicatorAbility->setScale(0.7);
 		rangeIndicatorAbility->setColor(Color3B::YELLOW);
 		break;
@@ -448,8 +451,8 @@ void GameScene::addRangeIndicator(SceneUtils::AllBrawler brawler)
 		rangeIndicatorAttack->setScaleY(0.3);
 		/*技能*/
 		rangeIndicatorAbility = Sprite::create("Controller/circle.png");
-		rangeIndicatorAbility->setAnchorPoint(Vec2(0.37, 0.5));
-		rangeIndicatorAbility->setScale(0.7);
+		rangeIndicatorAbility->setAnchorPoint(Vec2(0.35, 0.5));
+		rangeIndicatorAbility->setScale(1);
 		rangeIndicatorAbility->setColor(Color3B::YELLOW);
 		break;
 	case SceneUtils::Stu:
@@ -479,20 +482,7 @@ void GameScene::addRangeIndicator(SceneUtils::AllBrawler brawler)
 void GameScene::addBar(Brawler* brawler)
 {
 	/*血条*/
-	auto hpBar = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("hpBar.png"));
-	hpBar->setAnchorPoint(Vec2(0, 0.5));
-	hpBar->setScale(0.5, 0.4);
-	hpBar->setPosition(Vec2(-50, 55));
-	brawler->setHpBar(hpBar);
-	brawler->addChild(hpBar);
-	brawler->setHpBarSize(hpBar->getContentSize());
-	/*血条文字*/
-	auto hpBarLabel = Label::createWithTTF(
-		StringUtils::format("%d", brawler->getCurrentHealthPoint()).c_str(),
-		"fonts/Marker Felt.ttf", 15);
-	hpBarLabel->setPosition(Vec2(0, 55));
-	brawler->setHpBarLabel(hpBarLabel);
-	brawler->addChild(hpBarLabel);
+	Entity::initHpBar(brawler);
 	/*子弹条*/
 	auto ammoBar = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("ammoBar.png"));
 	ammoBar->setAnchorPoint(Vec2(0, 0.5));
@@ -520,7 +510,9 @@ void GameScene::menuEmotionCallback(cocos2d::Ref* pSender)
 {
 	smokeMove();
 
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+
 	if(_emotionMenu->isVisible())
 		_emotionMenu->setVisible(false);
 	else
@@ -530,9 +522,13 @@ void GameScene::menuEmotionCallback(cocos2d::Ref* pSender)
 /*返回 回调函数*/
 void GameScene::menuBackCallback(cocos2d::Ref* pSender)
 {
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
-	SimpleAudioEngine::getInstance()->stopBackgroundMusic();
-	SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Menu.mp3");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if (SceneUtils::_musicOn) 
+	{
+		SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Menu.mp3");
+	}
 	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 }
 
@@ -572,8 +568,12 @@ Point GameScene::tileCoordForPosition(Point position)
 void GameScene::setPlayerPosition(Point position)
 {
 	Vec2 tileSize = _map->getTileSize(); //获得单个瓦片尺寸
-
 	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
+
+	//确保不出界
+	if (!(tileCoord.x < 47 && tileCoord.y < 37 && tileCoord.x >= 3 && tileCoord.y >= 3))
+		return;
+
 	if (_collidable->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定碰撞属性单元格
 	{
 		return; //与物体发生碰撞时不移动
@@ -619,6 +619,17 @@ void GameScene::setGrassOpacity(Point position)
 			_grassCell->setOpacity(100); //将指定草丛单元格设为半透明
 		}
 	}
+
+	/*英雄在草丛里半透明*/
+	Point tileCoord = this->tileCoordForPosition(position);
+	if (_grass->getTileAt(tileCoord))
+	{
+		_player->getBrawler()->getSprite()->setOpacity(100);
+	}
+	else
+	{
+		_player->getBrawler()->getSprite()->setOpacity(255);
+	}
 }
 
 /* 墙壁被大招摧毁 */
@@ -630,6 +641,16 @@ void GameScene::breakWall(Point position)
 		_wall->removeTileAt(tileCoord); //移除该单元格，表示墙壁被炸毁
 		_collidable->removeTileAt(tileCoord);
 	}
+}
+
+/*判断该位置是否为墙体*/
+bool GameScene::isWallTile(Point position)
+{
+	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
+	if(_wall->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定墙壁单元格
+		return true;
+
+	return false;
 }
 
 /* 获取全部宝箱的位置 */

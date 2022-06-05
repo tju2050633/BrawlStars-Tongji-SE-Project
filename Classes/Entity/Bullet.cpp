@@ -4,6 +4,7 @@
 /*≥ı ºªØ*/
 bool Bullet::init()
 {
+	_distance = 0;
 	return true;
 }
 

@@ -1,6 +1,7 @@
 #include <cmath>
 #include "Brawler/Stu.h"
 #include "Constant/Const.h"
+#include "Utils/SceneUtils.h"
 
 bool Stu::init()
 {
@@ -18,15 +19,42 @@ bool Stu::init()
 
 void Stu::attack(float angle)
 {
-	if (_ammo <= 0)
+	if (_ammo <= 0 || !_isAttackAvailable)
 		return;
 
 	/*调用父类函数*/
 	Brawler::attack(angle);
 
 	/*一定触发攻击音效*/
-	if(_isPlayer)
+	if(_isPlayer && SceneUtils::_effectOn)
 		SimpleAudioEngine::getInstance()->playEffect("Music/Stu/Stu_Attack.mp3");
+
+	/*设定攻击间隔时间后才能下一次攻击*/
+	_isAttackAvailable = false;
+	scheduleOnce([&](float dt) {
+		_isAttackAvailable = true;
+		}, STU_AI, "resumeAttack");
+
+	/*Stu攻击：射出2颗子弹*/
+	schedule([=](float dt) {
+		auto bullet = Bullet::create();
+		//属性
+		bullet->setLauncher(this);
+		bullet->setDamage(_attackDamage);
+		bullet->setRange(STU_BULLET_RANGE);
+		bullet->setSpeed(STU_BULLET_SPEED);
+		bullet->setAngle(angle);
+		//图片
+		auto sprite = Sprite::createWithTexture(
+			Director::getInstance()->getTextureCache()
+			->addImage("Animation/Stu_Bullet.png"));
+		sprite->setRotation(-angle * 180 / M_PI);
+		bullet->bindSprite(sprite);
+
+		bullet->setIsAbility(false);
+		this->addChild(bullet);
+		_bulletVector.pushBack(bullet);
+		}, 0.15, 1, 0, "stuAttack");
 }
 
 void Stu::castAbility(float angle)
@@ -41,13 +69,22 @@ void Stu::castAbility(float angle)
 	Brawler::castAbility(angle);
 
 	/*技能音效*/
-	if (_isPlayer)
+	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.5f)
 		SimpleAudioEngine::getInstance()->playEffect("Music/Stu/Stu_Ult.mp3");
 
 	/*斯图技能：突刺*/
-	INT32 distance = 50;
-	auto dash = MoveBy::create(1.0f, Vec2(distance * cos(angle), distance * sin(angle)));
-	//this->runAction(dash);
+
+	float duration = 0.3f;
+	_isCastingAbility = true;
+	INT32 originMS_X = _moveSpeedX;
+	INT32 originMS_Y = _moveSpeedY;
+	_moveSpeedX = STU_DASH_DITANCE / duration * cos(angle);
+	_moveSpeedY = STU_DASH_DITANCE / duration * sin(angle);
+	scheduleOnce([=](float dt) {
+		_moveSpeedX = originMS_X;
+		_moveSpeedY = originMS_Y;
+		_isCastingAbility = false;
+		}, duration, "finishAbility");
 }
 
 void Stu::takeDamage(INT32 damage)
@@ -56,7 +93,7 @@ void Stu::takeDamage(INT32 damage)
 	Brawler::takeDamage(damage);
 
 	/*受伤音效*/
-	if (_isPlayer)
+	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.5f)
 		SimpleAudioEngine::getInstance()->playEffect("Music/Stu/Stu_Hurt.mp3");
 }
 
@@ -66,5 +103,6 @@ void Stu::die()
 	Brawler::die();
 
 	/*死亡音效*/
-	SimpleAudioEngine::getInstance()->playEffect("Music/Stu/Stu_Die.mp3");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/Stu/Stu_Die.mp3");
 }

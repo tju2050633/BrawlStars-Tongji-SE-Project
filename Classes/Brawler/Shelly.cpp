@@ -1,7 +1,7 @@
 #include <cmath>
 #include "Brawler/Shelly.h"
 #include "Constant/Const.h"
-#include "Entity/Bullet.h"
+#include "Utils/SceneUtils.h"
 
 bool Shelly::init()
 {
@@ -19,28 +19,61 @@ bool Shelly::init()
 
 void Shelly::attack(float angle)
 {
-	if (_ammo <= 0)
+	if (_ammo <= 0 || !_isAttackAvailable)
 		return;
 
 	/*调用父类函数*/
 	Brawler::attack(angle);
 
-	auto bullet = Bullet::create();
-	/*绑定精灵图像，添加为子节点*/
-	bullet->setSprite(Sprite::create("bullet.png"));
-	bullet->addChild(bullet->getSprite());
-	
-	/*设置尺寸、角度及属性*/
-	bullet->getSprite()->setScale(0.02);
-	bullet->setRotation(90 - angle * 180 / M_PI);
-	bullet->setAttributes(SHELLY_AD, SHELLY_BULLET_SPEED, SHELLY_BULLET_RANGE, angle, this);
-
-	_bulletVector.pushBack(bullet);
-	this->addChild(bullet);
-
 	/*一定概率触发攻击音效*/
-	if (_isPlayer && CCRANDOM_0_1() < 0.3f)
+	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.3f)
 		SimpleAudioEngine::getInstance()->playEffect("Music/Shelly/Shelly_Attack.mp3");
+
+	/*设定攻击间隔时间后才能下一次攻击*/
+	_isAttackAvailable = false;
+	scheduleOnce([&](float dt) {
+		_isAttackAvailable = true;
+		}, SHELLY_AI,"resumeAttack");
+
+	/*Shelly攻击：射出5簇子弹，每簇4颗*/
+	for (int i = -2; i <= 2; i++)
+	{
+		auto bullet = Bullet::create();
+		//属性
+		bullet->setLauncher(this);
+		bullet->setDamage(_attackDamage);
+		bullet->setRange(SHELLY_BULLET_RANGE);
+		bullet->setSpeed(SHELLY_BULLET_SPEED);
+		bullet->setAngle(angle + 5 * i * M_PI / 180);
+		//贴上4颗子弹的图片
+		for (int j = 0; j < 4; j++)
+		{
+			auto sprite = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Animation/Shelly_Bullet.png"));
+			Vec2 position;
+			switch (j)
+			{
+			case 0:
+				position = Vec2(-10, 0);
+				break;
+			case 1:
+				position = Vec2(10, 0);
+			case 2:
+				position = Vec2(0, 10);
+				break;
+			case 3:
+				position = Vec2(0, -10);
+				break;
+			default:
+				break;
+			}
+			sprite->setPosition(position);
+			sprite->setRotation(90 - angle * 180 / M_PI - 5 * i);
+			bullet->bindSprite(sprite);
+		}
+		bullet->setIsAbility(false);
+		this->addChild(bullet);
+		_bulletVector.pushBack(bullet);
+	}
 }
 
 void Shelly::castAbility(float angle)
@@ -55,10 +88,50 @@ void Shelly::castAbility(float angle)
 	Brawler::castAbility(angle);
 
 	/*技能音效*/
-	if (_isPlayer)
+	if (_isPlayer && SceneUtils::_effectOn)
 		SimpleAudioEngine::getInstance()->playEffect("Music/Shelly/Shelly_Ult.mp3");
 
-	
+	/*Shelly技能：射出9簇子弹，每簇4颗*/
+	for (int i = -4; i <= 4; i++)
+	{
+		auto bullet = Bullet::create();
+		//属性
+		bullet->setLauncher(this);
+		bullet->setDamage(_attackDamage);
+		bullet->setRange(SHELLY_BULLET_RANGE * 1.5);
+		bullet->setDistance(0);
+		bullet->setSpeed(SHELLY_BULLET_SPEED * 1.5);
+		bullet->setAngle(angle + 2.5 * i * M_PI / 180);
+		//贴上4颗子弹的图片
+		for (int j = 0; j < 4; j++)
+		{
+			auto sprite = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Animation/Shelly_Bullet.png"));
+			Vec2 position;
+			switch (j)
+			{
+			case 0:
+				position = Vec2(-10, 0);
+				break;
+			case 1:
+				position = Vec2(10, 0);
+			case 2:
+				position = Vec2(0, 10);
+				break;
+			case 3:
+				position = Vec2(0, -10);
+				break;
+			default:
+				break;
+			}
+			sprite->setScale(1.2);
+			sprite->setPosition(position);
+			sprite->setRotation(90 - angle * 180 / M_PI - 2.5 * i);
+			bullet->bindSprite(sprite);
+		}
+		bullet->setIsAbility(true);
+		this->addChild(bullet);
+		_bulletVector.pushBack(bullet);
+	}
 }
 
 void Shelly::takeDamage(INT32 damage)
@@ -67,7 +140,7 @@ void Shelly::takeDamage(INT32 damage)
 	Brawler::takeDamage(damage);
 
 	/*受伤音效*/
-	if (_isPlayer)
+	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.5f)
 		SimpleAudioEngine::getInstance()->playEffect("Music/Shelly/Shelly_Hurt.mp3");
 }
 
@@ -77,5 +150,6 @@ void Shelly::die()
 	Brawler::die();
 
 	/*死亡音效*/
-	SimpleAudioEngine::getInstance()->playEffect("Music/Shelly/Shelly_Die.mp3");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/Shelly/Shelly_Die.mp3");
 }

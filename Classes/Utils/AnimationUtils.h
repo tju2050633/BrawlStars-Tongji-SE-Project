@@ -7,35 +7,38 @@
 USING_NS_CC;
 using namespace std;
 
-class Brawler;
+class Entity;
 class AnimationUtils {
 public:
     /*枚举所有英雄*/
-    enum BrawlerEnum {
+    enum EntityEnum {
         Shelly,
         Nita,
         Primo,
-        Stu
+        Stu,
+        bear
     };
-    static string Brawlers[4];
+    static string Entities[5];
 
     /*枚举所有动画种类*/
     enum TypeEnum {
         Top,
         Left,
         Bottom,
-        Right
+        Right,
+        boom,
+        Attack
     };
-    static string Types[4];
+    static string Types[6];
 
     /*获取动画序列*/
-    static Animate* getAnimate(BrawlerEnum brawler, TypeEnum type, float time, INT32 iFrameNum, INT32 loop);
+    static Animate* getAnimate(EntityEnum entity, TypeEnum type, float time, INT32 iFrameNum, INT32 loop);
     
     /*英雄运行动画*/
-    static void runAnimate(Brawler* targetBrawler,BrawlerEnum brawler, TypeEnum type, float time, INT32 iFrameNum, INT32 loop);
+    static void runAnimate(Entity* target, EntityEnum entity, TypeEnum type, float time, INT32 iFrameNum, INT32 loop);
 
     /*英雄停止动画*/
-    static void stopAnimate(Brawler* targetBrawler, BrawlerEnum brawler, TypeEnum type);
+    static void stopAnimate(Entity* target, EntityEnum entity, TypeEnum type);
 };
 
 

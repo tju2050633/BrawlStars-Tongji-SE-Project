@@ -14,7 +14,9 @@ class Bullet : public Node {
 	CC_SYNTHESIZE(INT32, _damage, Damage);		//伤害
 	CC_SYNTHESIZE(INT32, _speed, Speed);		//速度
 	CC_SYNTHESIZE(float, _range, Range);		//射程
+	CC_SYNTHESIZE(float, _distance, Distance);	//已走过距离
 	CC_SYNTHESIZE(float, _angle, Angle);		//角度
+	CC_SYNTHESIZE(bool, _isAbility, IsAbility);	//是技能的子弹
 
 public:
 	/*创建对象和初始化函数*/

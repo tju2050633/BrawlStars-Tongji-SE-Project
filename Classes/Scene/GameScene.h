@@ -73,10 +73,12 @@ private:
 	void menuBackCallback(Ref *pSender);	//返回主菜单
 
 public:
+	static GameScene* _gameScene;
 	/*创建场景和初始化*/
 	static Scene *createScene();
 	virtual bool init();
 	CREATE_FUNC(GameScene);
+	static GameScene* getGameScene() { return _gameScene; }
 	void update(float dt);
 
 	/*瓦片地图需要的函数*/
@@ -85,12 +87,16 @@ public:
 	void setPlayerPosition(Point position);          //设置玩家位置（添加物理碰撞）
 	void setGrassOpacity(Point position);            //设置草丛透明度
 	void breakWall(Point position);                  //墙壁被大招摧毁
+	bool isWallTile(Point position);                  //判断该位置是否为墙体
 
 	void setEnemyVisible(Sprite* _enemy);            //设置敌人是否可见
 	void getBoxPosition();                           //获取全部宝箱的位置
 	void boxDie(Point position);                     //宝箱被摧毁（死亡）
 	void smokeMove();                                //毒烟移动
 	void smokeDamage(Point position, Brawler* brawler);//毒烟伤害
+
+	/*对外提供接口*/
+	Size getTileSize()const { return _map->getTileSize(); }
 };
 
 #endif // !__GAME_SCENE_H_

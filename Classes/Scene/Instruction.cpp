@@ -41,7 +41,8 @@ bool Instruction::init()
 	MenuItemImage* button = MenuItemImage::create("button/Back-Normal.png", "button/Back-Active.png",
 		[](Ref* pSender)
 		{
-			SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+			if (SceneUtils::_effectOn)
+				SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 			SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 		});
 

@@ -2,6 +2,7 @@
 #include "cocos2d.h"
 #include "Entity/Brawler.h"
 #include "Utils/SceneUtils.h"
+#include "Scene/GameScene.h"
 
 bool Brawler::init()
 {
@@ -9,6 +10,8 @@ bool Brawler::init()
 	_energy = 0;
 	_moveSpeedX = 0;
 	_moveSpeedY = 0;
+
+	_isCastingAbility = false;
 
 	this->scheduleUpdate();
 	this->schedule([&](float dt) {
@@ -27,12 +30,45 @@ bool Brawler::init()
 void Brawler::update(float dt)
 {
 	/*遍历已发射子弹，每帧进行移动*/
-	for (auto bullet : _bulletVector)
+	for (int i = 0;i < _bulletVector.size();i++)
 	{
-		float angle = bullet->getAngle();					//子弹角度
-		float dx = (bullet->getSpeed() * cos(angle) - _moveSpeedX) * dt;	//子弹每帧移动量
+		auto bullet = _bulletVector.at(i);
+		auto bulletPosition = bullet->getPosition() 
+			+ this->getParent()->getPosition();//在地图上的坐标
+		//位置要合法
+		auto pos = GameScene::getGameScene()->tileCoordForPosition(bulletPosition);
+		if (!(pos.x < 47 && pos.y < 37 && pos.x >= 3 && pos.y >= 3))
+		{
+			_bulletVector.erase(i);
+			removeChild(bullet, true);
+			continue;
+		}
+		//子弹每帧移动量
+		float angle = bullet->getAngle();					
+		float dx = (bullet->getSpeed() * cos(angle) - _moveSpeedX) * dt;	
 		float dy = (bullet->getSpeed() * sin(angle) - _moveSpeedY) * dt;
+		//若达到射程，移除子弹
+		bullet->setDistance(bullet->getDistance() + bullet->getSpeed() * dt);
+		if (bullet->getDistance() >= bullet->getRange())
+		{
+			_bulletVector.erase(i);
+			removeChild(bullet, true);
+			continue;
+		}
+		//碰到墙体，攻击的子弹移除，技能的子弹摧毁墙体后移除
+		if (GameScene::getGameScene()->isWallTile(bulletPosition))
+		{
+			
+			if (bullet->getIsAbility())
+				GameScene::getGameScene()->breakWall(bulletPosition);
+
+			_bulletVector.erase(i);
+			removeChild(bullet, true);
+			continue;
+		}
+		//碰到实体，技能子弹将其击退一段距离，子弹移除
 		
+		//继续移动
 		bullet->setPosition(bullet->getPosition() + Vec2(dx, dy));
 	}
 }
@@ -90,9 +126,10 @@ void Brawler::dealDamage(INT32 damage)
 	/*如果能量已满，改变技能图标*/
 	if (_energy == _maxEnergy)
 	{
-		_playerController->getAbilityRoundSprite()->setVisible(true);//
 		_playerController->getAbilityCenterSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("AbilityCenter.png"));//
-		_playerController->getAbilityCenterSprite()->setPosition(_playerController->getAbilityCenterSprite()->getPosition() + Vec2(45, 85));//
+		if (_playerController->getAbilityRoundSprite()->isVisible() == false)
+			_playerController->getAbilityCenterSprite()->setPosition(_playerController->getAbilityCenterSprite()->getPosition() + Vec2(45, 85));//
+		_playerController->getAbilityRoundSprite()->setVisible(true);//
 	}
 }
 

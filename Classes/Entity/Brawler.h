@@ -11,7 +11,6 @@ USING_NS_CC;
 
 class Brawler : public Entity {
 	/*玩家相关*/
-	CC_SYNTHESIZE(bool, _isPlayer, IsPlayer);								//是玩家操纵的英雄
 	CC_SYNTHESIZE(PlayerController* , _playerController, PlayerController);	//操作器
 
 	/*属性*/
@@ -26,6 +25,8 @@ class Brawler : public Entity {
 	CC_SYNTHESIZE(INT32, _moveSpeedX, MoveSpeedX); //当前x方向速度
 	CC_SYNTHESIZE(INT32, _moveSpeedY, MoveSpeedY); //当前y方向速度
 
+	CC_SYNTHESIZE(bool, _isCastingAbility, IsCastingAbility); //正在放技能，无法操纵移动
+
 	/*已发射的子弹*/
 	Vector<Bullet*> _bulletVector;
 
@@ -34,7 +35,7 @@ class Brawler : public Entity {
 	CC_SYNTHESIZE(Sprite*, _rangeIndicatorAbility, RangeIndicatorAbility);
 
 	/*动画需要的英雄枚举类*/
-	CC_SYNTHESIZE(AnimationUtils::BrawlerEnum, _animateBrawler, AnimateBrawler);
+	CC_SYNTHESIZE(AnimationUtils::EntityEnum, _animateBrawler, AnimateBrawler);
 
 	/*距离上次攻击或受伤过去5s，可以回血*/
 	CC_SYNTHESIZE(bool, _readyForHeal, ReadyForHeal);

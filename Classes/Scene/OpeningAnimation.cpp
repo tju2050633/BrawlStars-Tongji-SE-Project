@@ -57,6 +57,13 @@ void OpeningAnimation::PreloadResource()
 	Director::getInstance()->getTextureCache()->addImage("Portrait/Nita-Normal.png");
 	Director::getInstance()->getTextureCache()->addImage("Portrait/Primo-Normal.png");
 	Director::getInstance()->getTextureCache()->addImage("Portrait/Stu-Normal.png");
+	Director::getInstance()->getTextureCache()->addImage("Animation/Shelly_Bullet.png");
+	Director::getInstance()->getTextureCache()->addImage("Animation/Nita_Bullet.png");
+	Director::getInstance()->getTextureCache()->addImage("Animation/Primo_Bullet1.png");
+	Director::getInstance()->getTextureCache()->addImage("Animation/Primo_Bullet2.png");
+	Director::getInstance()->getTextureCache()->addImage("Animation/Primo_Bullet3.png");
+	Director::getInstance()->getTextureCache()->addImage("Animation/Primo_Bullet4.png");
+	Director::getInstance()->getTextureCache()->addImage("Animation/Stu_Bullet.png");
 	/*Ñ©Àò*/
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Shelly/Shelly_Neutral.png");
 	Director::getInstance()->getTextureCache()->addImage("Emotion/Shelly/Shelly_Happy.png");
@@ -124,14 +131,19 @@ void OpeningAnimation::PreloadResource()
 	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Controller/Controller.plist");
 	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Controller/AttackButton.plist");
 	/*¼ÓÔØ¶¯»­Ö¡plist*/
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Animation/Shelly.plist");
 	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Animation/Nita.plist");
 	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Animation/Primo.plist");
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Animation/Primo_quan.plist");
 	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Animation/Stu.plist");
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Animation/bear.plist");
 }
 
 /*ÇÐ»»µ½ÓÎÏ·²Ëµ¥*/
 void OpeningAnimation::EnterMenu(float dt)
 {
 	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
-	SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Menu.mp3", true);
+
+	if(SceneUtils::_musicOn)
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Menu.mp3", true);
 }

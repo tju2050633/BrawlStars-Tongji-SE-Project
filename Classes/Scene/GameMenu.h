@@ -22,7 +22,8 @@ private:
 	/*按键回调函数*/
 	void menuSinglePlayerCallback(Ref *pSender); //单人模式
 	void menuMultiPlayerCallback(Ref *pSender);	 //多人模式
-	void menuSettingsCallback(Ref *pSender);	 //游戏设置
+	void menuMusicCallback(Ref* pSender);	 //音乐
+	void menuEffectCallback(Ref *pSender);	 //音效
 	void menuInstructionCallback(Ref *pSender);	 //游戏说明
 	void menuQuitCallback(Ref *pSender);		 //退出游戏
 

@@ -17,11 +17,13 @@ Vec2 Player::getTargetPosition()
 }
 void Player::setTargetMoveSpeedX(int speedX)
 {
-	_brawler->setMoveSpeedX(speedX);
+	if(_brawler->getIsCastingAbility() == false)
+		_brawler->setMoveSpeedX(speedX);
 }
 void Player::setTargetMoveSpeedY(int speedY)
 {
-	_brawler->setMoveSpeedY(speedY);
+	if (_brawler->getIsCastingAbility() == false)
+		_brawler->setMoveSpeedY(speedY);
 }
 INT32 Player::getTargetMoveSpeedX()
 {

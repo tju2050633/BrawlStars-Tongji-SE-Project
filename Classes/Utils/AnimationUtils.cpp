@@ -1,14 +1,14 @@
 #include "AnimationUtils.h"
 #include "Entity/Brawler.h"
 
-string AnimationUtils::Brawlers[4] = { "Shelly","Nita","Primo","Stu" };
-string AnimationUtils::Types[4] = { "Top","Left","Bottom","Right" };
+string AnimationUtils::Entities[5] = { "Shelly","Nita","Primo","Stu", "bear"};
+string AnimationUtils::Types[6] = { "Top","Left","Bottom","Right", "boom", "Attack"};
 
 /*加载动画序列*/
-Animate* AnimationUtils::getAnimate(BrawlerEnum brawler, TypeEnum type, float time, INT32 iFrameNum, INT32 loop)
+Animate* AnimationUtils::getAnimate(EntityEnum entity, TypeEnum type, float time, INT32 iFrameNum, INT32 loop)
 {
 	/*获取英雄名和动画种类*/
-	string brawlerName = Brawlers[brawler];
+	string brawlerName = Entities[entity];
 	string typeName = Types[type];
 
 	/*加载动画*/
@@ -25,23 +25,23 @@ Animate* AnimationUtils::getAnimate(BrawlerEnum brawler, TypeEnum type, float ti
 	return Animate::create(animation);
 }
 
-/*英雄运行动画*/
-void AnimationUtils::runAnimate(Brawler* targetBrawler, BrawlerEnum brawler, TypeEnum type, float time, INT32 iFrameNum, INT32 loop)
+/*运行动画*/
+void AnimationUtils::runAnimate(Entity* target, EntityEnum entity, TypeEnum type, float time, INT32 iFrameNum, INT32 loop)
 {
-	auto animate = AnimationUtils::getAnimate(brawler, type, time, iFrameNum, loop);
+	auto animate = AnimationUtils::getAnimate(entity, type, time, iFrameNum, loop);
 
-	targetBrawler->getSprite()->stopAllActions();
-	targetBrawler->getSprite()->runAction(animate->clone());
+	target->getSprite()->stopAllActions();
+	target->getSprite()->runAction(animate->clone());
 }
 
 /*停止动画*/
-void AnimationUtils::stopAnimate(Brawler* targetBrawler, BrawlerEnum brawler, TypeEnum type)
+void AnimationUtils::stopAnimate(Entity* target, EntityEnum entity, TypeEnum type)
 {
 	/*获取英雄名和动画种类*/
-	string brawlerName = Brawlers[brawler];
+	string brawlerName = Entities[entity];
 	string typeName = Types[type];
 
 	/*停止动画，设置为当前方向的静止状态*/
-	targetBrawler->getSprite()->stopAllActions();
-	targetBrawler->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(brawlerName + "_" + typeName + "1.png"));
+	target->getSprite()->stopAllActions();
+	target->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(brawlerName + "_" + typeName + "1.png"));
 }

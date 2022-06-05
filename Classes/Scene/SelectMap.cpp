@@ -91,7 +91,9 @@ void SelectMap::initMenu()
 /*选择地图 地图A回调函数 √*/
 void SelectMap::menuMapACallback(cocos2d::Ref* pSender)
 {
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	
 	SceneUtils::_map = SceneUtils::AllMap::MapA;
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }
@@ -99,7 +101,9 @@ void SelectMap::menuMapACallback(cocos2d::Ref* pSender)
 /*选择地图 地图B回调函数 √*/
 void SelectMap::menuMapBCallback(cocos2d::Ref* pSender)
 {
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	
 	SceneUtils::_map = SceneUtils::AllMap::MapB;
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }
@@ -107,7 +111,9 @@ void SelectMap::menuMapBCallback(cocos2d::Ref* pSender)
 /*选择地图 地图C回调函数 √*/
 void SelectMap::menuMapCCallback(cocos2d::Ref* pSender)
 {
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	
 	SceneUtils::_map = SceneUtils::AllMap::MapC;
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }
@@ -116,6 +122,8 @@ void SelectMap::menuMapCCallback(cocos2d::Ref* pSender)
 //场景从SelectMap切换至GameMenu
 void SelectMap::menuBackCallback(cocos2d::Ref* pSender)
 {
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	if (SceneUtils::_effectOn)
+		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	
 	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 }
