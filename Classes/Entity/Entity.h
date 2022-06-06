@@ -33,7 +33,7 @@ public:
 
 	virtual void attack(float angle) {}  //¹¥»÷
 	virtual void takeDamage(INT32 damage);  //³ĞÊÜÉËº¦
-	virtual void die() {}  //ËÀÍö
+	virtual void die();  //ËÀÍö
 };
 
 #endif// !__ENTITY_H_

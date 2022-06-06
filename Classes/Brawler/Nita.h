@@ -8,8 +8,6 @@
 USING_NS_CC;
 
 class Nita : public Brawler {
-	CC_SYNTHESIZE(Bear*, _bear, Bear);//拥有的熊
-
 public:
 	/*创建对象和初始化函数*/
 	CREATE_FUNC(Nita);

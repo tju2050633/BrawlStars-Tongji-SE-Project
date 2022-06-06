@@ -31,6 +31,8 @@ private:
 	Player* _player;
 	Vector<AI*> _AI_Vector;
 	Vector<Brawler*> _brawlerVector;
+	Vector<Entity*> _entityVector;
+	Vector<Sprite*> _buffVector;
 	PlayerController* _playerController;
 	/*瓦片地图部分*/
 	TMXTiledMap* _map;
@@ -60,6 +62,7 @@ private:
 	
 	/*初始化地图层*/
 	void initMap();				//地图
+	void addBox();				//宝箱
 	void initBrawler();			//英雄
 
 	/*初始化英雄 辅助函数*/
@@ -81,6 +84,10 @@ public:
 	static GameScene* getGameScene() { return _gameScene; }
 	void update(float dt);
 
+	/*进程*/
+	void BrawlerDie();		//英雄死亡
+	void GameOver(bool win);//结束游戏
+
 	/*瓦片地图需要的函数*/
 	virtual void setViewPointCenter(Point position); //设置窗口镜头位置
 	Point tileCoordForPosition(Point position);	     //转化为tile坐标
@@ -97,6 +104,18 @@ public:
 
 	/*对外提供接口*/
 	Size getTileSize()const { return _map->getTileSize(); }
+	Layer* getUILayer()const { return _UILayer; }
+	Label* getLabel()const { return _label; }
+	void pushBackBrawler(Brawler* brawler) { _brawlerVector.pushBack(brawler); }
+	void pushBackEntity(Entity* entity) { _entityVector.pushBack(entity); }
+	void pushBackBuff(Sprite* buff) { _buffVector.pushBack(buff); }
+	Vector<Brawler*> getBrawlerVector()const { return _brawlerVector; }
+	Vector<Entity*> getEntityVector()const { return _entityVector; }
+	Vector<Sprite*> getBuffVector()const { return _buffVector; }
+	void removeFromBrawlerVector(Brawler* brawler);
+	void removeFromEntityVector(Entity* entity);
+	void removeFromBuffVector(Sprite* buff);
+	TMXLayer* getCollidable()const { return _collidable; }
 };
 
 #endif // !__GAME_SCENE_H_

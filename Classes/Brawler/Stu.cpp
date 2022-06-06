@@ -4,11 +4,13 @@
 #include "Utils/SceneUtils.h"
 
 bool Stu::init()
+
 {
 	if (!Brawler::init())
 	{
 		return false;
 	}
+	_attackDamage = STU_AD;
 	_currentHealthPoint = STU_HP;
 	_healthPoint = STU_HP;
 	_maxEnergy = STU_EB;

@@ -25,9 +25,23 @@ void Bullet::setAttributes(INT32 damage, INT32 speed, INT32 range, float angle, 
 	setLauncher(launcher);
 }
 
-/*碰撞到单位，调用此函数*/
-void Bullet::collide(Entity* target)
+/*碰撞英雄*/
+void Bullet::collideWithBrawler(Brawler* target)
 {
-	target->takeDamage(_damage);
-	this->removeFromParent();
+	target->takeDamage(_damage);//实体受伤
+	this->removeFromParent();	//子弹移除
+	_launcher->dealDamage(_damage);//发射者造成伤害
+
+	if (_damage >= target->getCurrentHealthPoint())//击杀了英雄
+	{
+		_launcher->kill(target);
+	}
+}
+
+/*碰撞熊、宝箱*/
+void Bullet::collideWithEntity(Entity* target)
+{
+	target->takeDamage(_damage);//实体受伤
+	this->removeFromParent();	//子弹移除
+	_launcher->dealDamage(_damage);//发射者造成伤害
 }

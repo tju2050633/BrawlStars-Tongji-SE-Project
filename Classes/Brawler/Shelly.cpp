@@ -9,6 +9,7 @@ bool Shelly::init()
 	{
 		return false;
 	}
+	_attackDamage = SHELLY_AD;
 	_currentHealthPoint = SHELLY_HP;
 	_healthPoint = SHELLY_HP;
 	_maxEnergy = SHELLY_EB;

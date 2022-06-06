@@ -11,6 +11,7 @@ const int SHELLY_EB = 3450;		//能量条EnergeBar
 
 const int SHELLY_BULLET_SPEED = 400;//子弹速度
 const int SHELLY_BULLET_RANGE = 300;//射程
+const int SHELLY_BEAT_DISTANCE = 30;//技能可击退距离
 
 /*妮塔Nita 属性*/
 
@@ -62,6 +63,7 @@ const float BEAR_AI = 0.5;		//攻击间隔AttackInterval
 
 const int BOX_HP = 4000;	//箱子血量
 
-const int SMOKE_DAMAGE = 1000;
+const int SMOKE_DAMAGE = 1000;		//毒圈伤害
+const int SMOKE_MOVE_INTERVAL = 20;//毒圈缩一格时间
 
 #endif __CONST_H_

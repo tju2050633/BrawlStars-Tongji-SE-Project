@@ -108,6 +108,10 @@ void PlayerController::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* even
 		_controllerListener->getTargetBrawler()->dealDamage(1000);
 	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_R || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_R)
 		_controllerListener->getTargetBrawler()->setAnimateBrawler(AnimationUtils::bear);
+	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_Z || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_Z)
+		_controllerListener->getTargetBrawler()->takeBuff();
+	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_X || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_X)
+		_controllerListener->getTargetBrawler()->kill(_controllerListener->getTargetBrawler());
 
 	changeControllerSprite();
 

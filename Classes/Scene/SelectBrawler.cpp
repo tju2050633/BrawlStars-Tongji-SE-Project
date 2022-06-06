@@ -31,7 +31,7 @@ bool SelectBrawler::init()
 	initMenu();
 
 	/*背景*/
-	SceneUtils::setBGimage("SelectBrawler.png", this, SceneUtils::setBGimageWith::SpriteFrameCache);
+	SceneUtils::setBGimage("BGimage/Background.png", this, SceneUtils::setBGimageWith::TextureCache);
 
 	return true;
 }
@@ -63,10 +63,10 @@ void SelectBrawler::initMenu()
 		Vec2(0, 1) };
 	//按钮坐标
 	vector<Vec2> PositionVector = {
-		Vec2(visibleSize.width / 5 + origin.x, visibleSize.height / 3 + origin.y),
-		Vec2(2 * visibleSize.width / 5 + origin.x, visibleSize.height / 3 + origin.y),
-		Vec2(3 * visibleSize.width / 5 + origin.x, visibleSize.height / 3 + origin.y),
-		Vec2(4 * visibleSize.width / 5 + origin.x, visibleSize.height / 3 + origin.y),
+		Vec2(1 * visibleSize.width / 5 + origin.x, visibleSize.height / 2 + origin.y),
+		Vec2(2 * visibleSize.width / 5 + origin.x, visibleSize.height / 2 + origin.y),
+		Vec2(3 * visibleSize.width / 5 + origin.x, visibleSize.height / 2 + origin.y),
+		Vec2(4 * visibleSize.width / 5 + origin.x, visibleSize.height / 2 + origin.y),
 		Vec2(origin.x, visibleSize.height + origin.y) };
 
 	/*逐个创建按钮，分配信息，存入Vector*/

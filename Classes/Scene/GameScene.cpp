@@ -2,10 +2,12 @@
 #include "ui/CocosGUI.h"
 #include <vector>
 #include <string>
+#include <fstream>
 #include "Scene/GameScene.h"
 #include "Utils/SceneUtils.h"
 #include "Player/Player.h"
 #include "Player/AI.h"
+#include "Entity/Box.h"
 #include "Brawler/Shelly.h"
 #include "Brawler/Nita.h"
 #include "Brawler/Primo.h"
@@ -235,6 +237,7 @@ bool GameScene::init()
 	initBrawler();
 	
 	this->scheduleUpdate();						//每帧刷新
+
 	this->schedule([=](float dt) {				//每1秒刷新
 		for (auto brawler : _brawlerVector)
 		{
@@ -245,6 +248,10 @@ bool GameScene::init()
 				brawler->heal(brawler->getHealthPoint() * 0.13);
 		}
 	}, 1.0f, "smoke damaga/auto heal");
+
+	this->schedule([=](float dt) {				//每20秒刷新
+			smokeMove();
+		}, SMOKE_MOVE_INTERVAL, "smoke move");
 
 	return true;
 }
@@ -258,7 +265,6 @@ void GameScene::update(float dt)
 	this->setPlayerPosition(playerPos);//设置玩家位置
 	this->setGrassOpacity(playerPos);//设置草丛透明度
 	this->setViewPointCenter(playerPos);//设置镜头跟随
-	//this->smokeDamage(playerPos,_player->getBrawler());	//毒烟伤害
 }
 
 /*************************************************************初始化地图层*************************************************************/
@@ -302,14 +308,33 @@ void GameScene::initMap()
 
 	/* 添加宝箱对象层 */
 	_boxObjects = _map->getObjectGroup("BoxObjects");
+
 	/* 获取全部宝箱位置 */
 	this->getBoxPosition();
+
+	/*添加宝箱*/
+	addBox();
 
 	/* 添加玩家出生点坐标对象层 */
 	_playerSpawnPoint = _map->getObjectGroup("PlayerSpawnPoint");
 
 	/* 添加AI出生点坐标对象层 */
 	_AISpawnPoint = _map->getObjectGroup("AISpawnPoint");
+}
+
+/*添加宝箱*/
+void GameScene::addBox()
+{
+	for (auto pos : _boxPos)
+	{
+		auto box = Box::create();
+		box->bindSprite(Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Box.png")));
+		box->setPosition(pos + Vec2(20, 50));
+		box->setScale(0.25);
+		Entity::initHpBar(box);
+
+		this->addChild(box, 1);
+	}
 }
 
 /*地图层 人物*/
@@ -347,9 +372,6 @@ void GameScene::initBrawler()
 		string filepath = "Music/" + brawlerName + "/" + brawlerName + "_Start.mp3";
 		SimpleAudioEngine::getInstance()->playEffect(filepath.c_str());
 	}
-
-	/*添加进渲染树和Vector成员变量*/
-	_brawlerVector.pushBack(_player->getBrawler());
 
 	this->addChild(_player);
 }
@@ -499,8 +521,22 @@ void GameScene::addBar(Brawler* brawler)
 	brawler->setEnergyBar(energyBar);
 	brawler->addChild(energyBar);
 	brawler->setEnergyBarSize(energyBar->getContentSize());
-	
 	brawler->setEnergeBarPercent(0);	//能量条初始为0
+	/*Buff*/
+	auto buff = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Buff.png"));
+	buff->setAnchorPoint(Vec2(1, 0.5));
+	buff->setScale(0.5);
+	buff->setPosition(Vec2(0, 75));
+	brawler->addChild(buff);
+	/*Buff文字*/
+	auto buffLabel = Label::createWithTTF(
+		StringUtils::format("%d", brawler->getBuffNumber()).c_str(),
+		"fonts/Marker Felt.ttf", 20);
+	buffLabel->setAnchorPoint(Vec2(0, 0.5));
+	buffLabel->setPosition(Vec2(0, 75));
+	buffLabel->setColor(Color3B::GREEN);
+	brawler->setBuffLabel(buffLabel);
+	brawler->addChild(buffLabel);
 }
 
 /*************************************************************回调函数*************************************************************/
@@ -508,7 +544,20 @@ void GameScene::addBar(Brawler* brawler)
 /*表情 回调函数*/
 void GameScene::menuEmotionCallback(cocos2d::Ref* pSender)
 {
+	//test
 	smokeMove();
+
+	//test
+	int iTrophyNumber;
+	ifstream in("trophy.txt");
+	in >> iTrophyNumber;
+	in.close();
+
+	iTrophyNumber += 10;
+
+	ofstream out("trophy.txt");
+	out << iTrophyNumber;
+	out.close();
 
 	if (SceneUtils::_effectOn)
 		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
@@ -527,9 +576,125 @@ void GameScene::menuBackCallback(cocos2d::Ref* pSender)
 	if (SceneUtils::_musicOn) 
 	{
 		SimpleAudioEngine::getInstance()->stopBackgroundMusic();
-		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Menu.mp3");
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Menu.mp3", true);
 	}
 	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
+}
+
+/*************************************************************进程*************************************************************/
+
+/*英雄死亡*/
+void GameScene::BrawlerDie()
+{
+	SceneUtils::_brawlerNumber--;
+
+	/*标签文字*/
+	_label->setString(StringUtils::format("Brawler Left: %d", SceneUtils::_brawlerNumber).c_str());
+
+	/*背景音乐*/
+	if (SceneUtils::_brawlerNumber == 2)
+	{
+		SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Final.mp3", true);
+	}
+}
+
+/*结束游戏*/
+void GameScene::GameOver(bool win)
+{
+	/*清除UI层，停止一切*/
+	this->unscheduleAllCallbacks();
+	_UILayer->removeFromParent();
+	_playerController->removeFromParent();
+
+	/*奖杯*/
+	INT32 rank = SceneUtils::_brawlerNumber;
+	INT32 trophy;
+	switch (rank)
+	{
+	case 1:
+		trophy = 10;
+		break;
+	case 2:
+		trophy = 8;
+		break;
+	case 3:
+		trophy = 7;
+		break;
+	case 4:
+		trophy = 6;
+		break;
+	case 5:
+		trophy = 5;
+		break;
+	case 6:
+		trophy = 4;
+		break;
+	case 7:
+		trophy = 3;
+		break;
+	case 8:
+		trophy = 2;
+		break;
+	case 9:
+		trophy = 0;
+		break;
+	case 10:
+		trophy = 0;
+		break;
+	default:
+		break;
+	}
+	
+	int iTrophyNumber;
+	ifstream in("trophy.txt");
+	in >> iTrophyNumber;
+	in.close();
+
+	iTrophyNumber += trophy;
+
+	ofstream out("trophy.txt");
+	out << iTrophyNumber;
+	out.close();
+
+	/*BGM切歌*/
+	SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+	if (win && SceneUtils::_musicOn)
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Win.mp3", true);
+	else if(!win && SceneUtils::_musicOn)
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Defeat.mp3", true);
+	
+	/*1秒后弹出/*胜利/失败画面*/
+	scheduleOnce([=](float dt) {
+		/*胜利、失败图像*/
+		Sprite* sprite;
+		if (win)
+		{
+			sprite = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Victory.png"));
+			sprite->setScale(4);
+		}
+		else
+		{
+			sprite = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Defeat.png"));
+			sprite->setScale(2);
+		}
+
+		sprite->setPosition(Vec2(_visibleSize.width / 2 + _origin.x, _visibleSize.height / 2 + _origin.y));
+		this->getParent()->addChild(sprite, 2);
+
+		/*返回按钮*/
+		auto button = MenuItemImage::create("button/ReturnMenu-Normal.png", "button/ReturnMenu-Active.png", CC_CALLBACK_1(GameScene::menuBackCallback, this));
+		if (button == nullptr || button->getContentSize().width <= 0 || button->getContentSize().height <= 0)
+			SceneUtils::problemLoading("button/ReturnMenu-Normal.png");
+		else
+		{
+			button->setPosition(Vec2(_visibleSize.width / 2 + _origin.x, _visibleSize.height / 5 + _origin.y));
+
+			Menu* menu = Menu::create(button, NULL);
+			menu->setPosition(Vec2::ZERO);
+			this->getParent()->addChild(menu, 2);
+		}
+	}, 1.0f, "displayWIN/LOSE");
 }
 
 /*************************************************************瓦片地图需要的函数*************************************************************/
@@ -742,3 +907,31 @@ void GameScene::smokeDamage(Point position, Brawler* brawler)
 	}
 }
 
+
+/*屎山上的补丁——临时加的接口*/
+void GameScene::removeFromBrawlerVector(Brawler* brawler)
+{
+	for (int i = 0; i < _brawlerVector.size(); i++)
+	{
+		if (_brawlerVector.at(i) == brawler)
+			_brawlerVector.erase(i);
+	}
+}
+
+void GameScene::removeFromEntityVector(Entity* entity)
+{
+	for (int i = 0; i < _entityVector.size(); i++)
+	{
+		if (_entityVector.at(i) == entity)
+			_entityVector.erase(i);
+	}
+}
+
+void GameScene::removeFromBuffVector(Sprite* buff)
+{
+	for (int i = 0; i < _buffVector.size(); i++)
+	{
+		if (_buffVector.at(i) == buff)
+			_buffVector.erase(i);
+	}
+}

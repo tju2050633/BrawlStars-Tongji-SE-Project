@@ -10,6 +10,7 @@ bool Primo::init()
 	{
 		return false;
 	}
+	_attackDamage = PRIMO_AD;
 	_currentHealthPoint = PRIMO_HP;
 	_healthPoint = PRIMO_HP;
 	_maxEnergy = PRIMO_EB;

@@ -29,7 +29,8 @@ public:
 	/*设置属性*/
 	void setAttributes(INT32 damage, INT32 speed, INT32 range, float angle, Brawler* launcher);
 
-	void collide(Entity* target);     //接受一个Entity参数，碰撞时调用
+	void collideWithBrawler(Brawler* target);     //碰撞英雄
+	void collideWithEntity(Entity* target);     //碰撞熊、宝箱
 };
 
 #endif// __BULLET_H_

@@ -185,10 +185,15 @@ void Room::menuStartCallback(Ref* pSender)
 {
 	if(SceneUtils::_effectOn)
 		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+
+	//гЂалЪ§аш>=2
+	if (SceneUtils::_brawlerNumber == 1)
+		return;
+
 	if (SceneUtils::_musicOn)
 	{
 		SimpleAudioEngine::getInstance()->stopBackgroundMusic();
-		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Combat.mp3");
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Combat.mp3", true);
 	}
 	SceneUtils::changeScene(SceneUtils::GameScene);
 }

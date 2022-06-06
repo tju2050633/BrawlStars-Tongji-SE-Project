@@ -6,6 +6,7 @@
 #include "Entity/Bullet.h"
 #include "Utils/AnimationUtils.h"
 #include "Controller/PlayerController.h"
+#include "Entity/Bear.h"
 
 USING_NS_CC;
 
@@ -21,6 +22,8 @@ class Brawler : public Entity {
 	CC_SYNTHESIZE(INT32, _maxEnergy, MaxEnergy);//最大能量
 	CC_SYNTHESIZE(Sprite*, _energyBar, EnergyBar);//能量条
 	CC_SYNTHESIZE(Size, _energyBarSize, EnergyBarSize);//能量条尺寸
+	CC_SYNTHESIZE(INT32, _buffNumber, BuffNumber);//buff数量
+	CC_SYNTHESIZE(Label*, _buffLabel, BuffLabel);//buff文字标签
 
 	CC_SYNTHESIZE(INT32, _moveSpeedX, MoveSpeedX); //当前x方向速度
 	CC_SYNTHESIZE(INT32, _moveSpeedY, MoveSpeedY); //当前y方向速度
@@ -40,6 +43,9 @@ class Brawler : public Entity {
 	/*距离上次攻击或受伤过去5s，可以回血*/
 	CC_SYNTHESIZE(bool, _readyForHeal, ReadyForHeal);
 
+	/*Nita的熊*/
+	CC_SYNTHESIZE(Bear*, _bear, Bear);
+
 public:
 	/*创建对象和初始化函数*/
 	CREATE_FUNC(Brawler);
@@ -49,12 +55,12 @@ public:
 
 	/*继承自Entity的函数*/
 	virtual void attack(float angle)override;	//攻击
-	
 	virtual void takeDamage(INT32 damage)override;//受伤
 	virtual void die()override;					//死亡
 
 	/*Brawler特有函数*/
 	void dealDamage(INT32 damage);			//造成伤害
+	void kill(Brawler* brawler);			//击杀英雄
 	virtual void castAbility(float angle);	//技能
 	void takeBuff();						//获得buff，增加属性
 	void heal(INT32 healAmount);			//治疗

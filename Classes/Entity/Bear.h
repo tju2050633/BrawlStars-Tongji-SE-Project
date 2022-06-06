@@ -17,6 +17,8 @@ public:
 	virtual bool init();
 
 	void update(float dt);
+
+	void die()override;
 };
 
 #endif// !__BEAR_H_

@@ -2,17 +2,24 @@
 #include "cocos2d.h"
 #include "Entity/Brawler.h"
 #include "Utils/SceneUtils.h"
+#include "Utils/AnimationUtils.h"
 #include "Scene/GameScene.h"
+#include "Constant/Const.h"
 
 bool Brawler::init()
 {
+	//属性初始化
 	_ammo = 3;
 	_energy = 0;
 	_moveSpeedX = 0;
 	_moveSpeedY = 0;
+	_buffNumber = 0;
 
 	_isCastingAbility = false;
 
+	//添加进GameScene的数组
+	GameScene::getGameScene()->pushBackBrawler(this);
+		
 	this->scheduleUpdate();
 	this->schedule([&](float dt) {
 		if (_ammo >= 3)
@@ -66,10 +73,77 @@ void Brawler::update(float dt)
 			removeChild(bullet, true);
 			continue;
 		}
-		//碰到实体，技能子弹将其击退一段距离，子弹移除
 		
+		Vector<Brawler*> brawlerVec = GameScene::getGameScene()->getBrawlerVector();
+		Vector<Entity*> entityVec = GameScene::getGameScene()->getEntityVector();
+
+		bool isCollided = false;//子弹已与英雄/熊/宝箱发生碰撞
+		//碰到英雄
+		for (int j = 0; j < brawlerVec.size(); j++)
+		{
+			auto bullet_pos_to_target = bulletPosition - brawlerVec.at(j)->getPosition();//子弹相对目标物的位置
+			if (brawlerVec.at(j) == this)//不能攻击自身
+				continue;
+			Rect rect = brawlerVec.at(j)->getSprite()->getBoundingBox();
+			float scale = entityVec.at(j)->getScale();//碰撞体积是精灵图原始大小，要乘以实体scale
+			Size size = rect.size * scale;
+			rect.setRect(rect.getMinX() * scale, rect.getMinY() * scale, size.width, size.height);
+			if (rect.containsPoint(bullet_pos_to_target))
+			{
+				//shelly技能可将英雄击退
+				if (bullet->getIsAbility())
+				{
+					int distance = SHELLY_BEAT_DISTANCE;
+					float angle = bullet->getAngle();
+					brawlerVec.at(j)->getParent()->runAction(MoveBy::create(1.0f, Vec2(distance * cos(angle), distance * cos(angle))));
+				}
+				bullet->collideWithBrawler(brawlerVec.at(j));
+				_bulletVector.erase(i);
+				isCollided = true;
+				break;
+			}
+		}
+		if (isCollided)
+			continue;
+		//碰到熊或宝箱
+		for (int j = 0; j < entityVec.size(); j++)
+		{
+			auto bullet_pos_to_target = bulletPosition - entityVec.at(j)->getPosition();//子弹相对目标物的位置
+			//if (entityVec.at(j) == _bear)//不能攻击自己的熊
+			//	continue;
+			Rect rect = entityVec.at(j)->getSprite()->getBoundingBox();
+			float scale = entityVec.at(j)->getScale();//碰撞体积是精灵图原始大小，要乘以实体scale
+			Size size = rect.size * scale;
+			rect.setRect(rect.getMinX() * scale, rect.getMinY() * scale, size.width, size.height);
+			if (rect.containsPoint(bullet_pos_to_target))
+			{
+				bullet->collideWithEntity(entityVec.at(j));
+				_bulletVector.erase(i);
+				isCollided = true;
+				break;
+			}
+		}
+		if (isCollided)
+			continue;
+
 		//继续移动
 		bullet->setPosition(bullet->getPosition() + Vec2(dx, dy));
+	}
+
+	/*监测位置，获取buff*/
+	auto buffVec = GameScene::getGameScene()->getBuffVector();
+	auto playerPos = this->getParent()->getPosition();
+	for (int i = 0; i < buffVec.size(); i++)
+	{
+		auto buff = buffVec.at(i);
+		Rect rect = buff->getBoundingBox();
+		if (rect.containsPoint(playerPos))
+		{
+			this->takeBuff();
+			buff->removeFromParent();
+			GameScene::getGameScene()->removeFromBuffVector(buff);
+			break;
+		}
 	}
 }
 
@@ -109,8 +183,30 @@ void Brawler::takeDamage(INT32 damage)
 /*死亡*/
 void Brawler::die()
 {
-	/*英雄数-1，配合GameScene的update刷新Label内容和出毒圈、换BGM、判定胜利等*/
-	SceneUtils::_brawlerNumber--;
+	/*通知GameScene*/
+	GameScene::getGameScene()->BrawlerDie();
+
+	/*玩家死亡，失败，隐藏节点;否则,若仅剩一个英雄，胜利，其他英雄直接移除*/
+	if (_isPlayer)
+	{
+		setVisible(false);
+		GameScene::getGameScene()->GameOver(false);
+	}
+	else
+	{
+		/*掉落buff*/
+		auto buff = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Buff.png"));
+		buff->setPosition(getPosition());
+		getParent()->addChild(buff, 1);
+
+		/*移除*/
+		removeFromParent();
+		GameScene::getGameScene()->removeFromBrawlerVector(this);
+
+
+		if (SceneUtils::_brawlerNumber == 1)
+			GameScene::getGameScene()->GameOver(true);
+	}
 }
 
 /*造成伤害*/
@@ -133,6 +229,49 @@ void Brawler::dealDamage(INT32 damage)
 	}
 }
 
+/*击杀英雄*/
+void Brawler::kill(Brawler* brawler)
+{
+	/*获取visibleSize和origin*/
+	auto visibleSize = Director::getInstance()->getVisibleSize(); //得到屏幕大小
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();	  //获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
+
+	/*获取英雄名*/
+	string leftBrawlerName;
+	string rightBrawlerName;
+
+	leftBrawlerName = AnimationUtils::Entities[_animateBrawler];
+	rightBrawlerName = AnimationUtils::Entities[brawler->getAnimateBrawler()];
+
+	/*飘出击杀提示*/
+	auto info = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Notice.png"));
+	auto left = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Portrait/" + leftBrawlerName + "-Normal.png"));
+	auto right = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Portrait/" + rightBrawlerName + "-Normal.png"));
+
+	left->setScale(0.2);
+	left->setPosition(Vec2(160,90));
+
+	right->setScale(0.2);
+	right->setPosition(Vec2(325,90));
+
+	info->addChild(left);
+	info->addChild(right);
+	info->setScale(0.8);
+	info->setAnchorPoint(Vec2(1, 1));
+	info->setPosition(Vec2(origin.x, origin.y + visibleSize.height - 100));
+	GameScene::getGameScene()->getUILayer()->addChild(info, 1);
+
+	auto move = MoveBy::create(0.3, Vec2(250, 0));
+	auto delay = MoveBy::create(1.5, Vec2(1, 0));
+	auto vanish = CallFunc::create([=]() {
+		info->removeFromParent();
+		});
+
+	auto sequence = Sequence::create(move, delay, vanish, NULL);
+
+	info->runAction(sequence);
+}
+
 /*技能*/
 void Brawler::castAbility(float angle)
 {
@@ -145,11 +284,15 @@ void Brawler::takeBuff()
 {
 	/*加血量*/
 	_healthPoint += 400;
-	_currentHealthPoint += 400;
+	heal(400);
 	setHpBarPercent(float(_currentHealthPoint) / _healthPoint);
 
 	/*加伤害*/
 	_attackDamage *= 1.1;
+
+	/*修改buff文字标签*/
+	_buffNumber++;
+	_buffLabel->setString(StringUtils::format("%d", _buffNumber).c_str());
 }
 
 /*治疗*/

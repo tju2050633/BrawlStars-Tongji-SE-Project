@@ -53,6 +53,11 @@ void OpeningAnimation::PreloadResource()
 	Director::getInstance()->getTextureCache()->addImage("hpBar.png");
 	Director::getInstance()->getTextureCache()->addImage("ammoBar.png");
 	Director::getInstance()->getTextureCache()->addImage("energyBar.png");
+	Director::getInstance()->getTextureCache()->addImage("Box.png");
+	Director::getInstance()->getTextureCache()->addImage("Buff.png");
+	Director::getInstance()->getTextureCache()->addImage("Notice.png");
+	Director::getInstance()->getTextureCache()->addImage("Victory.png");
+	Director::getInstance()->getTextureCache()->addImage("Defeat.png");
 	Director::getInstance()->getTextureCache()->addImage("Portrait/Shelly-Normal.png");
 	Director::getInstance()->getTextureCache()->addImage("Portrait/Nita-Normal.png");
 	Director::getInstance()->getTextureCache()->addImage("Portrait/Primo-Normal.png");

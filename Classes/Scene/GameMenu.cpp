@@ -121,8 +121,6 @@ void GameMenu::initTrophy()
 	int iTrophy = 0;
 	if (in.good())
 		in >> iTrophy;
-	else
-		iTrophy = 0;
 
 	auto label = Label::createWithTTF(StringUtils::format("%d", iTrophy).c_str(), "fonts/Marker Felt.ttf", 48);
 	label->setAnchorPoint(Vec2(0, 1));

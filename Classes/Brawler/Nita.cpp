@@ -11,6 +11,7 @@ bool Nita::init()
 	{
 		return false;
 	}
+	_attackDamage = NITA_AD;
 	_currentHealthPoint = NITA_HP;
 	_healthPoint = NITA_HP;
 	_maxEnergy = NITA_EB;

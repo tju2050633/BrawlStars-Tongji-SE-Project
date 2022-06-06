@@ -1,4 +1,5 @@
 #include "Entity/Entity.h"
+#include "Scene/GameScene.h"
 
 /*构造函数 析构函数*/
 Entity::Entity() : _isPlayer(false),_sprite(nullptr), _hpBar(nullptr), _hpBarLabel(nullptr),_isAttackAvailable(true)
@@ -78,4 +79,11 @@ void Entity::takeDamage(INT32 damage)
 	auto sequence = Sequence::create(jump,vanish, nullptr);
 	
 	number->runAction(sequence);
+}
+
+/*死亡*/
+void Entity::die()
+{
+	this->removeFromParent();
+	GameScene::getGameScene()->removeFromEntityVector(this);
 }
