@@ -73,18 +73,25 @@ list(APPEND GAME_SOURCE
      Classes/Entity/Bullet.cpp
      Classes/Entity/Entity.cpp
 
+
      Classes/Controller/PlayerController.cpp
      Classes/Brawler/Nita.cpp
      Classes/Brawler/Primo.cpp
      Classes/Brawler/Shelly.cpp
      Classes/Brawler/Stu.cpp
 
-     Classes/Utils/AIUtils.cpp
+     
      Classes/Utils/AnimationUtils.cpp
      Classes/Utils/SceneUtils.cpp
+     Classes/Utils/FSMState.cpp
+     Classes/Utils/FSMSystem.cpp 
+     Classes/Utils/MusicUtils.cpp 
 
      Classes/Player/AI.cpp
      Classes/Player/Player.cpp
+
+     Classes/AllState/WalkingState.cpp
+     Classes/AllState/AttackState.cpp
     )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
@@ -108,9 +115,13 @@ list(APPEND GAME_HEADER
      Classes/Brawler/Shelly.h
      Classes/Brawler/Stu.h
 
-     Classes/Utils/AIUtils.h
+    
      Classes/Utils/AnimationUtils.h
      Classes/Utils/SceneUtils.h
+     Classes/Utils/FSMState.h
+     Classes/Utils/FSMSystem.h
+     Classes/Utils/MsgType.h
+     Classes/Utils/MusicUtils.h
 
      Classes/Constant/Const.h
      Classes/Controller/ControllerListener.h
@@ -118,6 +129,9 @@ list(APPEND GAME_HEADER
 
      Classes/Player/AI.h
      Classes/Player/Player.h
+
+     Classes/AllState/WalkingState.h
+     Classes/AllState/AttackState.h
     )
 
 if(ANDROID)

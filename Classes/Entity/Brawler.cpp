@@ -30,7 +30,7 @@ bool Brawler::init()
 		}
 		_ammo++;
 		setAmmoBarPercent(float(_ammo) / 3);
-	}, 1.5f, "reload");	//刷新弹药
+		}, 1.5f, "reload");	//刷新弹药
 
 	return true;
 }
@@ -38,10 +38,10 @@ bool Brawler::init()
 void Brawler::update(float dt)
 {
 	/*遍历已发射子弹，每帧进行移动*/
-	for (int i = 0;i < _bulletVector.size();i++)
+	for (int i = 0; i < _bulletVector.size(); i++)
 	{
 		auto bullet = _bulletVector.at(i);
-		auto bulletPosition = bullet->getPosition() 
+		auto bulletPosition = bullet->getPosition()
 			+ this->getParent()->getPosition();//在地图上的坐标
 		//位置要合法
 		auto pos = GameScene::getGameScene()->tileCoordForPosition(bulletPosition);
@@ -52,8 +52,8 @@ void Brawler::update(float dt)
 			continue;
 		}
 		//子弹每帧移动量
-		float angle = bullet->getAngle();					
-		float dx = (bullet->getSpeed() * cos(angle) - _moveSpeedX) * dt;	
+		float angle = bullet->getAngle();
+		float dx = (bullet->getSpeed() * cos(angle) - _moveSpeedX) * dt;
 		float dy = (bullet->getSpeed() * sin(angle) - _moveSpeedY) * dt;
 		//若达到射程，移除子弹
 		bullet->setDistance(bullet->getDistance() + bullet->getSpeed() * dt);
@@ -66,7 +66,7 @@ void Brawler::update(float dt)
 		//碰到墙体，攻击的子弹移除，技能的子弹摧毁墙体后移除
 		if (GameScene::getGameScene()->isWallTile(bulletPosition))
 		{
-			
+
 			if (bullet->getIsAbility())
 				GameScene::getGameScene()->breakWall(bulletPosition);
 
@@ -164,7 +164,7 @@ void Brawler::attack(float angle)
 			}
 			_ammo++;
 			setAmmoBarPercent(float(_ammo) / 3);
-		}, 1.5f, "reload");	//刷新弹药
+			}, 1.5f, "reload");	//刷新弹药
 	}
 
 	_ammo--;

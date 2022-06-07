@@ -18,8 +18,8 @@ INT32 SceneUtils::_nitaNumber = 0;
 INT32 SceneUtils::_primoNumber = 0;
 INT32 SceneUtils::_stuNumber = 0;
 
-bool SceneUtils::_musicOn = true;
-bool SceneUtils::_effectOn = true;
+//bool SceneUtils::_musicOn = true;
+//bool SceneUtils::_effectOn = true;
 
 /*共用的problemLoading，避免代码重复*/
 void SceneUtils::problemLoading(const char* filename)

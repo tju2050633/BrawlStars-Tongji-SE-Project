@@ -5,11 +5,11 @@
 #include "Scene/Settings.h"
 #include "Scene/Instruction.h"
 #include "Utils/SceneUtils.h"
-#include "audio/include/SimpleAudioEngine.h"
+#include "Utils/MusicUtils.h"
 
 USING_NS_CC;
 using namespace std;
-using namespace CocosDenshion;
+
 
 
 /*获得场景对象 √*/
@@ -29,7 +29,7 @@ bool GameMenu::init()
 	{
 		return false;
 	}
-	
+
 	/*菜单*/
 	initMenu();
 
@@ -52,18 +52,17 @@ void GameMenu::initMenu()
 	/*菜单所有按钮统一处理*/
 	Vector<MenuItem*> MenuItemVector;
 	//文件名所用的字符串
-	vector<string> stringVector = { "SinglePlayer", "MultiPlayer", "Music", "Effect", "Instruction", "Quit" };
+	vector<string> stringVector = { "SinglePlayer", "MultiPlayer", "Settings", "Instruction", "Quit" };
 	//按钮回调函数
 	vector<void (GameMenu::*)(Ref* pSender)> CallbackVector = { &GameMenu::menuSinglePlayerCallback,&GameMenu::menuMultiPlayerCallback,
-																&GameMenu::menuMusicCallback,&GameMenu::menuEffectCallback,&GameMenu::menuInstructionCallback,
+																&GameMenu::menuSettingsCallback,&GameMenu::menuInstructionCallback,
 																 &GameMenu::menuQuitCallback };
 	//按钮尺寸
-	vector<float> ScaleVector = { 1, 1, 1.4, 1.4, 1, 0.2 };
+	vector<float> ScaleVector = { 1, 1, 1, 1, 0.2 };
 	//按钮锚点
 	vector<Vec2> AnchorVector = {
 		Vec2(0.5, 0.5),
 		Vec2(0.5, 0.5),
-		Vec2(1, 1),
 		Vec2(1, 1),
 		Vec2(1, 1),
 		Vec2(1, 0),
@@ -74,7 +73,6 @@ void GameMenu::initMenu()
 		Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y - 250),
 		Vec2(visibleSize.width + origin.x, visibleSize.height + origin.y),//
 		Vec2(visibleSize.width + origin.x, visibleSize.height + origin.y - 100),
-		Vec2(visibleSize.width + origin.x, visibleSize.height + origin.y - 200),
 		Vec2(visibleSize.width + origin.x, origin.y),
 	};
 	/*逐个设置坐标，存入Vector*/
@@ -132,8 +130,7 @@ void GameMenu::initTrophy()
 /*菜单 单人模式回调函数 切换至SelectMap*/
 void GameMenu::menuSinglePlayerCallback(cocos2d::Ref* pSender)
 {
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectMap);
 }
 
@@ -141,56 +138,27 @@ void GameMenu::menuSinglePlayerCallback(cocos2d::Ref* pSender)
 void GameMenu::menuMultiPlayerCallback(cocos2d::Ref* pSender)
 {
 	/*暂时不实现联机模式*/
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 }
 
-/*菜单 音乐回调函数 */
-void GameMenu::menuMusicCallback(cocos2d::Ref* pSender)
-{
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 
-	auto audio = SimpleAudioEngine::getInstance();
-	if (SceneUtils::_musicOn)
-	{
-		audio->pauseBackgroundMusic();
-		SceneUtils::_musicOn = false;
-	}
-	else
-	{
-		audio->resumeBackgroundMusic();
-		SceneUtils::_musicOn = true;
-	}
-}
-
-/*菜单 音效回调函数 */
-void GameMenu::menuEffectCallback(cocos2d::Ref* pSender)
+/*菜单 设置回调函数 */
+void GameMenu::menuSettingsCallback(cocos2d::Ref* pSender)
 {
-	SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
-	auto audio = SimpleAudioEngine::getInstance();
-	if (SceneUtils::_effectOn)
-	{
-		SceneUtils::_effectOn = false;
-	}
-	else
-	{
-		SceneUtils::_effectOn = true;
-	}
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
+	SceneUtils::changeScene(SceneUtils::AllScenes::Settings);
 }
 
 /*菜单 游戏说明回调函数 切换至Instruction*/
 void GameMenu::menuInstructionCallback(cocos2d::Ref* pSender)
 {
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 	SceneUtils::changeScene(SceneUtils::AllScenes::Instruction);
 }
 
 /*菜单 退出游戏回调函数 √*/
 void GameMenu::menuQuitCallback(cocos2d::Ref* pSender)
 {
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 	Director::getInstance()->end();
 }

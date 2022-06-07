@@ -2,6 +2,7 @@
 #include "Brawler/Shelly.h"
 #include "Constant/Const.h"
 #include "Utils/SceneUtils.h"
+#include "Utils/MusicUtils.h"
 
 bool Shelly::init()
 {
@@ -27,14 +28,15 @@ void Shelly::attack(float angle)
 	Brawler::attack(angle);
 
 	/*一定概率触发攻击音效*/
-	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.3f)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Shelly/Shelly_Attack.mp3");
+	if (_isPlayer && CCRANDOM_0_1() < 0.3f)
+		MusicUtils::playEffect("Music/Shelly/Shelly_Attack.mp3");
+
 
 	/*设定攻击间隔时间后才能下一次攻击*/
 	_isAttackAvailable = false;
 	scheduleOnce([&](float dt) {
 		_isAttackAvailable = true;
-		}, SHELLY_AI,"resumeAttack");
+		}, SHELLY_AI, "resumeAttack");
 
 	/*Shelly攻击：射出5簇子弹，每簇4颗*/
 	for (int i = -2; i <= 2; i++)
@@ -53,19 +55,19 @@ void Shelly::attack(float angle)
 			Vec2 position;
 			switch (j)
 			{
-			case 0:
-				position = Vec2(-10, 0);
-				break;
-			case 1:
-				position = Vec2(10, 0);
-			case 2:
-				position = Vec2(0, 10);
-				break;
-			case 3:
-				position = Vec2(0, -10);
-				break;
-			default:
-				break;
+				case 0:
+					position = Vec2(-10, 0);
+					break;
+				case 1:
+					position = Vec2(10, 0);
+				case 2:
+					position = Vec2(0, 10);
+					break;
+				case 3:
+					position = Vec2(0, -10);
+					break;
+				default:
+					break;
 			}
 			sprite->setPosition(position);
 			sprite->setRotation(90 - angle * 180 / M_PI - 5 * i);
@@ -89,8 +91,8 @@ void Shelly::castAbility(float angle)
 	Brawler::castAbility(angle);
 
 	/*技能音效*/
-	if (_isPlayer && SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Shelly/Shelly_Ult.mp3");
+	if (_isPlayer)
+		MusicUtils::playEffect("Music/Shelly/Shelly_Ult.mp3");
 
 	/*Shelly技能：射出9簇子弹，每簇4颗*/
 	for (int i = -4; i <= 4; i++)
@@ -110,19 +112,19 @@ void Shelly::castAbility(float angle)
 			Vec2 position;
 			switch (j)
 			{
-			case 0:
-				position = Vec2(-10, 0);
-				break;
-			case 1:
-				position = Vec2(10, 0);
-			case 2:
-				position = Vec2(0, 10);
-				break;
-			case 3:
-				position = Vec2(0, -10);
-				break;
-			default:
-				break;
+				case 0:
+					position = Vec2(-10, 0);
+					break;
+				case 1:
+					position = Vec2(10, 0);
+				case 2:
+					position = Vec2(0, 10);
+					break;
+				case 3:
+					position = Vec2(0, -10);
+					break;
+				default:
+					break;
 			}
 			sprite->setScale(1.2);
 			sprite->setPosition(position);
@@ -142,8 +144,9 @@ bool Shelly::takeDamage(INT32 damage)
 		return true;
 
 	/*受伤音效*/
-	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.5f)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Shelly/Shelly_Hurt.mp3");
+	if (_isPlayer && CCRANDOM_0_1() < 0.5f)
+		MusicUtils::playEffect("Music/Shelly/Shelly_Hurt.mp3");
+
 
 	return false;
 }
@@ -154,6 +157,6 @@ void Shelly::die()
 	Brawler::die();
 
 	/*死亡音效*/
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Shelly/Shelly_Die.mp3");
+	MusicUtils::playEffect("Music/Shelly/Shelly_Die.mp3");
+
 }

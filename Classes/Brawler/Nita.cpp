@@ -2,7 +2,7 @@
 #include "Brawler/Nita.h"
 #include "Constant/Const.h"
 #include "Utils/SceneUtils.h"
-#include "Utils/AnimationUtils.h"
+#include "Utils/MusicUtils.h"
 #include "Scene/GameScene.h"
 
 bool Nita::init()
@@ -29,8 +29,9 @@ void Nita::attack(float angle)
 	Brawler::attack(angle);
 
 	/*一定概率触发攻击音效*/
-	if(_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.3f)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Nita/Nita_Attack.mp3");
+	if (_isPlayer && CCRANDOM_0_1() < 0.3f)
+		MusicUtils::playEffect("Music/Nita/Nita_Attack.mp3");
+
 
 	/*设定攻击间隔时间后才能下一次攻击*/
 	_isAttackAvailable = false;
@@ -87,8 +88,8 @@ void Nita::castAbility(float angle)
 	Brawler::castAbility(angle);
 
 	/*技能音效*/
-	if (_isPlayer && SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Nita/Nita_Ult.mp3");
+	if (_isPlayer)
+		MusicUtils::playEffect("Music/Nita/Nita_Ult.mp3");
 
 	/*Nita技能：召唤一只熊*/
 	if (_bear != nullptr)
@@ -101,7 +102,7 @@ void Nita::castAbility(float angle)
 	//绑定关系，但熊不是英雄的子节点
 	_bear = bear;
 	_bear->setOwner(this);
-	this->getParent()->getParent()->addChild(_bear,1);
+	this->getParent()->getParent()->addChild(_bear, 1);
 
 	//播放降落动画
 	AnimationUtils::runAnimate(bear, AnimationUtils::Nita, AnimationUtils::boom, 0.5, 4, 1);
@@ -109,11 +110,11 @@ void Nita::castAbility(float angle)
 	//图片
 	scheduleOnce([=](float dt) {
 		AnimationUtils::stopAnimate(bear, AnimationUtils::bear, AnimationUtils::Bottom);
-	}, 0.5, "bear");
+		}, 0.5, "bear");
 
 	//血条
 	Entity::initHpBar(_bear);
-	
+
 }
 
 bool Nita::takeDamage(INT32 damage)
@@ -123,8 +124,8 @@ bool Nita::takeDamage(INT32 damage)
 		return true;
 
 	/*受伤音效*/
-	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.5f)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Nita/Nita_Hurt.mp3");
+	if (_isPlayer && CCRANDOM_0_1() < 0.5f)
+		MusicUtils::playEffect("Music/Nita/Nita_Hurt.mp3");
 
 	//test
 	if (_bear)
@@ -142,6 +143,5 @@ void Nita::die()
 	Brawler::die();
 
 	/*死亡音效*/
-	if(SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Nita/Nita_Die.mp3");
+	MusicUtils::playEffect("Music/Nita/Nita_Die.mp3");
 }

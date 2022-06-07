@@ -1,6 +1,7 @@
 #include "Entity/Entity.h"
 #include "Scene/GameScene.h"
 
+
 /*构造函数 析构函数*/
 Entity::Entity()
 {
@@ -78,12 +79,12 @@ bool Entity::takeDamage(INT32 damage)
 
 	auto jump = JumpBy::create(1.0f, Vec2::ZERO, 50, 1);
 	auto vanish = CallFunc::create([=]() {
-		this->removeChild(number,true);
+		this->removeChild(number, true);
 		number->setVisible(false);
-	});
+		});
 
-	auto sequence = Sequence::create(jump,vanish, nullptr);
-	
+	auto sequence = Sequence::create(jump, vanish, nullptr);
+
 	number->runAction(sequence);
 
 	return false;

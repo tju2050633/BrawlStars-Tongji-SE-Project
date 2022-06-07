@@ -54,14 +54,14 @@ private:
 	vector<Point> _boxPos;              //存储全部宝箱位置坐标
 	TMXObjectGroup* _playerSpawnPoint;  //玩家出生点坐标对象层
 	TMXObjectGroup* _AISpawnPoint;      //AI出生点坐标对象层
-	
+
 	/*初始化UI层组件*/
 	void initLabel();			//标签
 	void initButton();			//按钮
 	void initEmotionMenu();		//表情菜单
 	void initControllerSprite();//控制器图标
 	void initController();		//控制器
-	
+
 	/*初始化地图层*/
 	void initMap();				//地图
 	void addBox();				//宝箱
@@ -69,21 +69,21 @@ private:
 
 	/*初始化英雄 辅助函数*/
 	string bindBrawler();									//绑定英雄，返回英雄名称字符串
-	
+
 	void initAI();
 
 	void placeInSpawnPoint();								//放置玩家和AI在出生点
 	void addRangeIndicator(SceneUtils::AllBrawler brawler);	//添加范围指示器
 	void addBar(Brawler* brawler);						//添加血条
-	
+
 	/*回调函数*/
-	void menuEmotionCallback(Ref *pSender);	//显示表情
-	void menuBackCallback(Ref *pSender);	//返回主菜单
+	void menuEmotionCallback(Ref* pSender);	//显示表情
+	void menuBackCallback(Ref* pSender);	//返回主菜单
 
 public:
 	static GameScene* _gameScene;
 	/*创建场景和初始化*/
-	static Scene *createScene();
+	static Scene* createScene();
 	virtual bool init();
 	CREATE_FUNC(GameScene);
 	static GameScene* getGameScene() { return _gameScene; }

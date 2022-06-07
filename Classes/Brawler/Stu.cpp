@@ -2,6 +2,7 @@
 #include "Brawler/Stu.h"
 #include "Constant/Const.h"
 #include "Utils/SceneUtils.h"
+#include "Utils/MusicUtils.h"
 
 bool Stu::init()
 
@@ -28,8 +29,9 @@ void Stu::attack(float angle)
 	Brawler::attack(angle);
 
 	/*一定触发攻击音效*/
-	if(_isPlayer && SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Stu/Stu_Attack.mp3");
+	if (_isPlayer)
+		MusicUtils::playEffect("Music/Stu/Stu_Attack.mp3");
+
 
 	/*设定攻击间隔时间后才能下一次攻击*/
 	_isAttackAvailable = false;
@@ -71,8 +73,9 @@ void Stu::castAbility(float angle)
 	Brawler::castAbility(angle);
 
 	/*技能音效*/
-	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.5f)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Stu/Stu_Ult.mp3");
+	if (_isPlayer && CCRANDOM_0_1() < 0.5f)
+		MusicUtils::playEffect("Music/Stu/Stu_Ult.mp3");
+
 
 	/*斯图技能：突刺*/
 
@@ -93,7 +96,7 @@ void Stu::castAbility(float angle)
 			_moveSpeedX = originMS_X;
 			_moveSpeedY = originMS_Y;
 		}
-		
+
 		_isCastingAbility = false;
 		}, duration, "finishAbility");
 }
@@ -104,8 +107,9 @@ bool Stu::takeDamage(INT32 damage)
 		return true;
 
 	/*受伤音效*/
-	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.5f)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Stu/Stu_Hurt.mp3");
+	if (_isPlayer && CCRANDOM_0_1() < 0.5f)
+		MusicUtils::playEffect("Music/Stu/Stu_Hurt.mp3");
+
 
 	return false;
 }
@@ -116,6 +120,5 @@ void Stu::die()
 	Brawler::die();
 
 	/*死亡音效*/
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Stu/Stu_Die.mp3");
+	MusicUtils::playEffect("Music/Stu/Stu_Die.mp3");
 }

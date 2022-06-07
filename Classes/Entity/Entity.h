@@ -2,10 +2,10 @@
 #define __ENTITY_H_
 
 #include "cocos2d.h"
-#include "audio/include/SimpleAudioEngine.h"
+
 
 USING_NS_CC;
-using namespace CocosDenshion;
+
 
 class Entity : public Node {
 	/* Ù–‘*/

@@ -3,11 +3,12 @@
 #include <string>
 #include "Room.h"
 #include "Utils/SceneUtils.h"
-#include "audio/include/SimpleAudioEngine.h"
+#include "Utils/MusicUtils.h"
+#include "audio/include/AudioEngine.h"
 
 USING_NS_CC;
 using namespace std;
-using namespace CocosDenshion;
+
 
 /*获得场景对象 √*/
 Scene* Room::createScene()
@@ -33,7 +34,7 @@ bool Room::init()
 	SceneUtils::_nitaNumber = 0;
 	SceneUtils::_primoNumber = 0;
 	SceneUtils::_stuNumber = 0;
-	
+
 	/*菜单*/
 	initMenu();
 
@@ -60,15 +61,15 @@ void Room::initMenu()
 	/*菜单所有按钮统一处理，必须用用cocos::Vector*/
 	Vector<MenuItem*> MenuItemVector;
 	//文件名所用的字符串
-	vector<string> stringVector = { "Start", "Shelly", "Primo", "Nita", "Stu", "Back"};
+	vector<string> stringVector = { "Start", "Shelly", "Primo", "Nita", "Stu", "Back" };
 	//按钮回调函数
 	vector<void (Room::*)(Ref* pSender)> CallbackVector = {
 		&Room::menuStartCallback,
-		& Room::menuAddShellyCallback,
-		& Room::menuAddPrimoCallback,
-		& Room::menuAddNitaCallback,
-		& Room::menuAddStuCallback,
-		& Room::menuBackCallback };
+		&Room::menuAddShellyCallback,
+		&Room::menuAddPrimoCallback,
+		&Room::menuAddNitaCallback,
+		&Room::menuAddStuCallback,
+		&Room::menuBackCallback };
 	//按钮尺寸
 	vector<float> ScaleVector = { 1, 0.2, 0.2, 0.2, 0.2, 1 };
 	//按钮锚点
@@ -155,20 +156,20 @@ void Room::addPortrait(SceneUtils::AllBrawler brawler)
 	Sprite* portrait;
 	switch (brawler)
 	{
-	case SceneUtils::Shelly:
-		portrait = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Portrait/Shelly-Normal.png"));
-		break;
-	case SceneUtils::Primo:
-		portrait = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Portrait/Primo-Normal.png"));
-		break;
-	case SceneUtils::Nita:
-		portrait = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Portrait/Nita-Normal.png"));
-		break;
-	case SceneUtils::Stu:
-		portrait = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Portrait/Stu-Normal.png"));
-		break;
-	default:
-		break;
+		case SceneUtils::Shelly:
+			portrait = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Portrait/Shelly-Normal.png"));
+			break;
+		case SceneUtils::Primo:
+			portrait = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Portrait/Primo-Normal.png"));
+			break;
+		case SceneUtils::Nita:
+			portrait = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Portrait/Nita-Normal.png"));
+			break;
+		case SceneUtils::Stu:
+			portrait = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Portrait/Stu-Normal.png"));
+			break;
+		default:
+			break;
 	}
 	portrait->setScale(0.2);
 
@@ -176,28 +177,25 @@ void Room::addPortrait(SceneUtils::AllBrawler brawler)
 	INT32 index = SceneUtils::_brawlerNumber;
 	portrait->setPosition(_labels.at(index)->getPosition() + Vec2(150, 0));
 	_labels.at(index)->setVisible(true);
-	
+
 	this->addChild(portrait, 1);
 }
 
 /*开始 回调函数*/
 void Room::menuStartCallback(Ref* pSender)
 {
-	if(SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 
 	//英雄数需>=2
 	if (SceneUtils::_brawlerNumber == 1)
 		return;
 
-	if (SceneUtils::_musicOn)
-	{
-		SimpleAudioEngine::getInstance()->stopBackgroundMusic();
-		if(SceneUtils::_brawlerNumber == 2)
-			SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Final.mp3", true);
-		else
-			SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Combat.mp3", true);
-	}
+
+	if (SceneUtils::_brawlerNumber == 2)
+		MusicUtils::playMusic("Music/Final.mp3");
+	else
+		MusicUtils::playMusic("Music/Combat.mp3");
+
 	SceneUtils::changeScene(SceneUtils::GameScene);
 }
 
@@ -210,8 +208,7 @@ void Room::menuAddShellyCallback(Ref* pSender)
 	SceneUtils::_brawlerNumber++;
 	SceneUtils::_shellyNumber++;
 
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 }
 
 /*添加Nita 回调函数*/
@@ -223,8 +220,7 @@ void Room::menuAddNitaCallback(Ref* pSender)
 	SceneUtils::_brawlerNumber++;
 	SceneUtils::_nitaNumber++;
 
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 }
 
 /*添加Primo 回调函数*/
@@ -236,8 +232,7 @@ void Room::menuAddPrimoCallback(Ref* pSender)
 	SceneUtils::_brawlerNumber++;
 	SceneUtils::_primoNumber++;
 
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 }
 
 /*添加Stu 回调函数*/
@@ -249,14 +244,12 @@ void Room::menuAddStuCallback(Ref* pSender)
 	SceneUtils::_brawlerNumber++;
 	SceneUtils::_stuNumber++;
 
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 }
 
 /*返回SelectBrawler*/
 void Room::menuBackCallback(Ref* pSender)
 {
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }

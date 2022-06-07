@@ -12,7 +12,7 @@ USING_NS_CC;
 
 class Brawler : public Entity {
 	/*玩家相关*/
-	CC_SYNTHESIZE(PlayerController* , _playerController, PlayerController);	//操作器
+	CC_SYNTHESIZE(PlayerController*, _playerController, PlayerController);	//操作器
 
 	/*属性*/
 	CC_SYNTHESIZE(INT32, _ammo, Ammo);			//弹药

@@ -2,6 +2,7 @@
 #include "Brawler/Primo.h"
 #include "Constant/Const.h"
 #include "Utils/SceneUtils.h"
+#include "Utils/MusicUtils.h"
 #include "Scene/GameScene.h"
 
 bool Primo::init()
@@ -28,8 +29,8 @@ void Primo::attack(float angle)
 	Brawler::attack(angle);
 
 	/*一定概率触发攻击音效*/
-	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.3f)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Primo/Primo_Attack.mp3");
+	if (_isPlayer && CCRANDOM_0_1() < 0.3f)
+		MusicUtils::playEffect("Music/Primo/Primo_Attack.mp3");
 
 	/*设定攻击间隔时间后才能下一次攻击*/
 	_isAttackAvailable = false;
@@ -60,7 +61,7 @@ void Primo::attack(float angle)
 
 		this->addChild(bullet);
 		_bulletVector.pushBack(bullet);
-	}, 0.1, 3, 0, "primoAttack");
+		}, 0.1, 3, 0, "primoAttack");
 }
 
 void Primo::castAbility(float angle)
@@ -81,8 +82,8 @@ void Primo::castAbility(float angle)
 	Brawler::castAbility(angle);
 
 	/*技能音效*/
-	if (_isPlayer && SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Primo/Primo_Ult.mp3");
+	if (_isPlayer)
+		MusicUtils::playEffect("Music/Primo/Primo_Ult.mp3");
 
 	/*Primo技能：飞出一段距离，可以摧毁墙体*/
 	auto leap = MoveBy::create(1, deltaPosition);
@@ -98,7 +99,7 @@ void Primo::castAbility(float angle)
 		GameScene::getGameScene()->breakWall(this->getParent()->getPosition() + Vec2(-X, Y));
 		GameScene::getGameScene()->breakWall(this->getParent()->getPosition() + Vec2(-X, 0));
 		GameScene::getGameScene()->breakWall(this->getParent()->getPosition() + Vec2(-X, -Y));
-	});
+		});
 	auto sequence = Sequence::create(leap, destroyWall, nullptr);
 	this->getParent()->runAction(sequence);
 }
@@ -110,8 +111,9 @@ bool Primo::takeDamage(INT32 damage)
 		return true;
 
 	/*受伤音效*/
-	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.5f)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Primo/Primo_Hurt.mp3");
+	if (_isPlayer && CCRANDOM_0_1() < 0.5f)
+		MusicUtils::playEffect("Music/Primo/Primo_Hurt.mp3");
+
 
 	return false;
 }
@@ -122,6 +124,6 @@ void Primo::die()
 	Brawler::die();
 
 	/*死亡音效*/
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/Primo/Primo_Die.mp3");
+	MusicUtils::playEffect("Music/Primo/Primo_Die.mp3");
+
 }

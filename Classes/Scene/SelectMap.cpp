@@ -2,11 +2,12 @@
 #include "cocos2d.h"
 #include "Scene/SelectMap.h"
 #include "Utils/SceneUtils.h"
-#include "audio/include/SimpleAudioEngine.h"
+#include "Utils/MusicUtils.h"
+#include "audio/include/AudioEngine.h"
 
 USING_NS_CC;
 using namespace std;
-using namespace CocosDenshion;
+
 
 /*获得场景对象 √*/
 Scene* SelectMap::createScene()
@@ -91,9 +92,8 @@ void SelectMap::initMenu()
 /*选择地图 地图A回调函数 √*/
 void SelectMap::menuMapACallback(cocos2d::Ref* pSender)
 {
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
-	
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
+
 	SceneUtils::_map = SceneUtils::AllMap::MapA;
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }
@@ -101,9 +101,8 @@ void SelectMap::menuMapACallback(cocos2d::Ref* pSender)
 /*选择地图 地图B回调函数 √*/
 void SelectMap::menuMapBCallback(cocos2d::Ref* pSender)
 {
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
-	
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
+
 	SceneUtils::_map = SceneUtils::AllMap::MapB;
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }
@@ -111,9 +110,8 @@ void SelectMap::menuMapBCallback(cocos2d::Ref* pSender)
 /*选择地图 地图C回调函数 √*/
 void SelectMap::menuMapCCallback(cocos2d::Ref* pSender)
 {
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
-	
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
+
 	SceneUtils::_map = SceneUtils::AllMap::MapC;
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }
@@ -122,8 +120,7 @@ void SelectMap::menuMapCCallback(cocos2d::Ref* pSender)
 //场景从SelectMap切换至GameMenu
 void SelectMap::menuBackCallback(cocos2d::Ref* pSender)
 {
-	if (SceneUtils::_effectOn)
-		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
-	
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
+
 	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 }

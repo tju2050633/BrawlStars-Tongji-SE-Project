@@ -2,10 +2,10 @@
 #include "Instruction.h"
 #include "GameMenu.h"
 #include "Utils/SceneUtils.h"
-#include "audio/include/SimpleAudioEngine.h"
+//#include "audio/include/SimpleAudioEngine.h"
 
 USING_NS_CC;
-using namespace CocosDenshion;
+//using namespace CocosDenshion;
 
 /*获得场景对象 √*/
 Scene* Instruction::createScene()
@@ -41,8 +41,8 @@ bool Instruction::init()
 	MenuItemImage* button = MenuItemImage::create("button/Back-Normal.png", "button/Back-Active.png",
 		[](Ref* pSender)
 		{
-			if (SceneUtils::_effectOn)
-				SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
+			//if (SceneUtils::_effectOn);
+				//SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 			SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 		});
 
