@@ -67,6 +67,8 @@ void PlayerController::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event
 		_keyA = false;
 	}
 
+	_controllerListener->getTargetBrawler()->setKeysReleased(false);
+
 	changeControllerSprite();
 }
 
@@ -131,7 +133,10 @@ void PlayerController::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* even
 	else if (_keyD)
 		AnimationUtils::runAnimate(_controllerListener->getTargetBrawler(), brawler, AnimationUtils::Right, time, iFrameNum, loop);
 	else
+	{
 		AnimationUtils::stopAnimate(_controllerListener->getTargetBrawler(), brawler, currentDirection);
+		_controllerListener->getTargetBrawler()->setKeysReleased(true);
+	}
 }
 
 /*Êó±ê¼àÌıÆ÷*/

@@ -16,6 +16,7 @@ bool Brawler::init()
 	_buffNumber = 0;
 
 	_isCastingAbility = false;
+	_keysReleased = true;
 
 	//添加进GameScene的数组
 	GameScene::getGameScene()->pushBackBrawler(this);
@@ -171,13 +172,13 @@ void Brawler::attack(float angle)
 }
 
 /*受伤*/
-void Brawler::takeDamage(INT32 damage)
+bool Brawler::takeDamage(INT32 damage)
 {
-	/*调用父类函数*/
-	Entity::takeDamage(damage);
-
 	/*重置恢复状态*/
 	resetReadyForHeal();
+
+	/*调用父类函数*/
+	return Entity::takeDamage(damage);
 }
 
 /*死亡*/

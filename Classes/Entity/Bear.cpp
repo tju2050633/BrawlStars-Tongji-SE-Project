@@ -25,6 +25,6 @@ void Bear::update(float dt)
 
 void Bear::die()
 {
-	Entity::die();
 	_owner->setBear(nullptr);
+	Entity::die();
 }

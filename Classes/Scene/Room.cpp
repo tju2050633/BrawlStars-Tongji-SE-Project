@@ -193,7 +193,10 @@ void Room::menuStartCallback(Ref* pSender)
 	if (SceneUtils::_musicOn)
 	{
 		SimpleAudioEngine::getInstance()->stopBackgroundMusic();
-		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Combat.mp3", true);
+		if(SceneUtils::_brawlerNumber == 2)
+			SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Final.mp3", true);
+		else
+			SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Combat.mp3", true);
 	}
 	SceneUtils::changeScene(SceneUtils::GameScene);
 }

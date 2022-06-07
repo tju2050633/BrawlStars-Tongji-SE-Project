@@ -14,6 +14,7 @@ private:
 	CC_SYNTHESIZE(Brawler*, _brawler, Brawler); //²Ù×ÝµÄÓ¢ÐÛ
 
 public:
+	CREATE_FUNC(AI);
 	virtual bool init();
 	virtual void update(float dt);
 

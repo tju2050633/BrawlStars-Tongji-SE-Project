@@ -30,9 +30,11 @@ private:
 	/*玩家部分*/
 	Player* _player;
 	Vector<AI*> _AI_Vector;
+
 	Vector<Brawler*> _brawlerVector;
 	Vector<Entity*> _entityVector;
 	Vector<Sprite*> _buffVector;
+
 	PlayerController* _playerController;
 	/*瓦片地图部分*/
 	TMXTiledMap* _map;
@@ -67,6 +69,9 @@ private:
 
 	/*初始化英雄 辅助函数*/
 	string bindBrawler();									//绑定英雄，返回英雄名称字符串
+	
+	void initAI();
+
 	void placeInSpawnPoint();								//放置玩家和AI在出生点
 	void addRangeIndicator(SceneUtils::AllBrawler brawler);	//添加范围指示器
 	void addBar(Brawler* brawler);						//添加血条
@@ -100,7 +105,7 @@ public:
 	void getBoxPosition();                           //获取全部宝箱的位置
 	void boxDie(Point position);                     //宝箱被摧毁（死亡）
 	void smokeMove();                                //毒烟移动
-	void smokeDamage(Point position, Brawler* brawler);//毒烟伤害
+	bool smokeDamage(Point position, Brawler* brawler);//毒烟伤害
 
 	/*对外提供接口*/
 	Size getTileSize()const { return _map->getTileSize(); }

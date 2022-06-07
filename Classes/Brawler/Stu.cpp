@@ -83,20 +83,31 @@ void Stu::castAbility(float angle)
 	_moveSpeedX = STU_DASH_DITANCE / duration * cos(angle);
 	_moveSpeedY = STU_DASH_DITANCE / duration * sin(angle);
 	scheduleOnce([=](float dt) {
-		_moveSpeedX = originMS_X;
-		_moveSpeedY = originMS_Y;
+		if (_keysReleased)
+		{
+			_moveSpeedX = 0;
+			_moveSpeedY = 0;
+		}
+		else
+		{
+			_moveSpeedX = originMS_X;
+			_moveSpeedY = originMS_Y;
+		}
+		
 		_isCastingAbility = false;
 		}, duration, "finishAbility");
 }
 
-void Stu::takeDamage(INT32 damage)
+bool Stu::takeDamage(INT32 damage)
 {
-	/*调用父类函数*/
-	Brawler::takeDamage(damage);
+	if (Brawler::takeDamage(damage))
+		return true;
 
 	/*受伤音效*/
 	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.5f)
 		SimpleAudioEngine::getInstance()->playEffect("Music/Stu/Stu_Hurt.mp3");
+
+	return false;
 }
 
 void Stu::die()

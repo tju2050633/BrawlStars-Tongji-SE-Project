@@ -29,6 +29,7 @@ class Brawler : public Entity {
 	CC_SYNTHESIZE(INT32, _moveSpeedY, MoveSpeedY); //当前y方向速度
 
 	CC_SYNTHESIZE(bool, _isCastingAbility, IsCastingAbility); //正在放技能，无法操纵移动
+	CC_SYNTHESIZE(bool, _keysReleased, KeysReleased);		 //WASD全部释放
 
 	/*已发射的子弹*/
 	Vector<Bullet*> _bulletVector;
@@ -55,7 +56,7 @@ public:
 
 	/*继承自Entity的函数*/
 	virtual void attack(float angle)override;	//攻击
-	virtual void takeDamage(INT32 damage)override;//受伤
+	virtual bool takeDamage(INT32 damage)override;//受伤
 	virtual void die()override;					//死亡
 
 	/*Brawler特有函数*/

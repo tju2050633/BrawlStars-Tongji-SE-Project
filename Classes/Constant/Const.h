@@ -35,7 +35,7 @@ const float PRIMO_AI = 0.3;		//攻击间隔AttackInterval
 const int PRIMO_EB = 4320;		//能量条EnergeBar
 
 const int PRIMO_BULLET_SPEED = 400;//子弹速度
-const int PRIMO_BULLET_RANGE = 60;//射程
+const int PRIMO_BULLET_RANGE = 100;//射程
 
 const int PRIMO_ABILITY_RANGE = 300;//技能范围
 

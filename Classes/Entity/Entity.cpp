@@ -2,8 +2,15 @@
 #include "Scene/GameScene.h"
 
 /*构造函数 析构函数*/
-Entity::Entity() : _isPlayer(false),_sprite(nullptr), _hpBar(nullptr), _hpBarLabel(nullptr),_isAttackAvailable(true)
-{}
+Entity::Entity()
+{
+	_isPlayer = false;
+	_isAI = false;
+	_sprite = nullptr;
+	_hpBar = nullptr;
+	_hpBarLabel = nullptr;
+	_isAttackAvailable = true;
+}
 
 Entity::~Entity()
 {}
@@ -45,7 +52,7 @@ void Entity::initHpBar(Entity* target)
 }
 
 /*承受伤害*/
-void Entity::takeDamage(INT32 damage)
+bool Entity::takeDamage(INT32 damage)
 {
 	/*当前血量*/
 	_currentHealthPoint -= damage;
@@ -53,8 +60,7 @@ void Entity::takeDamage(INT32 damage)
 	if (_currentHealthPoint <= 0)
 	{
 		die();
-		_currentHealthPoint = 0;
-		percent = 0;
+		return true;
 	}
 
 	/*血条*/
@@ -79,6 +85,8 @@ void Entity::takeDamage(INT32 damage)
 	auto sequence = Sequence::create(jump,vanish, nullptr);
 	
 	number->runAction(sequence);
+
+	return false;
 }
 
 /*死亡*/

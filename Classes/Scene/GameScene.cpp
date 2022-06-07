@@ -241,13 +241,14 @@ bool GameScene::init()
 	this->schedule([=](float dt) {				//每1秒刷新
 		for (auto brawler : _brawlerVector)
 		{
-			/*如果在毒雾中，受到伤害*/
-			smokeDamage(brawler->getParent()->getPosition(), brawler);
+			/*如果在毒雾中，受到伤害;英雄死亡，跳过他*/
+			if (smokeDamage(brawler->getParent()->getPosition(), brawler))
+				break;
 			/*如果离上次受伤和攻击超过5s，回血*/
 			if (brawler->getReadyForHeal())
 				brawler->heal(brawler->getHealthPoint() * 0.13);
 		}
-	}, 1.0f, "smoke damaga/auto heal");
+	}, 1.0f, "smoke damage/auto heal");
 
 	this->schedule([=](float dt) {				//每20秒刷新
 			smokeMove();
@@ -340,9 +341,6 @@ void GameScene::addBox()
 /*地图层 人物*/
 void GameScene::initBrawler()
 {
-	//initPlayer
-	//initAI
-
 	/*创建Player*/
 	_player = Player::create();
 
@@ -350,9 +348,11 @@ void GameScene::initBrawler()
 	string brawlerName = bindBrawler();
 	
 	/*英雄绑定精灵图像*/
-	_player->getBrawler()->setSprite(Sprite::create("Portrait/Shelly-Normal.png"));
-	_player->getBrawler()->addChild(_player->getBrawler()->getSprite());
+	_player->getBrawler()->bindSprite(Sprite::create("Portrait/Shelly-Normal.png"));
 	_player->getBrawler()->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(brawlerName + "_Bottom1.png"));
+
+	/*创建AI*/
+	initAI();
 
 	/*将玩家和AI放置在出生点*/
 	placeInSpawnPoint();
@@ -409,6 +409,58 @@ string GameScene::bindBrawler()
 	return brawlerName;
 }
 
+/*创建AI*/
+void GameScene::initAI()
+{
+	ValueVector AIGroup = _AISpawnPoint->getObjects(); //获取AI对象层的所有对象
+
+	//逐个创建AI
+	for (int j = 0; j < SceneUtils::_brawlerNumber - 1; j++)
+	{
+		AI* ai = AI::create();
+
+		//确定AI英雄种类，绑定精灵图片
+		if (SceneUtils::_shellyNumber != 0)
+		{
+			ai->setBrawler(Shelly::create());
+			ai->getBrawler()->bindSprite(Sprite::create("Portrait/Shelly-Normal.png"));
+			ai->getBrawler()->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Shelly_Bottom1.png"));
+			SceneUtils::_shellyNumber--;
+		}
+		else if (SceneUtils::_nitaNumber != 0)
+		{
+			ai->setBrawler(Nita::create());
+			ai->getBrawler()->bindSprite(Sprite::create("Portrait/Nita-Normal.png"));
+			ai->getBrawler()->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Nita_Bottom1.png"));
+			SceneUtils::_nitaNumber--;
+		}
+		else if (SceneUtils::_primoNumber != 0)
+		{
+			ai->setBrawler(Primo::create());
+			ai->getBrawler()->bindSprite(Sprite::create("Portrait/Primo-Normal.png"));
+			ai->getBrawler()->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Primo_Bottom1.png"));
+			SceneUtils::_primoNumber--;
+		}
+		else if (SceneUtils::_stuNumber != 0)
+		{
+			ai->setBrawler(Stu::create());
+			ai->getBrawler()->bindSprite(Sprite::create("Portrait/Stu-Normal.png"));
+			ai->getBrawler()->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Stu_Bottom1.png"));
+			SceneUtils::_stuNumber--;
+		}
+		
+		/*添加血条等*/
+		addBar(ai->getBrawler());
+
+		//添加到地图
+		ai->addChild(ai->getBrawler());
+		ai->getBrawler()->setIsAI(true);
+		
+		_AI_Vector.pushBack(ai);
+		this->addChild(ai, 1);
+	}
+}
+
 /*放置玩家和AI在出生点*/
 void GameScene::placeInSpawnPoint()
 {
@@ -422,16 +474,15 @@ void GameScene::placeInSpawnPoint()
 	if (_AISpawnPoint != NULL)
 	{
 		ValueVector AIGroup = _AISpawnPoint->getObjects(); //获取AI对象层的所有对象
-		int size = AIGroup.size();
+		int size = SceneUtils::_brawlerNumber - 1;
 		for (int i = 0; i < size; i++) //遍历AI对象层所有出生点对象坐标
 		{
 			ValueMap objInfo = AIGroup.at(i).asValueMap();
 			int x = objInfo.at("x").asInt();
 			int y = objInfo.at("y").asInt();
 			Point AISpawnPoint = Vec2(x, y); //AI出生点
-			/***************************
-				在该位置设置AI
-			****************************/
+
+			_AI_Vector.at(i)->setPosition(AISpawnPoint);
 		}
 	}
 }
@@ -547,18 +598,6 @@ void GameScene::menuEmotionCallback(cocos2d::Ref* pSender)
 	//test
 	smokeMove();
 
-	//test
-	int iTrophyNumber;
-	ifstream in("trophy.txt");
-	in >> iTrophyNumber;
-	in.close();
-
-	iTrophyNumber += 10;
-
-	ofstream out("trophy.txt");
-	out << iTrophyNumber;
-	out.close();
-
 	if (SceneUtils::_effectOn)
 		SimpleAudioEngine::getInstance()->playEffect("Music/ButtonEffect.wav");
 
@@ -660,7 +699,7 @@ void GameScene::GameOver(bool win)
 	/*BGM切歌*/
 	SimpleAudioEngine::getInstance()->stopBackgroundMusic();
 	if (win && SceneUtils::_musicOn)
-		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Win.mp3", true);
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Victory.mp3", true);
 	else if(!win && SceneUtils::_musicOn)
 		SimpleAudioEngine::getInstance()->playBackgroundMusic("Music/Defeat.mp3", true);
 	
@@ -694,6 +733,27 @@ void GameScene::GameOver(bool win)
 			menu->setPosition(Vec2::ZERO);
 			this->getParent()->addChild(menu, 2);
 		}
+
+		//名次
+		auto rank_label = Label::createWithTTF(StringUtils::format("YOUR RANK : No.%d !", rank).c_str(), "fonts/Marker Felt.ttf", 100);
+		rank_label->setPosition(Vec2(_visibleSize.width / 2 + _origin.x, _visibleSize.height + _origin.y - 130));
+		rank_label->setTextColor(Color4B::RED);
+		this->getParent()->addChild(rank_label, 1);
+
+		//奖杯数量增加
+		auto spr = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("trophy.png"));
+		spr->setAnchorPoint(Vec2(0, 1));
+		spr->setPosition(Vec2(_origin.x, _visibleSize.height + _origin.y + 10));
+		spr->setScale(0.2);
+		spr->setRotation(10);
+		this->getParent()->addChild(spr, 1);
+
+		auto label = Label::createWithTTF(StringUtils::format("+%d",trophy).c_str(), "fonts/Marker Felt.ttf", 48);
+		label->setAnchorPoint(Vec2(0, 1));
+		label->setPosition(Vec2(_origin.x + 130, _visibleSize.height + _origin.y - 15));
+		label->setTextColor(Color4B::YELLOW);
+		this->getParent()->addChild(label, 1);
+
 	}, 1.0f, "displayWIN/LOSE");
 }
 
@@ -894,7 +954,7 @@ void GameScene::smokeMove()
 }
 
 /* 毒烟伤害 */
-void GameScene::smokeDamage(Point position, Brawler* brawler)
+bool GameScene::smokeDamage(Point position, Brawler* brawler)
 {
 	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
 	if (_smoke->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定毒烟单元格
@@ -902,7 +962,7 @@ void GameScene::smokeDamage(Point position, Brawler* brawler)
 		_smokeCell = _smoke->getTileAt(tileCoord); //通过tile坐标能够访问指定毒烟单元格
 		if (_smokeCell->isVisible()) //如果毒烟可见
 		{
-			brawler->takeDamage(SMOKE_DAMAGE);
+			return brawler->takeDamage(SMOKE_DAMAGE);
 		}
 	}
 }

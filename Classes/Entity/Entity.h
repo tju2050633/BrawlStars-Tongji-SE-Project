@@ -10,6 +10,8 @@ using namespace CocosDenshion;
 class Entity : public Node {
 	/*属性*/
 	CC_SYNTHESIZE(bool, _isPlayer, IsPlayer);						//是玩家操纵的英雄
+	CC_SYNTHESIZE(bool, _isAI, IsAI);								//是AI
+
 	CC_SYNTHESIZE(Sprite*, _sprite, Sprite);						//精灵
 	CC_SYNTHESIZE(Sprite*, _hpBar, HpBar);							//血条
 	CC_SYNTHESIZE(Size, _hpBarSize, HpBarSize);						//血条尺寸
@@ -32,7 +34,7 @@ public:
 	static void initHpBar(Entity* target);			//初始化血条
 
 	virtual void attack(float angle) {}  //攻击
-	virtual void takeDamage(INT32 damage);  //承受伤害
+	virtual bool takeDamage(INT32 damage);  //承受伤害
 	virtual void die();  //死亡
 };
 

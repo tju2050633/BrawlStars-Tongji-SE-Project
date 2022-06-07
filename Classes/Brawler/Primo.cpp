@@ -52,7 +52,7 @@ void Primo::attack(float angle)
 			Director::getInstance()->getTextureCache()->
 			addImage(StringUtils::format("Animation/Primo_Bullet%d.png", iPrimoBulletNumber)));
 		iPrimoBulletNumber = iPrimoBulletNumber % 4 + 1;//1~4循环
-		sprite->setScale(0.8);
+		sprite->setScale(0.3, 0.6);
 		sprite->setAnchorPoint(Vec2(0.1, 0.5));
 		sprite->setRotation(-angle * 180 / M_PI);
 		bullet->bindSprite(sprite);
@@ -103,14 +103,17 @@ void Primo::castAbility(float angle)
 	this->getParent()->runAction(sequence);
 }
 
-void Primo::takeDamage(INT32 damage)
+bool Primo::takeDamage(INT32 damage)
 {
 	/*调用父类函数*/
-	Brawler::takeDamage(damage);
+	if (Brawler::takeDamage(damage))
+		return true;
 
 	/*受伤音效*/
 	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.5f)
 		SimpleAudioEngine::getInstance()->playEffect("Music/Primo/Primo_Hurt.mp3");
+
+	return false;
 }
 
 void Primo::die()

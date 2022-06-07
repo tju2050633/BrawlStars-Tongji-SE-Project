@@ -15,7 +15,7 @@ public:
 
 	virtual void attack(float angle)override;
 	virtual void castAbility(float angle)override;
-	virtual void takeDamage(INT32 damage)override;
+	virtual bool takeDamage(INT32 damage)override;
 	virtual void die()override;
 };
 

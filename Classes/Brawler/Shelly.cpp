@@ -135,14 +135,17 @@ void Shelly::castAbility(float angle)
 	}
 }
 
-void Shelly::takeDamage(INT32 damage)
+bool Shelly::takeDamage(INT32 damage)
 {
 	/*调用父类函数*/
-	Brawler::takeDamage(damage);
+	if (Brawler::takeDamage(damage))
+		return true;
 
 	/*受伤音效*/
 	if (_isPlayer && SceneUtils::_effectOn && CCRANDOM_0_1() < 0.5f)
 		SimpleAudioEngine::getInstance()->playEffect("Music/Shelly/Shelly_Hurt.mp3");
+
+	return false;
 }
 
 void Shelly::die()
