@@ -24,6 +24,9 @@ class PlayerController :public Node {
 	/*按钮图标*/
 	CC_SYNTHESIZE(Rect, _rectReturnButton, RectReturnButton);
 	CC_SYNTHESIZE(Rect, _rectEmotionButton, RectEmotionButton);
+	CC_SYNTHESIZE(Rect, _rectPauseButton, RectPauseButton);
+	CC_SYNTHESIZE(Rect, _rectMusicButton, RectMusicButton);
+	CC_SYNTHESIZE(Rect, _rectEffectButton, RectEffectButton);
 	/*攻击和技能图标的原位置*/
 	CC_SYNTHESIZE(Vec2, _attackCenterOriginPosition, AttackCenterOriginPosition);
 	CC_SYNTHESIZE(Vec2, _abilityCenterOriginPosition, AbilityCenterOriginPosition);

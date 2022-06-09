@@ -160,7 +160,9 @@ void PlayerController::onMouseDown(Event* event)
 	auto mouseKey = e->getMouseButton();
 
 	/*点按钮时无反应*/
-	if (_rectReturnButton.containsPoint(cursorPosition) || _rectEmotionButton.containsPoint(cursorPosition))
+	if (_rectReturnButton.containsPoint(cursorPosition) || _rectEmotionButton.containsPoint(cursorPosition) ||
+		_rectPauseButton.containsPoint(cursorPosition) || _rectMusicButton.containsPoint(cursorPosition) ||
+		_rectEffectButton.containsPoint(cursorPosition))
 		return;
 
 	/*获得鼠标坐标的角度*/
@@ -199,6 +201,12 @@ void PlayerController::onMouseUp(Event* event)
 
 	/*获得鼠标坐标的角度*/
 	float angle = calculateAngle(cursorPosition, playerPosition);
+
+	/*在按钮处松开无反应*/
+	if (_rectReturnButton.containsPoint(cursorPosition) || _rectEmotionButton.containsPoint(cursorPosition) ||
+		_rectPauseButton.containsPoint(cursorPosition) || _rectMusicButton.containsPoint(cursorPosition) ||
+		_rectEffectButton.containsPoint(cursorPosition))
+		return;
 
 	/*左键攻击，右键技能*/
 	if (mouseKey == EventMouse::MouseButton::BUTTON_LEFT)

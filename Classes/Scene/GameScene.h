@@ -8,21 +8,29 @@
 #include "Player/AI.h"
 #include "Controller/PlayerController.h"
 #include "Utils/SceneUtils.h"
+#include "ui/UIText.h"
 
 USING_NS_CC;
 using namespace std;
+using namespace ui;
 
 class GameScene : public Layer
 {
 private:
 	/*UI层*/
-	Size _visibleSize;
+	Size _visibleSize; 
 	Vec2 _origin;
 	Layer* _UILayer;
 	Label* _label;				//剩余英雄数
 	MenuItem* _returnButton;	//返回按钮
+	MenuItem* _pauseButton;	    //暂停按钮
+	MenuItem* _musicButton;	    //音乐按钮
+	MenuItem* _effectButton;    //音效按钮
 	MenuItem* _emotionButton;	//表情按钮
+	MenuItemFont* _musicText;   //音乐开关文本
+	MenuItemFont* _effectText;  //音效开关文本
 	Menu* _emotionMenu;			//表情菜单
+	Menu* _pauseMenu;			//暂停菜单
 	Sprite* _controllerSprite;	//方向控制器
 	Sprite* _attackCenterSprite;//攻击键中心
 	Sprite* _abilityCenterSprite;//技能键中心
@@ -59,6 +67,7 @@ private:
 	void initLabel();			//标签
 	void initButton();			//按钮
 	void initEmotionMenu();		//表情菜单
+	void initPauseMenu();       //暂停菜单
 	void initControllerSprite();//控制器图标
 	void initController();		//控制器
 
@@ -78,7 +87,10 @@ private:
 
 	/*回调函数*/
 	void menuEmotionCallback(Ref* pSender);	//显示表情
+	void menuPause(Ref* pSender);	        //呼出暂停菜单
 	void menuBackCallback(Ref* pSender);	//返回主菜单
+	void menuMusicCallback(Ref* pSender);   //音乐开关
+	void menuEffectCallback(Ref* pSender);  //音效开关
 
 public:
 	static GameScene* _gameScene;

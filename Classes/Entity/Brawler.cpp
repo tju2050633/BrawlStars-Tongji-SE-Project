@@ -337,3 +337,24 @@ void Brawler::setEnergeBarPercent(float percent)
 	getEnergyBar()->setSpriteFrame(SpriteFrame::createWithTexture(Director::getInstance()->getTextureCache()->addImage("energyBar.png"),
 		Rect(0, 0, _energyBarSize.width * percent, _energyBarSize.height)));
 }
+
+/*»ñÈ¡Ó¢ÐÛ³¯Ïò*/
+AnimationUtils::TypeEnum Brawler::getDirection()
+{
+	if (_moveSpeedY>0)
+	{
+		return AnimationUtils::Top;
+	}
+	else if (_moveSpeedY < 0)
+	{
+		return AnimationUtils::Bottom;
+	}
+	else if (_moveSpeedX > 0)
+	{
+		return AnimationUtils::Right;
+	}
+	else if (_moveSpeedX < 0)
+	{
+		return AnimationUtils::Left;
+	}
+}

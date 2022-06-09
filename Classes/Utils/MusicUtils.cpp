@@ -8,7 +8,7 @@ bool MusicUtils::_musicOn = true;			//记录是否播放音乐
 bool MusicUtils::_effectOn = true;			//记录是否播放音效
 INT32 MusicUtils::_musicVolume = 10;		//记录音乐音量
 INT32 MusicUtils::_effectVolume = 10;		//记录音效音量
-INT32 MusicUtils::_musicID = 0;							//当前播放的音乐ID
+INT32 MusicUtils::_musicID = 0;			    //当前播放的音乐ID
 
 void MusicUtils::playMusic(const std::string& filePath)
 {

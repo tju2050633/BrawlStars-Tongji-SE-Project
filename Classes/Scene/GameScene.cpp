@@ -15,6 +15,7 @@
 #include "Brawler/Stu.h"
 #include "Controller/PlayerController.h"
 #include "Constant/Const.h"
+#include "audio/include/AudioEngine.h"
 
 
 USING_NS_CC;
@@ -36,9 +37,11 @@ Scene* GameScene::createScene()
 	/*初始化UI层的UI组件*/
 	mapLayer->initLabel();
 	mapLayer->initButton();
+	mapLayer->initPauseMenu();
 	mapLayer->initEmotionMenu();
 	mapLayer->initControllerSprite();
 	mapLayer->initController();
+
 
 	/*将地图层、UI层添加到场景中*/
 	scene->addChild(mapLayer);
@@ -66,13 +69,52 @@ void GameScene::initButton()
 	_emotionButton->setPosition(Vec2(_visibleSize.width + _origin.x, _visibleSize.height + _origin.y - 250));
 	_emotionButton->setOpacity(200);
 
-	_returnButton = MenuItemImage::create("button/Back-Normal.png", "button/Back-Active.png", bind(&GameScene::menuBackCallback, this, std::placeholders::_1));
-	_returnButton->setAnchorPoint(Vec2(0, 1));
-	_returnButton->setPosition(Vec2(_origin.x, _visibleSize.height + _origin.y));
+	_pauseButton = MenuItemImage::create("button/pause_button.png", "button/pause_button.png", bind(&GameScene::menuPause, this, std::placeholders::_1));
+	_pauseButton->setAnchorPoint(Vec2(0, 1));
+	_pauseButton->setPosition(Vec2(_origin.x, _visibleSize.height + _origin.y));
+	_pauseButton->setScale(0.5f);
 
-	Menu* menu = Menu::create(_emotionButton, _returnButton, NULL);
+	Menu* menu = Menu::create(_emotionButton, _pauseButton, NULL);
 	menu->setPosition(Vec2::ZERO);
 	_UILayer->addChild(menu, 1);
+}
+
+/*UI层 暂停菜单*/
+void GameScene::initPauseMenu()
+{
+	_returnButton = MenuItemImage::create("button/ReturnMenu-Normal.png", "button/ReturnMenu_Active.png", bind(&GameScene::menuBackCallback, this, std::placeholders::_1));
+	_returnButton->setAnchorPoint(Vec2(0.5, 0.5));
+	_returnButton->setPosition(Vec2(_origin.x + _visibleSize.width / 2, _visibleSize.height / 3 + _origin.y));
+
+	//_returnButton->setScale(0.5f); 
+
+	_musicButton = MenuItemImage::create("button/Music-Normal.png", "button/Music_Active.png", bind(&GameScene::menuMusicCallback, this, std::placeholders::_1));
+	_musicButton->setAnchorPoint(Vec2(0.5, 0.5));
+	_musicButton->setPosition(Vec2(_origin.x + _visibleSize.width / 2 - _visibleSize.width / 6, _visibleSize.height / 2 + _origin.y));
+	//_musicButton->setScale(0.5f);
+
+	_effectButton = MenuItemImage::create("button/Effect-Normal.png", "button/Effect_Active.png", bind(&GameScene::menuEffectCallback, this, std::placeholders::_1));
+	_effectButton->setAnchorPoint(Vec2(0.5, 0.5));
+	_effectButton->setPosition(Vec2(_origin.x + _visibleSize.width / 2 + _visibleSize.width / 6, _visibleSize.height / 2 + _origin.y));
+	//_effectButton->setScale(0.5f);
+
+	_musicText = MenuItemFont::create("ON");
+	_musicText->setAnchorPoint(Vec2(0.5, 0.5));
+	_musicText->setPosition(Vec2(_origin.x + _visibleSize.width / 2 - _visibleSize.width / 6 + _musicText->getContentSize().width*2, _visibleSize.height / 2 + _origin.y));
+	//_musicText->setScale(0.5f);
+
+	_effectText = MenuItemFont::create("ON");
+	_effectText->setAnchorPoint(Vec2(0.5, 0.5));
+	_effectText->setPosition(Vec2(_origin.x + _visibleSize.width / 2 + _visibleSize.width / 6 + _musicText->getContentSize().width*2, _visibleSize.height / 2 + _origin.y));
+	//_effectText->setScale(0.5f);
+
+	Menu* menu = Menu::create(_returnButton, _musicButton, _effectButton, _musicText, _effectText, NULL);
+	menu->setPosition(Vec2::ZERO);
+	_pauseMenu = menu;
+	_UILayer->addChild(menu, 2);
+	_pauseMenu->setVisible(false);
+
+
 }
 
 /*UI层 表情菜单*/
@@ -210,10 +252,16 @@ void GameScene::initController()
 	_playerController->setAbilityCenterOriginPosition(_abilityCenterSprite->getPosition());
 
 	/*储存菜单项矩形，防误点*/
-	_playerController->setRectReturnButton(Rect(_returnButton->getPosition().x, _returnButton->getPosition().y - _returnButton->getContentSize().height,
-		_returnButton->getContentSize().width, _returnButton->getContentSize().height));
+	_playerController->setRectPauseButton(Rect(_pauseButton->getPosition().x, _pauseButton->getPosition().y - _pauseButton->getContentSize().height,
+		_pauseButton->getContentSize().width, _pauseButton->getContentSize().height));
 	_playerController->setRectEmotionButton(Rect(_emotionButton->getPosition().x - _emotionButton->getContentSize().width, _emotionButton->getPosition().y - _emotionButton->getContentSize().height,
 		_emotionButton->getContentSize().width, _emotionButton->getContentSize().height));
+	_playerController->setRectReturnButton(Rect(_returnButton->getPosition().x- _returnButton->getContentSize().width/2, _returnButton->getPosition().y - _returnButton->getContentSize().height / 2,
+		_returnButton->getContentSize().width, _returnButton->getContentSize().height));
+	_playerController->setRectMusicButton(Rect(_musicButton->getPosition().x - _musicButton->getContentSize().width / 2, _musicButton->getPosition().y - _musicButton->getContentSize().height / 2,
+		_musicButton->getContentSize().width, _musicButton->getContentSize().height));
+	_playerController->setRectEffectButton(Rect(_effectButton->getPosition().x - _effectButton->getContentSize().width / 2, _effectButton->getPosition().y - _effectButton->getContentSize().height / 2,
+		_effectButton->getContentSize().width, _effectButton->getContentSize().height));
 
 	this->addChild(_playerController, 0, "controller");
 }
@@ -236,6 +284,7 @@ bool GameScene::init()
 	/*初始化*/
 	initMap();
 	initBrawler();
+	//setIsPaused(false);
 
 	this->scheduleUpdate();						//每帧刷新
 
@@ -597,7 +646,7 @@ void GameScene::addBar(Brawler* brawler)
 void GameScene::menuEmotionCallback(cocos2d::Ref* pSender)
 {
 	//test
-	smokeMove();
+	//smokeMove();
 
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 
@@ -607,14 +656,79 @@ void GameScene::menuEmotionCallback(cocos2d::Ref* pSender)
 		_emotionMenu->setVisible(true);
 }
 
+/*暂停 回调函数*/
+void GameScene::menuPause(cocos2d::Ref* pSender) 
+{
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
+
+	if (_pauseMenu->isVisible())
+	{
+		/*解除暂停状态*/
+		_pauseMenu->setVisible(false);
+
+		this->initController();//重新布置控制器
+		_playerController->changeControllerSprite();//重置控制器图标
+
+		/*重置英雄行动状态*/
+		AnimationUtils::stopAnimate(_player->getBrawler(), _player->getBrawler()->getAnimateBrawler(), _player->getBrawler()->getDirection());
+		_player->setTargetMoveSpeedX(0);
+		_player->setTargetMoveSpeedY(0);
+
+		Director::getInstance()->resume();//继续被暂停的导演类
+		
+	}
+	else
+	{
+		/*暂停状态*/
+		_pauseMenu->setVisible(true);
+
+		this->removeChildByName("controller");//移除控制器，此时玩家只能与Menu类元素互动
+
+		Director::getInstance()->pause();//暂停导演类，使所有schedule函数暂停
+	}
+}
+
 /*返回 回调函数*/
 void GameScene::menuBackCallback(cocos2d::Ref* pSender)
 {
 
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 	MusicUtils::playMusic("Music/Menu.mp3");
-
+	Director::getInstance()->resume();//使暂停的导演类继续活动，才能正常切换场景
 	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
+}
+
+/*音乐开关 回调函数*/
+void GameScene::menuMusicCallback(cocos2d::Ref* pSender)
+{
+	if (MusicUtils::_musicOn == true)
+	{
+		MusicUtils::_musicOn = false;
+		_musicText->setString("OFF");//改变文本
+		AudioEngine::pause(MusicUtils::_musicID);//暂停当前音乐
+	}
+	else if (MusicUtils::_musicOn == false)
+	{
+		MusicUtils::_musicOn = true;
+		_musicText->setString("ON");//改变文本
+		AudioEngine::resume(MusicUtils::_musicID);//继续播放当前音乐
+	}
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
+}
+
+/*音效开关 回调函数*/
+void GameScene::menuEffectCallback(cocos2d::Ref* pSender)
+{
+	MusicUtils::_effectOn = !MusicUtils::_effectOn;
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
+	if (MusicUtils::_effectOn == true)
+	{
+		_effectText->setString("ON");//改变文本
+	}
+	else if (MusicUtils::_effectOn == false)
+	{
+		_effectText->setString("OFF");//改变文本
+	}
 }
 
 /*************************************************************进程*************************************************************/

@@ -117,7 +117,7 @@ bool Settings::init()
 
 	/*创建音乐开关文本*/
 	Text* music = Text::create("ON", "fonts/Marker Felt.ttf", 24);
-	if (musicVolume == nullptr)
+	if (music == nullptr)
 	{
 		SceneUtils::problemLoading("musicText creating failed");
 	}
