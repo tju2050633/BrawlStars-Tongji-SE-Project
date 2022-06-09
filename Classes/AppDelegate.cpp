@@ -2,7 +2,7 @@
 #include "Scene/OpeningAnimation.h"
 #include "Scene/GameMenu.h"
 #include "Utils/SceneUtils.h"
-// #define USE_AUDIO_ENGINE 1
+#define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
 
 /*“Ù∆µµº»Î*/
@@ -13,7 +13,7 @@
 
 #if USE_AUDIO_ENGINE
 #include "audio/include/AudioEngine.h"
-using namespace cocos2d::experimental;
+
 #elif USE_SIMPLE_AUDIO_ENGINE
 #include "audio/include/SimpleAudioEngine.h"
 using namespace CocosDenshion;
