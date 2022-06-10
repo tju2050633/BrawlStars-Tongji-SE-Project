@@ -55,19 +55,6 @@ void Nita::attack(float angle)
 	bullet->setIsAbility(false);
 	this->addChild(bullet);
 	_bulletVector.pushBack(bullet);
-
-	//test
-	if (_bear)
-	{
-		if (angle >= -M_PI / 4 && angle <= M_PI / 4)
-			AnimationUtils::runAnimate(_bear, AnimationUtils::bear, AnimationUtils::Right, 1, 3, -1);
-		else if (angle >= M_PI / 4 && angle <= 3 * M_PI / 4)
-			AnimationUtils::runAnimate(_bear, AnimationUtils::bear, AnimationUtils::Top, 1, 3, -1);
-		else if (angle >= 3 * M_PI / 4 && angle <= 5 * M_PI / 4)
-			AnimationUtils::runAnimate(_bear, AnimationUtils::bear, AnimationUtils::Left, 1, 3, -1);
-		else if (angle >= 5 * M_PI / 4 || angle <= -M_PI / 4)
-			AnimationUtils::runAnimate(_bear, AnimationUtils::bear, AnimationUtils::Bottom, 1, 3, -1);
-	}
 }
 
 void Nita::castAbility(float angle)
@@ -102,7 +89,7 @@ void Nita::castAbility(float angle)
 	//绑定关系，但熊不是英雄的子节点
 	_bear = bear;
 	_bear->setOwner(this);
-	this->getParent()->getParent()->addChild(_bear, 1);
+	this->getParent()->getParent()->addChild(_bear,1);
 
 	//播放降落动画
 	AnimationUtils::runAnimate(bear, AnimationUtils::Nita, AnimationUtils::boom, 0.5, 4, 1);
@@ -110,11 +97,11 @@ void Nita::castAbility(float angle)
 	//图片
 	scheduleOnce([=](float dt) {
 		AnimationUtils::stopAnimate(bear, AnimationUtils::bear, AnimationUtils::Bottom);
-		}, 0.5, "bear");
+	}, 0.5, "bear");
 
 	//血条
 	Entity::initHpBar(_bear);
-
+	
 }
 
 bool Nita::takeDamage(INT32 damage)
@@ -127,13 +114,6 @@ bool Nita::takeDamage(INT32 damage)
 	if (_isPlayer && CCRANDOM_0_1() < 0.5f)
 		MusicUtils::playEffect("Music/Nita/Nita_Hurt.mp3");
 
-	//test
-	if (_bear)
-	{
-		AnimationUtils::runAnimate(_bear, AnimationUtils::bear, AnimationUtils::Attack, 0.5, 2, -1);
-		_bear->takeDamage(damage);
-	}
-
 	return false;
 }
 
@@ -141,6 +121,10 @@ void Nita::die()
 {
 	/*调用父类函数*/
 	Brawler::die();
+
+	/*熊陪葬*/
+	if(_bear != nullptr)
+		_bear->die();
 
 	/*死亡音效*/
 	MusicUtils::playEffect("Music/Nita/Nita_Die.mp3");

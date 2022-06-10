@@ -4,7 +4,6 @@
 #include "Scene/SelectBrawler.h"
 #include "Utils/SceneUtils.h"
 #include "Utils/MusicUtils.h"
-#include "audio/include/AudioEngine.h"
 
 USING_NS_CC;
 using namespace std;
@@ -98,7 +97,7 @@ void SelectBrawler::initMenu()
 void SelectBrawler::menuShellyCallback(cocos2d::Ref* pSender)
 {
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
-
+	
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Shelly;
 	SceneUtils::changeScene(SceneUtils::AllScenes::Room);
 }
@@ -107,7 +106,7 @@ void SelectBrawler::menuShellyCallback(cocos2d::Ref* pSender)
 void SelectBrawler::menuPrimoCallback(cocos2d::Ref* pSender)
 {
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
-
+	
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Primo;
 	SceneUtils::changeScene(SceneUtils::AllScenes::Room);
 }
@@ -116,7 +115,7 @@ void SelectBrawler::menuPrimoCallback(cocos2d::Ref* pSender)
 void SelectBrawler::menuNitaCallback(cocos2d::Ref* pSender)
 {
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
-
+	
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Nita;
 	SceneUtils::changeScene(SceneUtils::AllScenes::Room);
 }
@@ -125,7 +124,7 @@ void SelectBrawler::menuNitaCallback(cocos2d::Ref* pSender)
 void SelectBrawler::menuStuCallback(cocos2d::Ref* pSender)
 {
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
-
+	
 	SceneUtils::_brawler = SceneUtils::AllBrawler::Stu;
 	SceneUtils::changeScene(SceneUtils::AllScenes::Room);
 }
@@ -134,6 +133,6 @@ void SelectBrawler::menuStuCallback(cocos2d::Ref* pSender)
 void SelectBrawler::menuBackCallback(cocos2d::Ref* pSender)
 {
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
-
+	
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectMap);
 }

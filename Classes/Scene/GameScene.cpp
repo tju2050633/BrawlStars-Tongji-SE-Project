@@ -37,11 +37,11 @@ Scene* GameScene::createScene()
 	/*初始化UI层的UI组件*/
 	mapLayer->initLabel();
 	mapLayer->initButton();
-	mapLayer->initPauseMenu();
 	mapLayer->initEmotionMenu();
 	mapLayer->initControllerSprite();
 	mapLayer->initController();
 
+	mapLayer->initPauseMenu();
 
 	/*将地图层、UI层添加到场景中*/
 	scene->addChild(mapLayer);
@@ -100,12 +100,12 @@ void GameScene::initPauseMenu()
 
 	_musicText = MenuItemFont::create("ON");
 	_musicText->setAnchorPoint(Vec2(0.5, 0.5));
-	_musicText->setPosition(Vec2(_origin.x + _visibleSize.width / 2 - _visibleSize.width / 6 + _musicText->getContentSize().width*2, _visibleSize.height / 2 + _origin.y));
+	_musicText->setPosition(Vec2(_origin.x + _visibleSize.width / 2 - _visibleSize.width / 6 + _musicText->getContentSize().width * 2, _visibleSize.height / 2 + _origin.y));
 	//_musicText->setScale(0.5f);
 
 	_effectText = MenuItemFont::create("ON");
 	_effectText->setAnchorPoint(Vec2(0.5, 0.5));
-	_effectText->setPosition(Vec2(_origin.x + _visibleSize.width / 2 + _visibleSize.width / 6 + _musicText->getContentSize().width*2, _visibleSize.height / 2 + _origin.y));
+	_effectText->setPosition(Vec2(_origin.x + _visibleSize.width / 2 + _visibleSize.width / 6 + _musicText->getContentSize().width * 2, _visibleSize.height / 2 + _origin.y));
 	//_effectText->setScale(0.5f);
 
 	Menu* menu = Menu::create(_returnButton, _musicButton, _effectButton, _musicText, _effectText, NULL);
@@ -123,18 +123,18 @@ void GameScene::initEmotionMenu()
 	string brawlerName;
 	switch (SceneUtils::_brawler)
 	{
-		case SceneUtils::Shelly:
-			brawlerName = "Shelly";
-			break;
-		case SceneUtils::Nita:
-			brawlerName = "Nita";
-			break;
-		case SceneUtils::Primo:
-			brawlerName = "Primo";
-			break;
-		case SceneUtils::Stu:
-			brawlerName = "Stu";
-			break;
+	case SceneUtils::Shelly:
+		brawlerName = "Shelly";
+		break;
+	case SceneUtils::Nita:
+		brawlerName = "Nita";
+		break;
+	case SceneUtils::Primo:
+		brawlerName = "Primo";
+		break;
+	case SceneUtils::Stu:
+		brawlerName = "Stu";
+		break;
 	}
 
 	Vector<MenuItem*> EmotionVector;
@@ -173,7 +173,7 @@ void GameScene::initEmotionMenu()
 			item->setPosition(position + Vec2(-400 + i * 100, 100));
 		else
 			item->setPosition(position + Vec2(-400 + (i - 4) * 100, 0));
-
+		
 		/*存入数组*/
 		EmotionVector.pushBack(item);
 	}
@@ -252,16 +252,10 @@ void GameScene::initController()
 	_playerController->setAbilityCenterOriginPosition(_abilityCenterSprite->getPosition());
 
 	/*储存菜单项矩形，防误点*/
-	_playerController->setRectPauseButton(Rect(_pauseButton->getPosition().x, _pauseButton->getPosition().y - _pauseButton->getContentSize().height,
+	_playerController->setRectReturnButton(Rect(_pauseButton->getPosition().x, _pauseButton->getPosition().y - _pauseButton->getContentSize().height,
 		_pauseButton->getContentSize().width, _pauseButton->getContentSize().height));
 	_playerController->setRectEmotionButton(Rect(_emotionButton->getPosition().x - _emotionButton->getContentSize().width, _emotionButton->getPosition().y - _emotionButton->getContentSize().height,
 		_emotionButton->getContentSize().width, _emotionButton->getContentSize().height));
-	_playerController->setRectReturnButton(Rect(_returnButton->getPosition().x- _returnButton->getContentSize().width/2, _returnButton->getPosition().y - _returnButton->getContentSize().height / 2,
-		_returnButton->getContentSize().width, _returnButton->getContentSize().height));
-	_playerController->setRectMusicButton(Rect(_musicButton->getPosition().x - _musicButton->getContentSize().width / 2, _musicButton->getPosition().y - _musicButton->getContentSize().height / 2,
-		_musicButton->getContentSize().width, _musicButton->getContentSize().height));
-	_playerController->setRectEffectButton(Rect(_effectButton->getPosition().x - _effectButton->getContentSize().width / 2, _effectButton->getPosition().y - _effectButton->getContentSize().height / 2,
-		_effectButton->getContentSize().width, _effectButton->getContentSize().height));
 
 	this->addChild(_playerController, 0, "controller");
 }
@@ -280,12 +274,11 @@ bool GameScene::init()
 	/*获取visibleSize和origin*/
 	_visibleSize = Director::getInstance()->getVisibleSize(); //得到屏幕大小
 	_origin = Director::getInstance()->getVisibleOrigin();	  //获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
-
+	
 	/*初始化*/
 	initMap();
 	initBrawler();
-	//setIsPaused(false);
-
+	
 	this->scheduleUpdate();						//每帧刷新
 
 	this->schedule([=](float dt) {				//每1秒刷新
@@ -298,10 +291,10 @@ bool GameScene::init()
 			if (brawler->getReadyForHeal())
 				brawler->heal(brawler->getHealthPoint() * 0.13);
 		}
-		}, 1.0f, "smoke damage/auto heal");
+	}, 1.0f, "smoke damage/auto heal");
 
 	this->schedule([=](float dt) {				//每20秒刷新
-		smokeMove();
+			smokeMove();
 		}, SMOKE_MOVE_INTERVAL, "smoke move");
 
 	return true;
@@ -313,7 +306,7 @@ void GameScene::update(float dt)
 	/*每帧更新玩家位置，即当前位置+速度*每帧时间产生的移动量*/
 	Vec2 playerPos = _player->getTargetPosition() + Vec2(_player->getTargetMoveSpeedX() * dt, _player->getTargetMoveSpeedY() * dt);
 
-	this->setPlayerPosition(playerPos);//设置玩家位置
+	this->setTargetPosition(_player, playerPos);//设置玩家位置
 	this->setGrassOpacity(playerPos);//设置草丛透明度
 	this->setViewPointCenter(playerPos);//设置镜头跟随
 }
@@ -326,15 +319,15 @@ void GameScene::initMap()
 	/* 添加地图 */
 	switch (SceneUtils::_map)
 	{
-		case SceneUtils::MapA:
-			_map = TMXTiledMap::create("TileGameResources/TileMap1.tmx");
-			break;
-		case SceneUtils::MapB:
-			_map = TMXTiledMap::create("TileGameResources/TileMap2.tmx");
-			break;
-		case SceneUtils::MapC:
-			_map = TMXTiledMap::create("TileGameResources/TileMap3.tmx");
-			break;
+	case SceneUtils::MapA:
+		_map = TMXTiledMap::create("TileGameResources/TileMap1.tmx");
+		break;
+	case SceneUtils::MapB:
+		_map = TMXTiledMap::create("TileGameResources/TileMap2.tmx");
+		break;
+	case SceneUtils::MapC:
+		_map = TMXTiledMap::create("TileGameResources/TileMap3.tmx");
+		break;
 	}
 	_background = _map->getLayer("Background");
 	this->addChild(_map);
@@ -352,9 +345,9 @@ void GameScene::initMap()
 	/* 添加毒烟图层 */
 	_smoke = _map->getLayer("Smoke");
 	_xTileCoordMin = 0,
-		_xTileCoordMax = _map->getMapSize().width,
-		_yTileCoordMin = 0,
-		_yTileCoordMax = _map->getMapSize().height;
+	_xTileCoordMax = _map->getMapSize().width,
+	_yTileCoordMin = 0,
+	_yTileCoordMax = _map->getMapSize().height;
 	this->smokeMove();
 
 	/* 添加宝箱对象层 */
@@ -396,7 +389,7 @@ void GameScene::initBrawler()
 
 	/*绑定英雄*/
 	string brawlerName = bindBrawler();
-
+	
 	/*英雄绑定精灵图像*/
 	_player->getBrawler()->bindSprite(Sprite::create("Portrait/Shelly-Normal.png"));
 	_player->getBrawler()->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(brawlerName + "_Bottom1.png"));
@@ -420,7 +413,6 @@ void GameScene::initBrawler()
 	{
 		string filepath = "Music/" + brawlerName + "/" + brawlerName + "_Start.mp3";
 		MusicUtils::playEffect(filepath.c_str());
-
 	}
 
 	this->addChild(_player);
@@ -434,24 +426,24 @@ string GameScene::bindBrawler()
 	string brawlerName;
 	switch (SceneUtils::_brawler)
 	{
-		case SceneUtils::Shelly:
-			_player->setBrawler(Shelly::create());
-			brawlerName = "Shelly";
-			break;
-		case SceneUtils::Nita:
-			_player->setBrawler(Nita::create());
-			brawlerName = "Nita";
-			break;
-		case SceneUtils::Primo:
-			_player->setBrawler(Primo::create());
-			brawlerName = "Primo";
-			break;
-		case SceneUtils::Stu:
-			_player->setBrawler(Stu::create());
-			brawlerName = "Stu";
-			break;
-		default:
-			break;
+	case SceneUtils::Shelly:
+		_player->setBrawler(Shelly::create());
+		brawlerName = "Shelly";
+		break;
+	case SceneUtils::Nita:
+		_player->setBrawler(Nita::create());
+		brawlerName = "Nita";
+		break;
+	case SceneUtils::Primo:
+		_player->setBrawler(Primo::create());
+		brawlerName = "Primo";
+		break;
+	case SceneUtils::Stu:
+		_player->setBrawler(Stu::create());
+		brawlerName = "Stu";
+		break;
+	default:
+		break;
 	}
 	_player->addChild(_player->getBrawler());
 	_player->getBrawler()->setIsPlayer(true);
@@ -473,41 +465,41 @@ void GameScene::initAI()
 		if (SceneUtils::_shellyNumber != 0)
 		{
 			ai->setBrawler(Shelly::create());
-			ai->getBrawler()->bindSprite(Sprite::create("Portrait/Shelly-Normal.png"));
-			ai->getBrawler()->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Shelly_Bottom1.png"));
+			ai->getBrawler()->bindSprite(Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Shelly_Bottom1.png")));
+			ai->setAttackRange(SHELLY_BULLET_RANGE);
 			SceneUtils::_shellyNumber--;
 		}
 		else if (SceneUtils::_nitaNumber != 0)
 		{
 			ai->setBrawler(Nita::create());
-			ai->getBrawler()->bindSprite(Sprite::create("Portrait/Nita-Normal.png"));
-			ai->getBrawler()->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Nita_Bottom1.png"));
+			ai->getBrawler()->bindSprite(Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Nita_Bottom1.png")));
+			ai->setAttackRange(NITA_BULLET_RANGE);
 			SceneUtils::_nitaNumber--;
 		}
 		else if (SceneUtils::_primoNumber != 0)
 		{
 			ai->setBrawler(Primo::create());
-			ai->getBrawler()->bindSprite(Sprite::create("Portrait/Primo-Normal.png"));
-			ai->getBrawler()->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Primo_Bottom1.png"));
+			ai->getBrawler()->bindSprite(Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Primo_Bottom1.png")));
+			ai->setAttackRange(PRIMO_BULLET_RANGE);
 			SceneUtils::_primoNumber--;
 		}
 		else if (SceneUtils::_stuNumber != 0)
 		{
 			ai->setBrawler(Stu::create());
-			ai->getBrawler()->bindSprite(Sprite::create("Portrait/Stu-Normal.png"));
-			ai->getBrawler()->getSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Stu_Bottom1.png"));
-			SceneUtils::_stuNumber--;
+			ai->getBrawler()->bindSprite(Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("Stu_Bottom1.png")));
+			ai->setAttackRange(STU_BULLET_RANGE);
+			SceneUtils::_stuNumber--;		
 		}
-
+		
 		/*添加血条等*/
 		addBar(ai->getBrawler());
 
 		//添加到地图
 		ai->addChild(ai->getBrawler());
 		ai->getBrawler()->setIsAI(true);
-
+		
 		_AI_Vector.pushBack(ai);
-		this->addChild(ai, 1);
+		this->addChild(ai);
 	}
 }
 
@@ -544,52 +536,52 @@ void GameScene::addRangeIndicator(SceneUtils::AllBrawler brawler)
 	Sprite* rangeIndicatorAbility;
 	switch (brawler)
 	{
-		case SceneUtils::Shelly:
-			/*攻击*/
-			rangeIndicatorAttack = Sprite::create("Controller/sector.png");
-			rangeIndicatorAttack->setAnchorPoint(Vec2(0.55, 0.55));
-			rangeIndicatorAttack->setScale(1.8);
-			/*技能*/
-			rangeIndicatorAbility = Sprite::create("Controller/sector.png");
-			rangeIndicatorAbility->setAnchorPoint(Vec2(0.57, 0.55));
-			rangeIndicatorAbility->setScale(2.7, 1.8);
-			rangeIndicatorAbility->setColor(Color3B::YELLOW);
-			break;
-		case SceneUtils::Nita:
-			/*攻击*/
-			rangeIndicatorAttack = Sprite::create("Controller/rectangle.png");
-			rangeIndicatorAttack->setAnchorPoint(Vec2(0, 0.5));
-			rangeIndicatorAttack->setScale(0.3);
-			/*技能*/
-			rangeIndicatorAbility = Sprite::create("Controller/circle.png");
-			rangeIndicatorAbility->setAnchorPoint(Vec2(0.35, 0.5));
-			rangeIndicatorAbility->setScale(0.7);
-			rangeIndicatorAbility->setColor(Color3B::YELLOW);
-			break;
-		case SceneUtils::Primo:
-			/*攻击*/
-			rangeIndicatorAttack = Sprite::create("Controller/rectangle.png");
-			rangeIndicatorAttack->setAnchorPoint(Vec2(0, 0.5));
-			rangeIndicatorAttack->setScaleX(0.15);
-			rangeIndicatorAttack->setScaleY(0.3);
-			/*技能*/
-			rangeIndicatorAbility = Sprite::create("Controller/circle.png");
-			rangeIndicatorAbility->setAnchorPoint(Vec2(0.35, 0.5));
-			rangeIndicatorAbility->setScale(1);
-			rangeIndicatorAbility->setColor(Color3B::YELLOW);
-			break;
-		case SceneUtils::Stu:
-			/*攻击*/
-			rangeIndicatorAttack = Sprite::create("Controller/rectangle.png");
-			rangeIndicatorAttack->setAnchorPoint(Vec2(0, 0.55));
-			rangeIndicatorAttack->setScale(0.3);
-			/*技能*/
-			rangeIndicatorAbility = Sprite::create("Controller/rectangle.png");
-			rangeIndicatorAbility->setAnchorPoint(Vec2(0, 0.55));
-			rangeIndicatorAbility->setScaleX(0.1);
-			rangeIndicatorAbility->setScaleY(0.4);
-			rangeIndicatorAbility->setColor(Color3B::YELLOW);
-			break;
+	case SceneUtils::Shelly:
+		/*攻击*/
+		rangeIndicatorAttack = Sprite::create("Controller/sector.png");
+		rangeIndicatorAttack->setAnchorPoint(Vec2(0.55, 0.55));
+		rangeIndicatorAttack->setScale(1.8);
+		/*技能*/
+		rangeIndicatorAbility = Sprite::create("Controller/sector.png");
+		rangeIndicatorAbility->setAnchorPoint(Vec2(0.57, 0.55));
+		rangeIndicatorAbility->setScale(2.7,1.8);
+		rangeIndicatorAbility->setColor(Color3B::YELLOW);
+		break;
+	case SceneUtils::Nita:
+		/*攻击*/
+		rangeIndicatorAttack = Sprite::create("Controller/rectangle.png");
+		rangeIndicatorAttack->setAnchorPoint(Vec2(0, 0.5));
+		rangeIndicatorAttack->setScale(0.3);
+		/*技能*/
+		rangeIndicatorAbility = Sprite::create("Controller/circle.png");
+		rangeIndicatorAbility->setAnchorPoint(Vec2(0.35, 0.5));
+		rangeIndicatorAbility->setScale(0.7);
+		rangeIndicatorAbility->setColor(Color3B::YELLOW);
+		break;
+	case SceneUtils::Primo:
+		/*攻击*/
+		rangeIndicatorAttack = Sprite::create("Controller/rectangle.png");
+		rangeIndicatorAttack->setAnchorPoint(Vec2(0, 0.5));
+		rangeIndicatorAttack->setScaleX(0.15);
+		rangeIndicatorAttack->setScaleY(0.3);
+		/*技能*/
+		rangeIndicatorAbility = Sprite::create("Controller/circle.png");
+		rangeIndicatorAbility->setAnchorPoint(Vec2(0.35, 0.5));
+		rangeIndicatorAbility->setScale(1);
+		rangeIndicatorAbility->setColor(Color3B::YELLOW);
+		break;
+	case SceneUtils::Stu:
+		/*攻击*/
+		rangeIndicatorAttack = Sprite::create("Controller/rectangle.png");
+		rangeIndicatorAttack->setAnchorPoint(Vec2(0, 0.55));
+		rangeIndicatorAttack->setScale(0.3);
+		/*技能*/
+		rangeIndicatorAbility = Sprite::create("Controller/rectangle.png");
+		rangeIndicatorAbility->setAnchorPoint(Vec2(0, 0.55));
+		rangeIndicatorAbility->setScaleX(0.1);
+		rangeIndicatorAbility->setScaleY(0.4);
+		rangeIndicatorAbility->setColor(Color3B::YELLOW);
+		break;
 	}
 	/*攻击、技能指示器添加到玩家上*/
 	_player->getBrawler()->setRangeIndicatorAttack(rangeIndicatorAttack);
@@ -645,19 +637,27 @@ void GameScene::addBar(Brawler* brawler)
 /*表情 回调函数*/
 void GameScene::menuEmotionCallback(cocos2d::Ref* pSender)
 {
-	//test
-	//smokeMove();
-
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 
-	if (_emotionMenu->isVisible())
+	if(_emotionMenu->isVisible())
 		_emotionMenu->setVisible(false);
 	else
 		_emotionMenu->setVisible(true);
 }
 
+/*返回 回调函数*/
+void GameScene::menuBackCallback(cocos2d::Ref* pSender)
+{
+	
+	MusicUtils::playEffect("Music/ButtonEffect.mp3");
+	MusicUtils::playMusic("Music/Menu.mp3");
+
+	Director::getInstance()->resume();//使暂停的导演类继续活动，才能正常切换场景
+	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
+}
+
 /*暂停 回调函数*/
-void GameScene::menuPause(cocos2d::Ref* pSender) 
+void GameScene::menuPause(cocos2d::Ref* pSender)
 {
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 
@@ -675,7 +675,7 @@ void GameScene::menuPause(cocos2d::Ref* pSender)
 		_player->setTargetMoveSpeedY(0);
 
 		Director::getInstance()->resume();//继续被暂停的导演类
-		
+
 	}
 	else
 	{
@@ -686,16 +686,6 @@ void GameScene::menuPause(cocos2d::Ref* pSender)
 
 		Director::getInstance()->pause();//暂停导演类，使所有schedule函数暂停
 	}
-}
-
-/*返回 回调函数*/
-void GameScene::menuBackCallback(cocos2d::Ref* pSender)
-{
-
-	MusicUtils::playEffect("Music/ButtonEffect.mp3");
-	MusicUtils::playMusic("Music/Menu.mp3");
-	Director::getInstance()->resume();//使暂停的导演类继续活动，才能正常切换场景
-	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 }
 
 /*音乐开关 回调函数*/
@@ -752,49 +742,53 @@ void GameScene::BrawlerDie()
 void GameScene::GameOver(bool win)
 {
 	/*清除UI层，停止一切*/
-	this->unscheduleAllCallbacks();
-	_UILayer->removeFromParent();
-	_playerController->removeFromParent();
+	for (auto brawler : _brawlerVector)
+	{
+		brawler->unscheduleAllCallbacks();
+	}
+	for (auto ai : _AI_Vector)
+	{
+		ai->unscheduleAllCallbacks();
+	}
+	_UILayer->setVisible(false);
+	this->removeChildByName("controller");
 
 	/*奖杯*/
 	INT32 rank = SceneUtils::_brawlerNumber;
+	if (!win)
+		rank++;
 	INT32 trophy;
 	switch (rank)
 	{
-		case 1:
-			trophy = 10;
-			break;
-		case 2:
-			trophy = 8;
-			break;
-		case 3:
-			trophy = 7;
-			break;
-		case 4:
-			trophy = 6;
-			break;
-		case 5:
-			trophy = 5;
-			break;
-		case 6:
-			trophy = 4;
-			break;
-		case 7:
-			trophy = 3;
-			break;
-		case 8:
-			trophy = 2;
-			break;
-		case 9:
-			trophy = 0;
-			break;
-		case 10:
-			trophy = 0;
-			break;
-		default:
-			break;
+	case 1:
+		trophy = 10;
+		break;
+	case 2:
+		trophy = 8;
+		break;
+	case 3:
+		trophy = 7;
+		break;
+	case 4:
+		trophy = 6;
+		break;
+	case 5:
+		trophy = 5;
+		break;
+	case 6:
+		trophy = 4;
+		break;
+	case 7:
+		trophy = 3;
+		break;
+	case 8:
+		trophy = 2;
+		break;
+	default:
+		trophy = 0;
+		break;
 	}
-
+	
 	int iTrophyNumber = 0;
 	ifstream in("trophy.txt");
 	if (!in.is_open())
@@ -821,9 +815,9 @@ void GameScene::GameOver(bool win)
 	/*BGM切歌*/
 	if (win)
 		MusicUtils::playMusic("Music/Victory.mp3");
-	else if (!win)
+	else if(!win)
 		MusicUtils::playMusic("Music/Defeat.mp3");
-
+	
 	/*1秒后弹出/*胜利/失败画面*/
 	scheduleOnce([=](float dt) {
 		/*胜利、失败图像*/
@@ -866,16 +860,20 @@ void GameScene::GameOver(bool win)
 		spr->setAnchorPoint(Vec2(0, 1));
 		spr->setPosition(Vec2(_origin.x, _visibleSize.height + _origin.y + 10));
 		spr->setScale(0.2);
-		spr->setRotation(10);
+		spr->setRotation(10); 
 		this->getParent()->addChild(spr, 1);
 
-		auto label = Label::createWithTTF(StringUtils::format("+%d", trophy).c_str(), "fonts/Marker Felt.ttf", 48);
+		auto label = Label::createWithTTF(StringUtils::format("+%d",trophy).c_str(), "fonts/Marker Felt.ttf", 48);
 		label->setAnchorPoint(Vec2(0, 1));
 		label->setPosition(Vec2(_origin.x + 130, _visibleSize.height + _origin.y - 15));
 		label->setTextColor(Color4B::YELLOW);
 		this->getParent()->addChild(label, 1);
 
-		}, 1.0f, "displayWIN/LOSE");
+		Director::getInstance()->pause();
+
+	}, 1.0f, "displayWIN/LOSE");
+
+	
 }
 
 /*************************************************************瓦片地图需要的函数*************************************************************/
@@ -902,7 +900,7 @@ Point GameScene::tileCoordForPosition(Point position)
 	//消除位置偏差
 	double X = position.x * 1600 / 1500;
 	double Y = position.y * 1280 / 1195.3;
-
+	
 	//tilemap以左上角为坐标(0,0)
 	int x = X / _map->getTileSize().width;
 	int y = ((_map->getMapSize().height * _map->getTileSize().height) - Y) / _map->getTileSize().height;
@@ -911,7 +909,7 @@ Point GameScene::tileCoordForPosition(Point position)
 }
 
 /* 设置玩家位置，添加物理碰撞 */
-void GameScene::setPlayerPosition(Point position)
+void GameScene::setTargetPosition(Node* target, Point position)
 {
 	Vec2 tileSize = _map->getTileSize(); //获得单个瓦片尺寸
 	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
@@ -924,7 +922,7 @@ void GameScene::setPlayerPosition(Point position)
 	{
 		return; //与物体发生碰撞时不移动
 	}
-	_player->setPosition(position);
+	target->setPosition(position);
 }
 
 /* 设置草丛透明度 */
@@ -971,10 +969,12 @@ void GameScene::setGrassOpacity(Point position)
 	if (_grass->getTileAt(tileCoord))
 	{
 		_player->getBrawler()->getSprite()->setOpacity(100);
+		_player->getBrawler()->setInBush(true);
 	}
 	else
 	{
 		_player->getBrawler()->getSprite()->setOpacity(255);
+		_player->getBrawler()->setInBush(false);
 	}
 }
 
@@ -993,7 +993,7 @@ void GameScene::breakWall(Point position)
 bool GameScene::isWallTile(Point position)
 {
 	Point tileCoord = this->tileCoordForPosition(position); //通过指定坐标对应tile坐标
-	if (_wall->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定墙壁单元格
+	if(_wall->getTileAt(tileCoord)) //如果通过tile坐标能够访问指定墙壁单元格
 		return true;
 
 	return false;
@@ -1114,5 +1114,14 @@ void GameScene::removeFromBuffVector(Sprite* buff)
 	{
 		if (_buffVector.at(i) == buff)
 			_buffVector.erase(i);
+	}
+}
+
+void GameScene::removeFromAIVector(AI* ai)
+{
+	for (int i = 0; i < _AI_Vector.size(); i++)
+	{
+		if (_AI_Vector.at(i) == ai)
+			_AI_Vector.erase(i);
 	}
 }

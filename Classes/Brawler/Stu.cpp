@@ -31,7 +31,7 @@ void Stu::attack(float angle)
 	/*一定触发攻击音效*/
 	if (_isPlayer)
 		MusicUtils::playEffect("Music/Stu/Stu_Attack.mp3");
-
+		
 
 	/*设定攻击间隔时间后才能下一次攻击*/
 	_isAttackAvailable = false;
@@ -75,7 +75,7 @@ void Stu::castAbility(float angle)
 	/*技能音效*/
 	if (_isPlayer && CCRANDOM_0_1() < 0.5f)
 		MusicUtils::playEffect("Music/Stu/Stu_Ult.mp3");
-
+		
 
 	/*斯图技能：突刺*/
 
@@ -96,7 +96,7 @@ void Stu::castAbility(float angle)
 			_moveSpeedX = originMS_X;
 			_moveSpeedY = originMS_Y;
 		}
-
+		
 		_isCastingAbility = false;
 		}, duration, "finishAbility");
 }
@@ -109,7 +109,7 @@ bool Stu::takeDamage(INT32 damage)
 	/*受伤音效*/
 	if (_isPlayer && CCRANDOM_0_1() < 0.5f)
 		MusicUtils::playEffect("Music/Stu/Stu_Hurt.mp3");
-
+	
 
 	return false;
 }

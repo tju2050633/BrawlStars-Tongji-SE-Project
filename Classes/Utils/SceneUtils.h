@@ -44,7 +44,7 @@ public:
 	static INT32 _primoNumber;		//AI中Primo个数
 	static INT32 _stuNumber;		//AI中Stu个数
 
-	///*音乐设置*/
+	/*音乐设置*/
 	//static bool _musicOn;			//记录是否播放音乐
 	//static bool _effectOn;			//记录是否播放音效
 

@@ -30,7 +30,7 @@ bool Brawler::init()
 		}
 		_ammo++;
 		setAmmoBarPercent(float(_ammo) / 3);
-		}, 1.5f, "reload");	//刷新弹药
+	}, 1.5f, "reload");	//刷新弹药
 
 	return true;
 }
@@ -38,10 +38,10 @@ bool Brawler::init()
 void Brawler::update(float dt)
 {
 	/*遍历已发射子弹，每帧进行移动*/
-	for (int i = 0; i < _bulletVector.size(); i++)
+	for (int i = 0;i < _bulletVector.size();i++)
 	{
 		auto bullet = _bulletVector.at(i);
-		auto bulletPosition = bullet->getPosition()
+		auto bulletPosition = bullet->getPosition() 
 			+ this->getParent()->getPosition();//在地图上的坐标
 		//位置要合法
 		auto pos = GameScene::getGameScene()->tileCoordForPosition(bulletPosition);
@@ -52,8 +52,8 @@ void Brawler::update(float dt)
 			continue;
 		}
 		//子弹每帧移动量
-		float angle = bullet->getAngle();
-		float dx = (bullet->getSpeed() * cos(angle) - _moveSpeedX) * dt;
+		float angle = bullet->getAngle();					
+		float dx = (bullet->getSpeed() * cos(angle) - _moveSpeedX) * dt;	
 		float dy = (bullet->getSpeed() * sin(angle) - _moveSpeedY) * dt;
 		//若达到射程，移除子弹
 		bullet->setDistance(bullet->getDistance() + bullet->getSpeed() * dt);
@@ -66,7 +66,7 @@ void Brawler::update(float dt)
 		//碰到墙体，攻击的子弹移除，技能的子弹摧毁墙体后移除
 		if (GameScene::getGameScene()->isWallTile(bulletPosition))
 		{
-
+			
 			if (bullet->getIsAbility())
 				GameScene::getGameScene()->breakWall(bulletPosition);
 
@@ -82,22 +82,15 @@ void Brawler::update(float dt)
 		//碰到英雄
 		for (int j = 0; j < brawlerVec.size(); j++)
 		{
-			auto bullet_pos_to_target = bulletPosition - brawlerVec.at(j)->getPosition();//子弹相对目标物的位置
-			if (brawlerVec.at(j) == this)//不能攻击自身
+			auto bullet_pos_to_target = bulletPosition - brawlerVec.at(j)->getParent()->getPosition();//子弹相对目标物的位置
+			if (brawlerVec.at(j) == this)//不能攻击自己
 				continue;
 			Rect rect = brawlerVec.at(j)->getSprite()->getBoundingBox();
-			float scale = entityVec.at(j)->getScale();//碰撞体积是精灵图原始大小，要乘以实体scale
-			Size size = rect.size * scale;
+			float scale = brawlerVec.at(j)->getScale();//碰撞体积是精灵图原始大小，要乘以实体scale
+			Size size = rect.size * scale * 1.5;
 			rect.setRect(rect.getMinX() * scale, rect.getMinY() * scale, size.width, size.height);
 			if (rect.containsPoint(bullet_pos_to_target))
 			{
-				//shelly技能可将英雄击退
-				if (bullet->getIsAbility())
-				{
-					int distance = SHELLY_BEAT_DISTANCE;
-					float angle = bullet->getAngle();
-					brawlerVec.at(j)->getParent()->runAction(MoveBy::create(1.0f, Vec2(distance * cos(angle), distance * cos(angle))));
-				}
 				bullet->collideWithBrawler(brawlerVec.at(j));
 				_bulletVector.erase(i);
 				isCollided = true;
@@ -110,8 +103,8 @@ void Brawler::update(float dt)
 		for (int j = 0; j < entityVec.size(); j++)
 		{
 			auto bullet_pos_to_target = bulletPosition - entityVec.at(j)->getPosition();//子弹相对目标物的位置
-			//if (entityVec.at(j) == _bear)//不能攻击自己的熊
-			//	continue;
+			if (entityVec.at(j) == _bear)//不能攻击自己的熊
+				continue;
 			Rect rect = entityVec.at(j)->getSprite()->getBoundingBox();
 			float scale = entityVec.at(j)->getScale();//碰撞体积是精灵图原始大小，要乘以实体scale
 			Size size = rect.size * scale;
@@ -154,6 +147,13 @@ void Brawler::attack(float angle)
 	/*重置恢复状态*/
 	resetReadyForHeal();
 
+	/*若在草丛里，设为可见*/
+	if (_inBush)
+	{
+		_inBush = false;
+		getSprite()->setOpacity(100);
+	}
+
 	/*若弹药为满，重新开始定时器*/
 	if (_ammo >= 3) {
 		this->schedule([&](float dt) {
@@ -164,7 +164,7 @@ void Brawler::attack(float angle)
 			}
 			_ammo++;
 			setAmmoBarPercent(float(_ammo) / 3);
-			}, 1.5f, "reload");	//刷新弹药
+		}, 1.5f, "reload");	//刷新弹药
 	}
 
 	_ammo--;
@@ -186,7 +186,6 @@ void Brawler::die()
 {
 	/*通知GameScene*/
 	GameScene::getGameScene()->BrawlerDie();
-
 	/*玩家死亡，失败，隐藏节点;否则,若仅剩一个英雄，胜利，其他英雄直接移除*/
 	if (_isPlayer)
 	{
@@ -197,16 +196,18 @@ void Brawler::die()
 	{
 		/*掉落buff*/
 		auto buff = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("Buff.png"));
-		buff->setPosition(getPosition());
-		getParent()->addChild(buff, 1);
+		buff->setPosition(getParent()->getPosition());
+		GameScene::getGameScene()->addChild(buff, 1);
+		GameScene::getGameScene()->pushBackBuff(buff);
 
 		/*移除*/
-		removeFromParent();
 		GameScene::getGameScene()->removeFromBrawlerVector(this);
-
+		getParent()->removeFromParent();
 
 		if (SceneUtils::_brawlerNumber == 1)
+		{
 			GameScene::getGameScene()->GameOver(true);
+		}
 	}
 }
 
@@ -221,7 +222,7 @@ void Brawler::dealDamage(INT32 damage)
 	setEnergeBarPercent(float(_energy) / _maxEnergy);
 
 	/*如果能量已满，改变技能图标*/
-	if (_energy == _maxEnergy)
+	if (_energy == _maxEnergy && !_isAI && _playerController)
 	{
 		_playerController->getAbilityCenterSprite()->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("AbilityCenter.png"));//
 		if (_playerController->getAbilityRoundSprite()->isVisible() == false)
@@ -299,8 +300,15 @@ void Brawler::takeBuff()
 /*治疗*/
 void Brawler::heal(INT32 healAmount)
 {
+	/*不一定恢复healAmount，可能满血*/
+	healAmount = min(healAmount, _healthPoint - _currentHealthPoint);
+
+	/*满血直接返回*/
+	if (healAmount == 0)
+		return;
+
 	/*回血，不超过满血*/
-	INT32 hp = min(getCurrentHealthPoint() + healAmount, getHealthPoint());
+	INT32 hp = getCurrentHealthPoint() + healAmount;
 	setCurrentHealthPoint(hp);
 
 	/*设置血条*/
@@ -308,6 +316,22 @@ void Brawler::heal(INT32 healAmount)
 
 	/*血条文字*/
 	getHpBarLabel()->setString(StringUtils::format("%d", _currentHealthPoint));
+
+	/*跳出治疗值*/
+	auto number = Label::createWithTTF(StringUtils::format("%d", healAmount).c_str(), "fonts/Marker Felt.ttf", 48);
+	number->setPosition(Vec2(0, 50));
+	number->setColor(Color3B::GREEN);
+	this->addChild(number);
+
+	auto jump = JumpBy::create(1.0f, Vec2::ZERO, 30, 1);
+	auto vanish = CallFunc::create([=]() {
+		this->removeChild(number, true);
+		number->setVisible(false);
+		});
+
+	auto sequence = Sequence::create(jump, vanish, nullptr);
+
+	number->runAction(sequence);
 }
 
 /*攻击、放技能、受伤，重置距离恢复时间*/
@@ -337,4 +361,3 @@ void Brawler::setEnergeBarPercent(float percent)
 	getEnergyBar()->setSpriteFrame(SpriteFrame::createWithTexture(Director::getInstance()->getTextureCache()->addImage("energyBar.png"),
 		Rect(0, 0, _energyBarSize.width * percent, _energyBarSize.height)));
 }
-

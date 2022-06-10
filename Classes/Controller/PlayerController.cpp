@@ -104,16 +104,6 @@ void PlayerController::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* even
 		_keyD = false;
 		currentDirection = AnimationUtils::Right;
 	}
-	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_Q || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_Q)
-		_controllerListener->getTargetBrawler()->takeDamage(100);
-	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_E || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_E)
-		_controllerListener->getTargetBrawler()->dealDamage(1000);
-	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_R || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_R)
-		_controllerListener->getTargetBrawler()->setAnimateBrawler(AnimationUtils::bear);
-	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_Z || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_Z)
-		_controllerListener->getTargetBrawler()->takeBuff();
-	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_X || keyCode == cocos2d::EventKeyboard::KeyCode::KEY_CAPITAL_X)
-		_controllerListener->getTargetBrawler()->kill(_controllerListener->getTargetBrawler());
 
 	changeControllerSprite();
 
@@ -160,9 +150,7 @@ void PlayerController::onMouseDown(Event* event)
 	auto mouseKey = e->getMouseButton();
 
 	/*点按钮时无反应*/
-	if (_rectReturnButton.containsPoint(cursorPosition) || _rectEmotionButton.containsPoint(cursorPosition) ||
-		_rectPauseButton.containsPoint(cursorPosition) || _rectMusicButton.containsPoint(cursorPosition) ||
-		_rectEffectButton.containsPoint(cursorPosition))
+	if (_rectReturnButton.containsPoint(cursorPosition) || _rectEmotionButton.containsPoint(cursorPosition))
 		return;
 
 	/*获得鼠标坐标的角度*/
@@ -201,12 +189,6 @@ void PlayerController::onMouseUp(Event* event)
 
 	/*获得鼠标坐标的角度*/
 	float angle = calculateAngle(cursorPosition, playerPosition);
-
-	/*在按钮处松开无反应*/
-	if (_rectReturnButton.containsPoint(cursorPosition) || _rectEmotionButton.containsPoint(cursorPosition) ||
-		_rectPauseButton.containsPoint(cursorPosition) || _rectMusicButton.containsPoint(cursorPosition) ||
-		_rectEffectButton.containsPoint(cursorPosition))
-		return;
 
 	/*左键攻击，右键技能*/
 	if (mouseKey == EventMouse::MouseButton::BUTTON_LEFT)

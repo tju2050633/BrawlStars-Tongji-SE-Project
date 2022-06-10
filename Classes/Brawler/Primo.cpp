@@ -61,7 +61,7 @@ void Primo::attack(float angle)
 
 		this->addChild(bullet);
 		_bulletVector.pushBack(bullet);
-		}, 0.1, 3, 0, "primoAttack");
+	}, 0.1, 3, 0, "primoAttack");
 }
 
 void Primo::castAbility(float angle)
@@ -99,7 +99,7 @@ void Primo::castAbility(float angle)
 		GameScene::getGameScene()->breakWall(this->getParent()->getPosition() + Vec2(-X, Y));
 		GameScene::getGameScene()->breakWall(this->getParent()->getPosition() + Vec2(-X, 0));
 		GameScene::getGameScene()->breakWall(this->getParent()->getPosition() + Vec2(-X, -Y));
-		});
+	});
 	auto sequence = Sequence::create(leap, destroyWall, nullptr);
 	this->getParent()->runAction(sequence);
 }
@@ -113,7 +113,7 @@ bool Primo::takeDamage(INT32 damage)
 	/* ‹…À“Ù–ß*/
 	if (_isPlayer && CCRANDOM_0_1() < 0.5f)
 		MusicUtils::playEffect("Music/Primo/Primo_Hurt.mp3");
-
+	
 
 	return false;
 }
@@ -125,5 +125,5 @@ void Primo::die()
 
 	/*À¿Õˆ“Ù–ß*/
 	MusicUtils::playEffect("Music/Primo/Primo_Die.mp3");
-
+	
 }

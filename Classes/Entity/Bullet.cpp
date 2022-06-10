@@ -28,11 +28,10 @@ void Bullet::setAttributes(INT32 damage, INT32 speed, INT32 range, float angle, 
 /*碰撞英雄*/
 void Bullet::collideWithBrawler(Brawler* target)
 {
-	target->takeDamage(_damage);//实体受伤
 	this->removeFromParent();	//子弹移除
 	_launcher->dealDamage(_damage);//发射者造成伤害
 
-	if (_damage >= target->getCurrentHealthPoint())//击杀了英雄
+	if (target->takeDamage(_damage))//实体受伤,若击杀了目标
 	{
 		_launcher->kill(target);
 	}
