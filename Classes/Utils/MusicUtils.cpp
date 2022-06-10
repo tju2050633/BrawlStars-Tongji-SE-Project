@@ -1,3 +1,4 @@
+
 #include "MusicUtils.h"
 #include<String>
 #include "audio/include/AudioEngine.h"
@@ -22,6 +23,6 @@ void MusicUtils::playMusic(const std::string &filePath )
 
 void MusicUtils::playEffect(const std::string& filePath) 
 {
-	if (_effectOn);
+	if (_effectOn)
 		AudioEngine::play2d(filePath, false, _effectVolume / 10.0f);
 }
