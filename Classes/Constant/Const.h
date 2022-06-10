@@ -31,7 +31,7 @@ const int NITA_ABILITY_RANGE = 200;//技能范围
 const int PRIMO_HP = 6000;		//血量HealthPoint
 const int PRIMO_AD = 360;		//攻击力AttackDamage
 const int PRIMO_MS = 50;		//移速MoveSpeed
-const float PRIMO_AI = 0.3;		//攻击间隔AttackInterval
+const float PRIMO_AI = 0.5;		//攻击间隔AttackInterval
 const int PRIMO_EB = 4320;		//能量条EnergeBar
 
 const int PRIMO_BULLET_SPEED = 400;//子弹速度
@@ -58,6 +58,8 @@ const int BEAR_HP = 4400;		//血量HealthPoint
 const int BEAR_AD = 440;		//攻击力AttackDamage
 const int BEAR_MS = 50;		//移速MoveSpeed
 const float BEAR_AI = 0.5;		//攻击间隔AttackInterval
+
+const int BEAR_ATTACK_RANGE = 50;
 
 /*地图 属性*/
 

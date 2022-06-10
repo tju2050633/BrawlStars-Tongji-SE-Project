@@ -27,7 +27,7 @@ public:
 	static void playMusic(const std::string& filePath);
 	/*共用，播放特定音量的声效*/
 	static void playEffect(const std::string& filePath);
-
+	
 };
 
 #endif

@@ -5,7 +5,6 @@
 #include "GameMenu.h"
 #include "Utils/MusicUtils.h"
 #include "Utils/SceneUtils.h"
-#include "audio/include/AudioEngine.h"
 
 USING_NS_CC;
 using namespace std;
@@ -117,7 +116,7 @@ bool Settings::init()
 
 	/*创建音乐开关文本*/
 	Text* music = Text::create("ON", "fonts/Marker Felt.ttf", 24);
-	if (music == nullptr)
+	if (musicVolume == nullptr)
 	{
 		SceneUtils::problemLoading("musicText creating failed");
 	}
@@ -147,16 +146,16 @@ bool Settings::init()
 /*按键回调函数具体实现*/
 
 /*回到菜单*/
-void Settings::settingsBackCallback(Ref* pSender)
+void Settings::settingsBackCallback(Ref* pSender) 
 {
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 }
 
 /*音乐开关*/
-void  Settings::settingsMusicCallback(Ref* pSender)
+void  Settings::settingsMusicCallback(Ref* pSender) 
 {
-	if (MusicUtils::_musicOn == true)
+	if (MusicUtils::_musicOn == true) 
 	{
 		MusicUtils::_musicOn = false;
 		_musicText->setString("OFF");//改变文本
@@ -171,7 +170,7 @@ void  Settings::settingsMusicCallback(Ref* pSender)
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 }
 /*音效开关*/
-void  Settings::settingsEffectCallback(Ref* pSender)
+void  Settings::settingsEffectCallback(Ref* pSender) 
 {
 	MusicUtils::_effectOn = !MusicUtils::_effectOn;
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
@@ -185,7 +184,7 @@ void  Settings::settingsEffectCallback(Ref* pSender)
 	}
 }
 /*音乐增强*/
-void  Settings::settingsMusicUpCallback(Ref* pSender)
+void  Settings::settingsMusicUpCallback(Ref* pSender) 
 {
 	if (MusicUtils::_musicVolume < 10)
 	{
@@ -196,7 +195,7 @@ void  Settings::settingsMusicUpCallback(Ref* pSender)
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 }
 /*音乐减弱*/
-void  Settings::settingsMusicDownCallback(Ref* pSender)
+void  Settings::settingsMusicDownCallback(Ref* pSender) 
 {
 	if (MusicUtils::_musicVolume > 0)
 	{
@@ -207,7 +206,7 @@ void  Settings::settingsMusicDownCallback(Ref* pSender)
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 }
 /*音效增强*/
-void  Settings::settingsEffectUpCallback(Ref* pSender)
+void  Settings::settingsEffectUpCallback(Ref* pSender) 
 {
 	if (MusicUtils::_effectVolume < 10)
 	{
@@ -217,7 +216,7 @@ void  Settings::settingsEffectUpCallback(Ref* pSender)
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
 }
 /*音效减弱*/
-void  Settings::settingsEffectDownCallback(Ref* pSender)
+void  Settings::settingsEffectDownCallback(Ref* pSender) 
 {
 	if (MusicUtils::_effectVolume > 0)
 	{

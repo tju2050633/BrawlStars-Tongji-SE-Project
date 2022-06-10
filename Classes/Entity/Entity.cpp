@@ -77,14 +77,14 @@ bool Entity::takeDamage(INT32 damage)
 		number->setColor(Color3B::RED);
 	this->addChild(number);
 
-	auto jump = JumpBy::create(1.0f, Vec2::ZERO, 50, 1);
+	auto jump = JumpBy::create(1.0f, Vec2::ZERO, 30, 1);
 	auto vanish = CallFunc::create([=]() {
-		this->removeChild(number, true);
+		this->removeChild(number,true);
 		number->setVisible(false);
-		});
+	});
 
-	auto sequence = Sequence::create(jump, vanish, nullptr);
-
+	auto sequence = Sequence::create(jump,vanish, nullptr);
+	
 	number->runAction(sequence);
 
 	return false;

@@ -12,7 +12,7 @@ USING_NS_CC;
 
 class Brawler : public Entity {
 	/*玩家相关*/
-	CC_SYNTHESIZE(PlayerController*, _playerController, PlayerController);	//操作器
+	CC_SYNTHESIZE(PlayerController* , _playerController, PlayerController);	//操作器
 
 	/*属性*/
 	CC_SYNTHESIZE(INT32, _ammo, Ammo);			//弹药
@@ -24,6 +24,7 @@ class Brawler : public Entity {
 	CC_SYNTHESIZE(Size, _energyBarSize, EnergyBarSize);//能量条尺寸
 	CC_SYNTHESIZE(INT32, _buffNumber, BuffNumber);//buff数量
 	CC_SYNTHESIZE(Label*, _buffLabel, BuffLabel);//buff文字标签
+	CC_SYNTHESIZE(bool, _inBush, InBush);		//在草丛里
 
 	CC_SYNTHESIZE(INT32, _moveSpeedX, MoveSpeedX); //当前x方向速度
 	CC_SYNTHESIZE(INT32, _moveSpeedY, MoveSpeedY); //当前y方向速度
@@ -69,7 +70,6 @@ public:
 
 	void setAmmoBarPercent(float percent);		//设置弹药条百分比
 	void setEnergeBarPercent(float percent);	//设置能量条百分比
-
 };
 
 #endif// !__BRAWLER_H_

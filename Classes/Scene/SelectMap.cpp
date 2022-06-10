@@ -3,7 +3,6 @@
 #include "Scene/SelectMap.h"
 #include "Utils/SceneUtils.h"
 #include "Utils/MusicUtils.h"
-#include "audio/include/AudioEngine.h"
 
 USING_NS_CC;
 using namespace std;
@@ -93,7 +92,7 @@ void SelectMap::initMenu()
 void SelectMap::menuMapACallback(cocos2d::Ref* pSender)
 {
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
-
+	
 	SceneUtils::_map = SceneUtils::AllMap::MapA;
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }
@@ -102,7 +101,7 @@ void SelectMap::menuMapACallback(cocos2d::Ref* pSender)
 void SelectMap::menuMapBCallback(cocos2d::Ref* pSender)
 {
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
-
+	
 	SceneUtils::_map = SceneUtils::AllMap::MapB;
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }
@@ -111,7 +110,7 @@ void SelectMap::menuMapBCallback(cocos2d::Ref* pSender)
 void SelectMap::menuMapCCallback(cocos2d::Ref* pSender)
 {
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
-
+	
 	SceneUtils::_map = SceneUtils::AllMap::MapC;
 	SceneUtils::changeScene(SceneUtils::AllScenes::SelectBrawler);
 }
@@ -121,6 +120,6 @@ void SelectMap::menuMapCCallback(cocos2d::Ref* pSender)
 void SelectMap::menuBackCallback(cocos2d::Ref* pSender)
 {
 	MusicUtils::playEffect("Music/ButtonEffect.mp3");
-
+	
 	SceneUtils::changeScene(SceneUtils::AllScenes::GameMenu);
 }

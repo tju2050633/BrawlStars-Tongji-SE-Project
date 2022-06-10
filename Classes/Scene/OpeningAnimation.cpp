@@ -28,7 +28,7 @@ bool OpeningAnimation::init()
 	}
 
 	/*三秒后进入菜单界面*/    //改为2秒
-	scheduleOnce(SEL_SCHEDULE(&OpeningAnimation::EnterMenu), 1.5f);
+	scheduleOnce(SEL_SCHEDULE(&OpeningAnimation::EnterMenu), 1.5f); 
 
 	/*预加载所有图片、音频等资源*/
 	PreloadResource();
