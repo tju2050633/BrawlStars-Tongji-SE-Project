@@ -3,10 +3,12 @@
 
 string AnimationUtils::Entities[5] = { "Shelly","Nita","Primo","Stu", "bear"};
 string AnimationUtils::Types[6] = { "Top","Left","Bottom","Right", "boom", "Attack"};
+AnimationUtils::TypeEnum AnimationUtils::_state = Bottom;
 
 /*加载动画序列*/
 Animate* AnimationUtils::getAnimate(EntityEnum entity, TypeEnum type, float time, INT32 iFrameNum, INT32 loop)
 {
+	_state = type;
 	/*获取英雄名和动画种类*/
 	string brawlerName = Entities[entity];
 	string typeName = Types[type];
@@ -28,6 +30,7 @@ Animate* AnimationUtils::getAnimate(EntityEnum entity, TypeEnum type, float time
 /*运行动画*/
 void AnimationUtils::runAnimate(Entity* target, EntityEnum entity, TypeEnum type, float time, INT32 iFrameNum, INT32 loop)
 {
+	_state = type;
 	auto animate = AnimationUtils::getAnimate(entity, type, time, iFrameNum, loop);
 
 	target->getSprite()->stopAllActions();
@@ -37,6 +40,7 @@ void AnimationUtils::runAnimate(Entity* target, EntityEnum entity, TypeEnum type
 /*停止动画*/
 void AnimationUtils::stopAnimate(Entity* target, EntityEnum entity, TypeEnum type)
 {
+	_state = type;
 	/*获取英雄名和动画种类*/
 	string brawlerName = Entities[entity];
 	string typeName = Types[type];

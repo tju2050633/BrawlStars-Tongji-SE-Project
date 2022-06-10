@@ -70,7 +70,6 @@ public:
 	void setAmmoBarPercent(float percent);		//设置弹药条百分比
 	void setEnergeBarPercent(float percent);	//设置能量条百分比
 
-	AnimationUtils::TypeEnum getDirection();    //获取英雄朝向
 };
 
 #endif// !__BRAWLER_H_

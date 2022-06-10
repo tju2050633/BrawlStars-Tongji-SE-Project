@@ -670,7 +670,7 @@ void GameScene::menuPause(cocos2d::Ref* pSender)
 		_playerController->changeControllerSprite();//重置控制器图标
 
 		/*重置英雄行动状态*/
-		AnimationUtils::stopAnimate(_player->getBrawler(), _player->getBrawler()->getAnimateBrawler(), _player->getBrawler()->getDirection());
+		AnimationUtils::stopAnimate(_player->getBrawler(), _player->getBrawler()->getAnimateBrawler(), AnimationUtils::_state);
 		_player->setTargetMoveSpeedX(0);
 		_player->setTargetMoveSpeedY(0);
 

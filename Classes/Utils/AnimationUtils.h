@@ -30,6 +30,7 @@ public:
         Attack
     };
     static string Types[6];
+    static TypeEnum _state;//实时记录角色状态
 
     /*获取动画序列*/
     static Animate* getAnimate(EntityEnum entity, TypeEnum type, float time, INT32 iFrameNum, INT32 loop);
