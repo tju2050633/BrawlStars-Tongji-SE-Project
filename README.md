@@ -6,9 +6,6 @@
 - Github地址：https://github.com/tju2050633/BrawlStars-Tongji-SE-Project
 - 项目进度时间线：
 
-![1](D:\1\second_term\期末项目\1.png)
-
-
 
 
 ## 项目开发文档
@@ -22,13 +19,6 @@
    4.李恒鑫负责了设置和菜单场景、音频引擎控制音量。
 
 ### 整体架构设计
-
-![first](D:\1\second_term\期末项目\first.png)
-
-![second](D:\1\second_term\期末项目\second.png)
-
-![third](D:\1\second_term\期末项目\third.png)
-
 
 
 
