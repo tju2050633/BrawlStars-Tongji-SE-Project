@@ -13,8 +13,8 @@
 - 辅助软件：Tiled Map Editor 1.8.4 、Adobe Photoshop CC 2020
 - 支持平台：Windows  （此项待定）
 - 小组分工：
-   1.卢嘉霖负责大部分代码设计、开发、合并和调试，以及收集了音频、部分图片素材；
-   2.梁馨负责AI状态机的设计和部分代码开发，制作人物动画、部分UI组件所需的素材；
+   1.卢嘉霖负责大部分代码设计、开发、合并和调试，收集了音频、部分图片素材，实现macOS平台的运行；
+   2.梁馨负责AI状态机的设计和部分代码开发，制作人物动画、部分UI组件所需的素材，打包项目和项目文档撰写；
    3.李佩耘负责了瓦片地图的制作，以及大部分与瓦片地图交互的函数；
    4.李恒鑫负责了设置和菜单场景、音频引擎控制音量。
 
@@ -60,9 +60,13 @@ gantt
 - [x] 支持奖杯数记录
 - [x] 支持英雄使用普通攻击及大招攻击，普攻可积攒大招
 - [x] 部分英雄大招可以摧毁障碍物
-- [x] 支持拖拽轮盘及WAS
 
 ##### 进阶功能
+
+- [x] 表情系统
+- [x] 显示攻击、技能的范围指示器
+- [x] UI界面还原原版手游，随着操纵指示变化
+- [x] AI自动寻找目标、识别敌人、避开障碍、寻找宝箱buff等
 
 ###### C++新特性
 - [x] 基于范围的for循环
@@ -89,34 +93,62 @@ const int SHELLY_BULLET_RANGE = 300;//射程
 
 ```
 
-2. animation类的使用
+2. 预加载资源的使用
 
 ```
 class OpeningAnimation : public Layer
 {
 public:
-	/*创建场景和初始化*/
-	static Scene* createScene();
-	virtual bool init();
-	CREATE_FUNC(OpeningAnimation);
-
+	...
+	
 	/*预加载所有图片、音频等资源*/
 	void PreloadResource();
-
-	/*切换到游戏菜单*/
-	void EnterMenu(float dt);
+	
+	...
 };
 
+/*预加载所有图片、音频等资源*/
+void OpeningAnimation::PreloadResource()
+{
+	/*音乐音效*/
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Music/ButtonEffect.mp3");
+	...
+	
+	/*精灵图*/
+	Director::getInstance()->getTextureCache()->addImage("trophy.png");
+	...
+}
+
 ```
 
-3. AI有限状态机的使用
+3.Utils工具类的使用
 
 ```
 
-class FSMState :public Node {
+class SceneUtils
+{
 public:
-	virtual void execute(AI* _ai, MsgType _msgType) = 0;
+	/*枚举所有场景*/
+	enum AllScenes
+	{
+		OpeningAnimation,
+		GameMenu,
+	};
+	...
+	
+	/*静态成员变量，存储切换场景时用到的信息*/
+	static AllMap _map;				
+	...
+
+	/*共用，切换场景时使用，参数为该对象内枚举数*/
+	static void changeScene(AllScenes targetScene);
+	
+	...
+
+	/*放置背景图，所有场景类共用，loadWay区分加载背景图方式*/
+	static void setBGimage(const char* filename, Layer* layer, setBGimageWith loadWay);
 };
+
 ```
 
 4. PLIST文件的使用
@@ -138,4 +170,26 @@ public:
                 <false/>
             </dict>
 ```
+
+5. 接口类的使用
+
+```
+
+ class ControllerListener {
+public:
+	/*设置、获取位置*/
+	virtual void setTargetPosition(Vec2 position) = 0;
+	virtual Vec2 getTargetPosition() = 0;
+	/*设置和获取目标当前速度（不是英雄固有移速属性）*/
+	virtual void setTargetMoveSpeedX(int speedX) = 0;
+	virtual void setTargetMoveSpeedY(int speedY) = 0;
+	virtual INT32 getTargetMoveSpeedX() = 0;
+	virtual INT32 getTargetMoveSpeedY() = 0;
+	/*获取英雄*/
+	virtual Brawler* getTargetBrawler() = 0;
+};
+
+```
+
+
 
